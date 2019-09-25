@@ -1,0 +1,26 @@
+Must Have:
+	Gardenr Device (Raspberry PI)
+		-Monitor soil moisture level/percentage via a sensor
+		-Continuously transmit monitored values to the server (~once every 30 min)
+
+	Server
+		-Stores received data to database
+		-Provides REST API which allow client to request queries of
+			-> real time value(s)
+			-> value(s) as historical graph (time series) 
+		with adjustable time gap/frequency
+		-Able to handle multiple connections both from Gardenr devices and to the front-end devices
+	
+
+	User Interface
+		-Visualises data fetched from the server
+		-Ideally on mobile platform
+
+Should Have:
+	-Luminosity, Temperature, Humidity monitoring via sensors
+	-Camera, recording daily (or more frequent) images
+	
+
+Could Have:
+
+Won't / Would Have
