@@ -1,26 +1,34 @@
-Must Have:
-	Gardenr Device (Raspberry PI)
+Gardenr Device (Raspberry PI + Other components)
+	Must Have:
+		-External entry point to launch the script (SSH/Putty, assuming no displays connected to RPI)
+		-Establish connection to the server on start-up
 		-Monitor soil moisture level/percentage via a sensor
-		-Continuously transmit monitored values to the server (~once every 30 min)
+		-Continuously transmits monitored values to the server (~once every 30 min)
+	Should Have:
+		-Luminosity/UV, Temperature, Humidity monitoring
+		-Camera which captures image regularly (~daily), can also be triggered manually
+	Could Have:
+		-A pump connected to a limited but refillable water container
+		-Detect and broadcast level of remaining water in the container (ultrasonic sensor)
+		-Evaluating plant health with image processing/color detection
 
-	Server
-		-Stores received data to database
-		-Provides REST API which allow client to request queries of
-			-> real time value(s)
-			-> value(s) as historical graph (time series) 
-		with adjustable time gap/frequency
-		-Able to handle multiple connections both from Gardenr devices and to the front-end devices
-	
+		
 
-	User Interface
-		-Visualises data fetched from the server
-		-Ideally on mobile platform
+Server
+	Must Have:
+		-Database which stores time series
+		-Provides REST API which allow client to request real time and historical data
+		-Able to handle multiple connections both to Gardenr devices and the front-end devices
+		-Generate unique identifiers for Gardenr devices on the first connection
+	Should Have:
+		-API for users to trigger the pump
 
-Should Have:
-	-Luminosity, Temperature, Humidity monitoring via sensors
-	-Camera, recording daily (or more frequent) images
-	
 
-Could Have:
+User Interface
+	Must Have:
+		-Log in with unique id received on setup
+		-Visualises data fetched from the server (panels for real time data, graphs for time range data)
+	Should Have:
+		-Slots for registering multiple Gardenr devices
 
-Won't / Would Have
+
