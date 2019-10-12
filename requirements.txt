@@ -1,34 +1,50 @@
-Gardenr Device (Raspberry PI + Other components)
+Gardenr Device (Raspberry PI + sensors + other components)
 	Must Have:
-		-External entry point to launch the script (SSH/Putty, assuming no displays connected to RPI)
-		-Establish connection to the server on start-up
-		-Monitor soil moisture level/percentage via a sensor
-		-Continuously transmits monitored values to the server (~once every 30 min)
+		-Registered to the system via App + Bluetooth, only one registration required per device.
+		-Monitors soil moisture level/percentage via a sensor
+		-Scheduled script which read and send sensor values to Firebase once every ~30 min (once registered, via CRON)
+
 	Should Have:
-		-Luminosity/UV, Temperature, Humidity monitoring
-		-Camera which captures image regularly (~daily), can also be triggered manually
+		-Luminosity/UV, Temperature, Humidity sensors
+		-Camera which capture daily images
+		-Initialise device with existing ID via App + Bluetooth (in case of device replacement)
+
 	Could Have:
-		-A pump connected to a limited but refillable water container
-		-Detect and broadcast level of remaining water in the container (ultrasonic sensor)
+		-Powered on when an execution is needed, off otherwise, controlled by Arduino or any other low power components
+		-Runs on battery
+
+	Would Have:
 		-Evaluating plant health with image processing/color detection
 
 		
-
-Server
+Server (Firebase Realtime Database)
 	Must Have:
-		-Database which stores time series
-		-Provides REST API which allow client to request real time and historical data
-		-Able to handle multiple connections both to Gardenr devices and the front-end devices
-		-Generate unique identifiers for Gardenr devices on the first connection
+		-Stores data in tree-like structure (eg. JSON)
+		-Triggers updates/notification on clients when data is received
+		-Allow clients to query latest and time series data
+
 	Should Have:
-		-API for users to trigger the pump
+		-Social media platform, users can follow each other or follow other Gardenr devices
+		-Approximate and store the regular time when each plant is being watered
+		-Notifies users if plants are not being watered as usual
+		-Detects and notifies abnormal sensor conditions (eg. moisture sensor getting rusty/worn out)
+
+	Could Have
+		-Game-like mechanisms eg. achievements/medals for users to unlock (water a plant for 7 consecutive days, had a plant gone up to 40°, etc.)
 
 
-User Interface
+User Interface (Flutter)
 	Must Have:
-		-Log in with unique id received on setup
+		-User authentication system
 		-Visualises data fetched from the server (panels for real time data, graphs for time range data)
-	Should Have:
-		-Slots for registering multiple Gardenr devices
 
+	Should Have:
+		-Activate and claim ownership of Gardenr devices via Bluetooth
+		-List of all belonging plants
+		
+	Could Have:
+		-Follows another plant by ID
+		-Access to user profiles, their list of plants and unlocked achievement
+		-*Plant profile section*: name, species, description, optional photo, latest sensor values + graphs
+		
 
