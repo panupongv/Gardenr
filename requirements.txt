@@ -1,19 +1,22 @@
 Gardenr Device (Raspberry PI + sensors + other components)
 	Must Have:
-		-Registered to the system via App + Bluetooth, only one registration required per device.
+		-Initialised device via SSH
+		-Sends registration request once initialised
+		-Shows unique ID on SSH once registered
 		-Monitors soil moisture level/percentage via a sensor
-		-Scheduled script which read and send sensor values to Firebase once every ~30 min (once registered, via CRON)
+		-Reads and sends values to every 30 min (scheduled with CRON)
 
 	Should Have:
 		-Luminosity/UV, Temperature, Humidity sensors
-		-Camera which capture daily images
 		-Initialise device with existing ID via App + Bluetooth (in case of device replacement)
+		-Desynchronisation mechanism, avoid making request from bulk devices (hash)
 
 	Could Have:
-		-Powered on when an execution is needed, off otherwise, controlled by Arduino or any other low power components
-		-Runs on battery
+		-Arduino compatible
 
 	Would Have:
+		-Powered on when an execution is needed, off otherwise, controlled by Arduino or any other low power components
+		-Runs on battery
 		-Evaluating plant health with image processing/color detection
 
 		
