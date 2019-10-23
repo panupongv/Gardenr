@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'location_detail.dart';
 
-void main() => runApp(MaterialApp(
-  home: Scaffold(
-    appBar: AppBar(
-      title: Text("FLutter ez boi"),
-    ),
-  ),
-));
+void main() {
+  return runApp(MaterialApp(home: LocationDetail(),));
+}
