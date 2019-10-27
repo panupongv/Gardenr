@@ -25,7 +25,7 @@ class _DashBoardState extends State<DashBoard> {
           DashBoardItem(
               index: 0,
               dashBoardPlant: new DashBoardPlant(
-                  name: "Me. Tree",
+                  name: "Mr. Tree",
                   timeUpdated: "22nd Oct 2019 15:00",
                   moisture: "30",
                   temperature: "25"),
@@ -33,7 +33,7 @@ class _DashBoardState extends State<DashBoard> {
           DashBoardItem(
               index: 0,
               dashBoardPlant: new DashBoardPlant(
-                  name: "Me. Cactus",
+                  name: "Mr. Cactus",
                   timeUpdated: "22nd Oct 2019 15:00",
                   moisture: "0",
                   temperature: "40"),

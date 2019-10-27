@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 class DashBoardPlant {
   String name;
   String timeUpdated, moisture, temperature;
@@ -10,5 +8,4 @@ class DashBoardPlant {
     this.moisture,
     this.temperature
   });
-  
 }
