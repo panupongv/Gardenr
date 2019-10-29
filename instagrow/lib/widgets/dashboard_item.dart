@@ -3,21 +3,34 @@ import 'package:instagrow/models/dashboard_plant.dart';
 
 class DashBoardItem extends StatelessWidget {
   final int index;
-  final DashBoardPlant dashBoardPlant;
+  final DashBoardPlant plant;
   bool lastItem;
 
-  DashBoardItem({this.index, this.dashBoardPlant, this.lastItem});
+  DashBoardItem({this.index, this.plant, this.lastItem});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: CupertinoColors.inactiveGray
-      ),
+      decoration: BoxDecoration(color: CupertinoColors.inactiveGray),
       height: 100,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(dashBoardPlant.name), Text(dashBoardPlant.timeUpdated)],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(plant.name), 
+              Text(plant.timeUpdated.toString())],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Moisture: " + plant.moisture.toString()),
+              Text("Temperature: " + plant.temperature.toString())
+            ],
+          )
+        ],
       ),
     );
   }

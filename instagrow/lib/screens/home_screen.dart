@@ -2,24 +2,12 @@ import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/dashboard.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:instagrow/models/user_information.dart';
 
 class HomeScreen extends StatelessWidget {
   String temp;
   @override
   Widget build(BuildContext context) {
-    var value = FirebaseDatabase.instance.reference().child('gardenr-ed17f');
-    StreamBuilder(
-        stream: value.onValue,
-        builder: (context, snap) {
-          if (snap.hasData &&
-              !snap.hasError &&
-              snap.data.snapshot.value != null) {
-            temp = snap.data.snapshot.value.toString();
-          }
-        });
-
-//taking the data snapshot.
-    
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         items: [
@@ -41,10 +29,16 @@ class HomeScreen extends StatelessWidget {
         return CupertinoTabView(builder: (context) {
           switch (i) {
             case 0:
-              return DashBoard(temp);
+              return DashBoard(
+                  "My Garden",
+                  FirebaseDatabase.instance
+                      .reference()
+                      .child('plants')
+                      .orderByChild('ownerId')
+                      .equalTo(UserInformation().userId));
               break;
             case 1:
-              return DashBoard("Following");
+              return DashBoard("Following", null);
               break;
           }
           return null;
