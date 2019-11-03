@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
-import 'package:instagrow/models/user_information.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DashBoard extends StatefulWidget {
   final String title;
@@ -19,44 +19,63 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  int count = 0;
-  Widget build(BuildContext context) {
-    var myGardenQuery = FirebaseDatabase.instance
-        .reference()
-        .child('plants')
-        .orderByChild('ownerId')
-        .equalTo(UserInformation().userId);
-    //.equalTo(UserInformation.userId);
-    StreamBuilder builder = StreamBuilder(
-      stream: widget.dbRef.onValue,
-      builder: (context, snap) {
-        if (!snap.hasData || snap.hasError) {
-          return CircularProgressIndicator();
-        }
-        DataSnapshot snapshot = snap.data.snapshot;
-        LinkedHashMap value = snapshot.value;
-        List items = [];
+  List<DashBoardPlant> plants = List();
+
+  @override
+  initState() {
+    super.initState();
+    _onRefresh();
+  }
+
+  Future<void> _onRefresh() async {
+    widget.dbRef.once().then((DataSnapshot snapshot) {
+      LinkedHashMap value = snapshot.value;
+      setState(() {
+        plants.clear();
         value.forEach((k, v) {
-          if (k != null) items.add([k, v]);
+          if (k != null && v != null)
+            plants.add(DashBoardPlant.fromQueryData(k, v));
         });
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return DashBoardItem(
-              index: index,
-              plant: DashBoardPlant.fromQueryData(items[index]),
-              lastItem: index == items.length - 1,
-            );
+        print(plants.length.toString() + " item(s) loaded");
+        plants = plants;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    CustomScrollView scrollView = CustomScrollView(
+      physics:
+          const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      slivers: <Widget>[
+        CupertinoSliverRefreshControl(
+          onRefresh: () {
+            return _onRefresh();
           },
-        );
-      },
-    );
-    return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text("${widget.title}"),
-          trailing: Icon(CupertinoIcons.plus_circled),
         ),
-        child: builder);
+        SliverSafeArea(
+          top: true,
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return DashBoardItem(
+                  index: index,
+                  plant: plants[index],
+                  lastItem: index == plants.length - 1,
+                );
+              },
+              childCount: plants.length,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(widget.title),
+      ),
+      child: scrollView,
+    );
   }
 }

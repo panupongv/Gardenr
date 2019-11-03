@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
+import 'package:instagrow/screens/plant_info_board.dart';
 
 class DashBoardItem extends StatelessWidget {
   final int index;
@@ -10,7 +12,7 @@ class DashBoardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Container item = Container(
       decoration: BoxDecoration(color: CupertinoColors.inactiveGray),
       height: 100,
       child: Column(
@@ -32,6 +34,16 @@ class DashBoardItem extends StatelessWidget {
           )
         ],
       ),
+    );
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(CupertinoPageRoute(
+          builder: (context) {
+            return PlantInfoBoard(plant);
+          }
+        ));
+      },
+      child: item,
     );
   }
 }

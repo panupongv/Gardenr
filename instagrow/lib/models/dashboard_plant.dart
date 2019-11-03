@@ -1,21 +1,15 @@
 class DashBoardPlant {
   String name;
-  int timeUpdated, moisture, temperature;
+  int id, timeUpdated, moisture, temperature;
 
-  static DashBoardPlant fromQueryData(data) {
-    var dataMap = data[1];
-    DashBoardPlant newPlant = DashBoardPlant();
-    newPlant.name = dataMap['name'];
-    newPlant.timeUpdated = dataMap['timeUpdated'];
-    newPlant.moisture = dataMap['moisture'];
-    newPlant.temperature = dataMap['temperature'];
-    return newPlant;
+  static DashBoardPlant fromQueryData(id, data) {
+    return DashBoardPlant(int.parse(id),
+                          data['name'], 
+                          data['timeUpdated'],
+                          data['moisture'], 
+                          data['temperature']);
   }
 
-  DashBoardPlant({
-    this.name,
-    this.timeUpdated,
-    this.moisture,
-    this.temperature
-  });
+  DashBoardPlant(
+      this.id, this.name, this.timeUpdated, this.moisture, this.temperature);
 }
