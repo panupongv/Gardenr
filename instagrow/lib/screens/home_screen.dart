@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
-import 'package:instagrow/screens/dashboard.dart';
+import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:instagrow/models/user_information.dart';
 
 class HomeScreen extends StatelessWidget {
-  String temp;
+  FirebaseUser user;  
+  
+  HomeScreen(this.user);
+
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
@@ -29,7 +33,7 @@ class HomeScreen extends StatelessWidget {
         return CupertinoTabView(builder: (context) {
           switch (i) {
             case 0:
-              return DashBoard(
+              return DashBoardScreen(
                   "My Garden",
                   FirebaseDatabase.instance
                       .reference()
@@ -38,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                       .equalTo(UserInformation().userId));
               break;
             case 1:
-              return DashBoard("Following", null);
+              return DashBoardScreen("Following", null);
               break;
           }
           return null;

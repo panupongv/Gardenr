@@ -6,19 +6,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class DashBoard extends StatefulWidget {
+class DashBoardScreen extends StatefulWidget {
   final String title;
   final dbRef;
 
-  DashBoard(this.title, this.dbRef);
+  DashBoardScreen(this.title, this.dbRef);
 
   @override
-  _DashBoardState createState() => _DashBoardState();
+  _DashBoardScreenState createState() => _DashBoardScreenState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _DashBoardScreenState extends State<DashBoardScreen> {
   List<DashBoardPlant> plants = List();
 
   @override
@@ -47,7 +46,7 @@ class _DashBoardState extends State<DashBoard> {
     CustomScrollView scrollView = CustomScrollView(
       physics:
           const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-      slivers: <Widget>[
+      slivers: [
         CupertinoSliverRefreshControl(
           onRefresh: () {
             return _onRefresh();
