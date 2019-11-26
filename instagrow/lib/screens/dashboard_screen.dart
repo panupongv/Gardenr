@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,10 +9,11 @@ import 'package:instagrow/models/dashboard_plant.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
 
 class DashBoardScreen extends StatefulWidget {
-  final String title;
-  final dbRef;
+  final String _title;
+  final FirebaseUser _user;
+  final Function _query;
 
-  DashBoardScreen(this.title, this.dbRef);
+  DashBoardScreen(this._title, this._user, this._query);
 
   @override
   _DashBoardScreenState createState() => _DashBoardScreenState();
@@ -27,17 +29,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Future<void> _onRefresh() async {
-    widget.dbRef.once().then((DataSnapshot snapshot) {
-      LinkedHashMap value = snapshot.value;
-      setState(() {
-        plants.clear();
-        value.forEach((k, v) {
-          if (k != null && v != null)
-            plants.add(DashBoardPlant.fromQueryData(k, v));
-        });
-        print(plants.length.toString() + " item(s) loaded");
-        plants = plants;
-      });
+    DateTime refreshedTime = DateTime.now().toUtc();
+    var queriedPlants = await widget._query(widget._user, refreshedTime);
+    setState(() {
+      this.plants = queriedPlants;
     });
   }
 
@@ -72,7 +67,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.title),
+        middle: Text(widget._title),
       ),
       child: scrollView,
     );

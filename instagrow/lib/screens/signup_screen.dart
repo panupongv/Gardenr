@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagrow/screens/home_screen.dart';
+import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/quick_dialog.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -18,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.initState();
     _email = _password = _confirmPassword = "";
   }
+
 
   Future<void> signUp() async {
     bool hasEmptyField = _email == "" || _password == "";
@@ -40,7 +42,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           context: context,
           builder: (context) {
             return getQuickAlertDialog(context, "Passwords Mismatch",
-                "Make sure to enter two identical passwords", "Dismiss");
+                "Please make sure entered passwords are identical", "Dismiss");
           });
     } else if (passwordTooShort) {
       showCupertinoDialog(
@@ -55,8 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             .createUserWithEmailAndPassword(email: _email, password: _password);
         FirebaseUser user = result.user;
         user.sendEmailVerification();
-
-        print("Here?");
+        DatabaseService.createUserInstance(user);
 
         showCupertinoDialog(
           context: context,
@@ -79,11 +80,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             );
           },
         );
-        print("Here2");
-        //Navigator.pop(context);
       } catch (e) {
-        print(e.toString());
-        print("xxx" + e.message + "xxx");
+        print("Exception while signing up: " + e.message);
       }
     }
   }

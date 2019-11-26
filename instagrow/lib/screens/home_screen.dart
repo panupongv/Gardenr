@@ -3,12 +3,13 @@ import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:instagrow/models/user_information.dart';
+import 'package:instagrow/screens/setting_screen.dart';
+import 'package:instagrow/utils/database_service.dart';
 
 class HomeScreen extends StatelessWidget {
-  FirebaseUser user;  
-  
-  HomeScreen(this.user);
+  final FirebaseUser _user;
+
+  HomeScreen(this._user);
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +35,20 @@ class HomeScreen extends StatelessWidget {
           switch (i) {
             case 0:
               return DashBoardScreen(
-                  "My Garden",
-                  FirebaseDatabase.instance
-                      .reference()
-                      .child('plants')
-                      .orderByChild('ownerId')
-                      .equalTo(UserInformation().userId));
+                "My Garden",
+                _user,
+                DatabaseService.getMyPlants,
+              );
               break;
             case 1:
-              return DashBoardScreen("Following", null);
+              return DashBoardScreen(
+                "Following",
+                _user,
+                DatabaseService.getFollowingPlants,
+              );
+              break;
+            case 2:
+              return SettingScreen();
               break;
           }
           return null;

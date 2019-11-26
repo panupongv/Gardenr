@@ -25,14 +25,13 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> navigateToSignUpScreen() async {
     Route route = CupertinoPageRoute(builder: (context) => SignUpScreen());
     String newEmail = (await Navigator.push(context, route)) as String;
-    _emailController.text = newEmail;
-    _passwordController.text = "";
+    _email = _emailController.text = newEmail;
+    _password = _passwordController.text = "";
   }
 
   Future<void> signIn() async {
     bool hasEmptyField = _email == "" || _password == "";
 
-    print(_email + "x x" + _password);
     if (hasEmptyField) {
       showCupertinoDialog(
         context: context,
@@ -42,18 +41,6 @@ class _SignInScreenState extends State<SignInScreen> {
               "Missing Field",
               "Please enter your " + (_email == "" ? "email" : "password"),
               "Dismiss");
-          // return CupertinoAlertDialog(
-          //   title: Text("Missing Field"),
-          //   content: Text("Please enter your " + (_email == "" ? "email" : "password")),
-          //   actions: <Widget>[
-          //     CupertinoButton(
-          //       onPressed: () {
-          //         Navigator.of(context).pop();
-          //       },
-          //       child: Text("Dismiss"),
-          //     ),
-          //   ],
-          // );
         },
       );
     } else {
@@ -61,11 +48,14 @@ class _SignInScreenState extends State<SignInScreen> {
         AuthResult authResult = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
         FirebaseUser user = authResult.user;
+        if (!user.isEmailVerified) {
+          throw Exception("NOT_VERIFIED");
+        }
         Route route =
             CupertinoPageRoute(builder: (context) => HomeScreen(user));
         Navigator.pushReplacement(context, route);
       } catch (e) {
-        print(e.message);
+        print("Exception while Logging in: " + e.message);
       }
     }
   }

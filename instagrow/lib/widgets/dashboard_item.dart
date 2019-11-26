@@ -23,7 +23,8 @@ class DashBoardItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(plant.name), 
-              Text(plant.timeUpdated.toString())],
+              Text(plant.timeOffset),
+            ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
