@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
@@ -7,8 +5,6 @@ import 'package:instagrow/models/dashboard_plant.dart';
 class DatabaseService {
   static final DatabaseReference _database =
       FirebaseDatabase.instance.reference();
-
-  static FirebaseUser _user;
 
   static Future<void> createUserInstance(FirebaseUser newUser) async {
     String userId = newUser.uid;

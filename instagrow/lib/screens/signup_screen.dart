@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/quick_dialog.dart';
 import 'package:sprintf/sprintf.dart';
@@ -53,10 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           });
     } else {
       try {
-        AuthResult result = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: _email, password: _password);
-        FirebaseUser user = result.user;
-        user.sendEmailVerification();
+        FirebaseUser user = await AuthService.signUp(_email, _password);
         DatabaseService.createUserInstance(user);
 
         showCupertinoDialog(

@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/signin_screen.dart';
+import 'package:instagrow/utils/auth_service.dart';
 
 class SettingScreen extends StatelessWidget {
+
   Future<void> logOut(BuildContext context) async {
     showCupertinoDialog(
         context: context,
@@ -21,7 +23,7 @@ class SettingScreen extends StatelessWidget {
               CupertinoButton(
                 child: Text("Logout", style: TextStyle(color: Colors.red),),
                 onPressed: () async {
-                  await FirebaseAuth.instance.signOut().then((_) {
+                  await AuthService.logOut().then((_) {
                     Navigator.of(context).pop();
                     Route route = CupertinoPageRoute(builder: (context) => SignInScreen());
                     Navigator.pushReplacement(context, route);

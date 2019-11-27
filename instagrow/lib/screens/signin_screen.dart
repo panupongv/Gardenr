@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signup_screen.dart';
+import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/quick_dialog.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -45,9 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
       );
     } else {
       try {
-        AuthResult authResult = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: _email, password: _password);
-        FirebaseUser user = authResult.user;
+        FirebaseUser user = await AuthService.signIn(_email, _password);
         if (!user.isEmailVerified) {
           throw Exception("NOT_VERIFIED");
         }
