@@ -11,6 +11,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
+      theme: CupertinoTheme.of(context),
       home: FutureBuilder(
         future: FirebaseAuth.instance.currentUser(),
         builder: (context, snapshot) {

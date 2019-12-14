@@ -42,6 +42,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       physics:
           const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       slivers: [
+        // CupertinoSliverNavigationBar(
+        //   largeTitle: Text(widget._title),
+        // ),
         CupertinoSliverRefreshControl(
           onRefresh: () {
             return _onRefresh();
@@ -66,9 +69,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(widget._title),
-      ),
+      navigationBar: CupertinoNavigationBar(middle: Text(widget._title,),),
       child: scrollView,
     );
   }
