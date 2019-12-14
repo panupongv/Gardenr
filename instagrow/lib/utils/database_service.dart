@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
+import 'package:instagrow/utils/cache_service.dart';
 
 class DatabaseService {
   static final DatabaseReference _database =
@@ -15,27 +16,40 @@ class DatabaseService {
     });
   }
 
-  static Future<List<DashBoardPlant>> getMyPlants(FirebaseUser user, DateTime refreshedTime) async {
+  // TODO remove User
+  static Future<List<DashBoardPlant>> getMyPlants(
+      FirebaseUser user, DateTime refreshedTime) async {
     String userId = user.uid;
-    var queryResult = await _database.child('plants').orderByChild('ownerId').equalTo(userId).once();
+    DataSnapshot queryResult = await _database
+        .child('plants')
+        .orderByChild('ownerId')
+        .equalTo(userId)
+        .once()
+        .timeout(Duration(seconds: 2), onTimeout: () {
+      return null;
+    });
+
     if (queryResult == null) {
-      return [];
+      return await CacheService.loadMyPlants();
     }
-    return DashBoardPlant.fromMap(queryResult.value, refreshedTime);
+
+    List<DashBoardPlant> plants =
+        DashBoardPlant.fromMap(queryResult.value, refreshedTime);
+    CacheService.saveMyPlants(plants);
+    return plants;
   }
 
-  static Future<void> _queryFollowingPlant(int plantId, List<DashBoardPlant> plants, DateTime refreshedTime) async {
-    var queryResult = await _database.child('plants').child(plantId.toString()).once();
-    if (queryResult == null) {
-      return;
-    }
-    plants.add(DashBoardPlant.fromQueryData(plantId.toString(), queryResult.value, refreshedTime));
-  }
-
-  static Future<List<DashBoardPlant>> getFollowingPlants(FirebaseUser user, DateTime refreshedTime) async {
+  // TODO remove User
+  static Future<List<DashBoardPlant>> getFollowingPlants(
+      FirebaseUser user, DateTime refreshedTime) async {
     String userId = user.uid;
-    var plantIdsQueryResult = await _database.child('users').child(userId).child('followingPlants').once();
+    var plantIdsQueryResult = await _database
+        .child('users')
+        .child(userId)
+        .child('followingPlants')
+        .once();
     if (plantIdsQueryResult == null) return [];
+
     List<dynamic> plantIds = plantIdsQueryResult.value;
     List<DashBoardPlant> plants = List();
     List<Future> futures = List();
@@ -44,5 +58,16 @@ class DatabaseService {
     }
     await Future.wait(futures);
     return plants;
+  }
+
+  static Future<void> _queryFollowingPlant(
+      int plantId, List<DashBoardPlant> plants, DateTime refreshedTime) async {
+    var queryResult =
+        await _database.child('plants').child(plantId.toString()).once();
+    if (queryResult == null) {
+      return;
+    }
+    plants.add(DashBoardPlant.fromQueryData(
+        plantId.toString(), queryResult.value, refreshedTime));
   }
 }

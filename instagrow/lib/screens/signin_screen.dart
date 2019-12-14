@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signup_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
-import 'package:instagrow/utils/quick_dialog.dart';
+import 'package:instagrow/widgets/quick_dialog.dart';
 
 class SignInScreen extends StatefulWidget {
   @override

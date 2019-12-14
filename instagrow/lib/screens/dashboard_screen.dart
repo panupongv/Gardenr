@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
+import 'package:instagrow/widgets/navigation_bar_text.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final String _title;
@@ -69,7 +70,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(middle: Text(widget._title,),),
+      navigationBar: CupertinoNavigationBar(middle: navigationBarText(widget._title)),
       child: scrollView,
     );
   }

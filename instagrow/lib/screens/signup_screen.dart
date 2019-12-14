@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/database_service.dart';
-import 'package:instagrow/utils/quick_dialog.dart';
+import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:sprintf/sprintf.dart';
 
 class SignUpScreen extends StatefulWidget {

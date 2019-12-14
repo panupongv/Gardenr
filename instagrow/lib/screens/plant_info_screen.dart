@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
+import 'package:instagrow/widgets/navigation_bar_text.dart';
 
-class PlantInfoBoard extends StatelessWidget {
-  DashBoardPlant plant;
+class PlantInfoScreen extends StatelessWidget {
+  final DashBoardPlant plant;
 
-  PlantInfoBoard(this.plant);
+  PlantInfoScreen(this.plant);
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(plant.name),
+        middle: navigationBarText(plant.name),
         trailing: Text("Edit"),
       ),
       child: Container(

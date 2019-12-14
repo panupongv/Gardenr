@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
-import 'package:instagrow/screens/plant_info_board.dart';
+import 'package:instagrow/screens/plant_info_screen.dart';
 
 class DashBoardItem extends StatelessWidget {
   final int index;
@@ -71,12 +71,12 @@ class DashBoardItem extends StatelessWidget {
           item,
           Padding(
             padding: const EdgeInsets.only(
-              left: 100,
-              right: 16,
+              left: 0,
+              right: 0,
             ),
             child: Container(
               height: 1,
-              color: CupertinoColors.inactiveGray,
+              color: CupertinoColors.lightBackgroundGray,
             ),
           ),
         ],
@@ -86,45 +86,10 @@ class DashBoardItem extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       onTap: () {
         Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-          return PlantInfoBoard(plant);
+          return PlantInfoScreen(plant);
         }));
       },
       child: Container(child: listItem,),
-    );
-  }
-
-  @override
-  Widget build2(BuildContext context) {
-    Container item = Container(
-      height: 100,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(plant.name),
-              Text(plant.timeOffset),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Moisture: " + plant.moisture.toString()),
-              Text("Temperature: " + plant.temperature.toString())
-            ],
-          )
-        ],
-      ),
-    );
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-          return PlantInfoBoard(plant);
-        }));
-      },
-      child: item,
     );
   }
 }

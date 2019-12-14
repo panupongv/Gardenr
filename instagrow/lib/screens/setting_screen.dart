@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/signin_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
+import 'package:instagrow/widgets/navigation_bar_text.dart';
 
 class SettingScreen extends StatelessWidget {
   Future<void> logOut(BuildContext context) async {
@@ -41,26 +42,10 @@ class SettingScreen extends StatelessWidget {
   }
 
   @override
-  Widget build2(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: CustomScrollView(
-        slivers: <Widget>[
-          CupertinoSliverNavigationBar(
-            largeTitle: Text("Setting"),
-          ),
-          SliverSafeArea(
-            top: false,
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("Setting"),
+        middle: navigationBarText("Setting"),
       ),
       child: DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle,

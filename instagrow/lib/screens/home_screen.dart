@@ -25,6 +25,10 @@ class HomeScreen extends StatelessWidget {
             title: Text("Following"),
           ),
           BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.person),
+            title: Text("My Profile"),
+          ),
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear),
             title: Text("Setting"),
           ),
