@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
+import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/cache_service.dart';
 
 class DatabaseService {
@@ -9,58 +11,86 @@ class DatabaseService {
 
   static Future<void> createUserInstance(FirebaseUser newUser) async {
     String userId = newUser.uid;
-    String userEmail =
+    String trimmedEmail =
         newUser.email.toString().toLowerCase().split("@").elementAt(0);
     await _database.child("users").child(userId).set(<String, String>{
-      "name": userEmail,
+      "name": trimmedEmail,
     });
   }
 
-  // TODO remove User
+  static Stream<Event> profileImageStream(FirebaseUser user) {
+    return _database.child('users').child(user.uid).child('imageUrl').onValue;
+  }
+
+  static Stream<Event> displayNameStream(FirebaseUser user) {
+    return _database.child('users').child(user.uid).child('name').onValue;
+  }
+
+  static Stream<Event> userDescriptionStream(FirebaseUser user) {
+    return _database.child('users').child(user.uid).child('description').onValue;
+  }
+
   static Future<List<DashBoardPlant>> getMyPlants(
-      FirebaseUser user, DateTime refreshedTime) async {
-    String userId = user.uid;
-    DataSnapshot queryResult = await _database
+      DateTime refreshedTime) async {
+    String userId = (await AuthService.getUser()).uid;
+    int waitDurationInSeconds = 3;
+    DataSnapshot dataSnapshot = await _database
         .child('plants')
         .orderByChild('ownerId')
         .equalTo(userId)
         .once()
-        .timeout(Duration(seconds: 2), onTimeout: () {
+        .timeout(Duration(seconds: waitDurationInSeconds), onTimeout: () {
       return null;
     });
 
-    if (queryResult == null) {
+    if (dataSnapshot == null) {
       return await CacheService.loadMyPlants();
     }
 
     List<DashBoardPlant> plants =
-        DashBoardPlant.fromMap(queryResult.value, refreshedTime);
+        DashBoardPlant.fromMap(dataSnapshot.value, refreshedTime);
     CacheService.saveMyPlants(plants);
     return plants;
   }
 
-  // TODO remove User
   static Future<List<DashBoardPlant>> getFollowingPlants(
-      FirebaseUser user, DateTime refreshedTime) async {
+      DateTime refreshedTime) async {
+    final int waitDurationInSec = 5;
+    List<DashBoardPlant> plants = await _getFollowingPlants(refreshedTime)
+        .timeout(Duration(seconds: waitDurationInSec), onTimeout: () {
+      return null;
+    });
+
+    if (plants == null) {
+      return CacheService.loadFollowingPlants();
+    }
+
+    CacheService.saveFollowingPlants(plants);
+    return plants;
+  }
+
+  static Future<List<DashBoardPlant>> _getFollowingPlants(
+      DateTime refreshedTime) async {
+    FirebaseUser user = await AuthService.getUser();
     String userId = user.uid;
-    var plantIdsQueryResult = await _database
+    DataSnapshot plantIdsSnapshot = await _database
         .child('users')
         .child(userId)
         .child('followingPlants')
         .once();
-    if (plantIdsQueryResult == null) return [];
+    if (plantIdsSnapshot == null) return [];
 
-    List<dynamic> plantIds = plantIdsQueryResult.value;
+    List<dynamic> plantIds = plantIdsSnapshot.value;
     List<DashBoardPlant> plants = List();
     List<Future> futures = List();
     for (int plantId in plantIds) {
-      futures.add(_queryFollowingPlant(plantId, plants, refreshedTime));
+      futures.add(_addQueriedPlantToList(plantId, plants, refreshedTime));
     }
     await Future.wait(futures);
     return plants;
   }
 
-  static Future<void> _queryFollowingPlant(
+  static Future<void> _addQueriedPlantToList(
       int plantId, List<DashBoardPlant> plants, DateTime refreshedTime) async {
     var queryResult =
         await _database.child('plants').child(plantId.toString()).once();

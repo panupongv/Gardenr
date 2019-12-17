@@ -7,9 +7,9 @@ import 'package:instagrow/screens/setting_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
 
 class HomeScreen extends StatelessWidget {
-  final FirebaseUser _user;
+  FirebaseUser user;
 
-  HomeScreen(this._user);
+  HomeScreen(this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -41,19 +41,17 @@ class HomeScreen extends StatelessWidget {
               case 0:
                 return DashBoardScreen(
                   "My Garden",
-                  _user,
                   DatabaseService.getMyPlants,
                 );
                 break;
               case 1:
                 return DashBoardScreen(
                   "Following",
-                  _user,
                   DatabaseService.getFollowingPlants,
                 );
                 break;
               case 2:
-                return ProfileScreen();
+                return ProfileScreen(user);
                 break;
               case 3:
                 return SettingScreen();

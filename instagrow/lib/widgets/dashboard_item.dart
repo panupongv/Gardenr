@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
@@ -12,6 +13,12 @@ class DashBoardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Container defaultImage = Container(
+      width: 78,
+      height: 78,
+      decoration: BoxDecoration(color: Colors.amber),
+    );
+
     final SafeArea item = SafeArea(
       top: false,
       bottom: false,
@@ -26,11 +33,22 @@ class DashBoardItem extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(38),
-            child: Image.network(
-              "https://picsum.photos/78",
-              fit: BoxFit.cover,
-              width: 76,
-              height: 76,
+            child: CachedNetworkImage(
+              imageUrl: "https://picsum.photos/78",
+              imageBuilder: (BuildContext context, ImageProvider imageProvider) {
+                return Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  width: 78,
+                  height: 78,
+                );
+              },
+              placeholder: (context, url) => defaultImage,
+              errorWidget: (context, url, error) => defaultImage,
             ),
           ),
           Expanded(
@@ -89,7 +107,9 @@ class DashBoardItem extends StatelessWidget {
           return PlantInfoScreen(plant);
         }));
       },
-      child: Container(child: listItem,),
+      child: Container(
+        child: listItem,
+      ),
     );
   }
 }

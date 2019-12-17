@@ -12,7 +12,7 @@ class PlantInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: navigationBarText(plant.name),
+        middle: navigationBarTitle(plant.name),
         trailing: Text("Edit"),
       ),
       child: Container(

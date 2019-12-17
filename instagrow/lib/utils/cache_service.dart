@@ -11,7 +11,6 @@ class CacheService {
     FirebaseUser user = await AuthService.getUser();
     List<String> ids =
         plants.map((DashBoardPlant plant) => plant.id.toString()).toList();
-    print(ids.toString());
     preferences.setStringList("${user.uid}/${pathOption}/IDS", ids);
     plants.forEach((DashBoardPlant plant) {
       preferences.setString("${user.uid}/${pathOption}/CACHE/${plant.id}", plant.toJson().toString());
@@ -22,7 +21,6 @@ class CacheService {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     FirebaseUser user = await AuthService.getUser();
     List<String> ids = preferences.getStringList("${user.uid}/${pathOption}/IDS");
-    print("LOAD SP: "+ids.toString());
     if (ids == null) {
       return [];
     }
@@ -45,4 +43,13 @@ class CacheService {
   static Future<List<DashBoardPlant>> loadMyPlants() async {
     return _loadPlants("MYPLANTS");
   }
+
+  static Future<void> saveFollowingPlants(List<DashBoardPlant> plants) async {
+    _savePlants("FOLLOWINGPLANTS", plants);
+  }
+
+  static Future<List<DashBoardPlant>> loadFollowingPlants() async {
+    return _loadPlants("FOLLOWINGPLANTS");
+  }
+
 }

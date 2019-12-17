@@ -89,7 +89,6 @@ class _SignInScreenState extends State<SignInScreen> {
             CupertinoButton(
               child: Text("Create an account"),
               onPressed: navigateToSignUpScreen,
-              //onPressed: navigateToSignUpScreen,
             )
           ],
         ),

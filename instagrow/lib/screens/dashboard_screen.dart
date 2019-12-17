@@ -1,7 +1,3 @@
-import 'dart:collection';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,10 +7,9 @@ import 'package:instagrow/widgets/navigation_bar_text.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final String _title;
-  final FirebaseUser _user;
   final Function _query;
 
-  DashBoardScreen(this._title, this._user, this._query);
+  DashBoardScreen(this._title, this._query);
 
   @override
   _DashBoardScreenState createState() => _DashBoardScreenState();
@@ -31,7 +26,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   Future<void> _onRefresh() async {
     DateTime refreshedTime = DateTime.now().toUtc();
-    var queriedPlants = await widget._query(widget._user, refreshedTime);
+    var queriedPlants = await widget._query(refreshedTime);
     setState(() {
       this.plants = queriedPlants;
     });
@@ -43,9 +38,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       physics:
           const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       slivers: [
-        // CupertinoSliverNavigationBar(
-        //   largeTitle: Text(widget._title),
-        // ),
         CupertinoSliverRefreshControl(
           onRefresh: () {
             return _onRefresh();
@@ -70,7 +62,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     );
 
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(middle: navigationBarText(widget._title)),
+      navigationBar: CupertinoNavigationBar(middle: navigationBarTitle(widget._title)),
       child: scrollView,
     );
   }

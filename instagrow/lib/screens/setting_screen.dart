@@ -45,7 +45,7 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: navigationBarText("Setting"),
+        middle: navigationBarTitle("Setting"),
       ),
       child: DefaultTextStyle(
         style: CupertinoTheme.of(context).textTheme.textStyle,
