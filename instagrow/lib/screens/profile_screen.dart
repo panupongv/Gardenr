@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -18,43 +19,56 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _imageUrl;
+  ImageProvider _profileImage;
   String _userDisplayName;
   String _userDescription;
 
   @override
   Widget build(BuildContext context) {
+    Container defaultImage = Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/defaultprofile.png'),
+        ),
+      ),
+      width: PROFILE_IMAGE_SIZE,
+      height: PROFILE_IMAGE_SIZE,
+    );
     UnconstrainedBox imageDisplay = UnconstrainedBox(
       child: Padding(
         padding: EdgeInsets.all(30),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(80),
-          child: StreamBuilder<Event>(
-            stream: DatabaseService.profileImageStream(widget.user),
+          borderRadius: BorderRadius.circular(PROFILE_IMAGE_SIZE / 2),
+          child: FutureBuilder<String>(
+            future: DatabaseService.getProfileImageUrl(widget.user),
             builder:
-                (BuildContext context, AsyncSnapshot<Event> asyncSnapshot) {
-              String streamedUrl = "defaultImage";
-
-              if (asyncSnapshot.data != null) {
-                streamedUrl = asyncSnapshot.data.snapshot.value;
-                _imageUrl = streamedUrl;
-              }
-              return CachedNetworkImage(
-                imageUrl: streamedUrl,
-                imageBuilder:
-                    (BuildContext context, ImageProvider imageProvider) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
+                (BuildContext context, AsyncSnapshot<String> asyncSnapshot) {
+              String streamedUrl;
+              if (asyncSnapshot.connectionState == ConnectionState.done) {
+                print("Not null");
+                streamedUrl = asyncSnapshot.data;
+                return CachedNetworkImage(
+                  imageUrl: streamedUrl,
+                  imageBuilder:
+                      (BuildContext context, ImageProvider imageProvider) {
+                    _profileImage = imageProvider;
+                    return Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    width: 160,
-                    height: 160,
-                  );
-                },
-              );
+                      width: PROFILE_IMAGE_SIZE,
+                      height: PROFILE_IMAGE_SIZE,
+                    );
+                  },
+                  placeholder: (context, url) => defaultImage,
+                  errorWidget: (context, url, error) => defaultImage,
+                );
+              } else {
+                return defaultImage;
+              }
             },
           ),
         ),
@@ -62,18 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     return CupertinoPageScaffold(
+      backgroundColor: Colors.transparent,
       navigationBar: CupertinoNavigationBar(
-        middle: navigationBarTitle("Profile"),
+        border: null,
         trailing: navigationBarTextButton("Edit", () {
-          CupertinoPageRoute route = CupertinoPageRoute(
-              builder: (context) => ProfileEditScreen(
-                  _imageUrl, _userDisplayName, _userDescription));
-          Navigator.push(
-              context,
-              PageTransition(
-                  type: PageTransitionType.fade,
-                  child: ProfileEditScreen(
-                      _imageUrl, _userDisplayName, _userDescription)));
+          Navigator.of(context).push(PageTransition(
+              type: PageTransitionType.fade,
+              child: ProfileEditScreen(
+                  _profileImage, _userDisplayName, _userDescription)));
         }),
       ),
       child: SafeArea(

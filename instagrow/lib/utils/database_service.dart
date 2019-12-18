@@ -1,13 +1,21 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instagrow/models/dashboard_plant.dart';
 import 'package:instagrow/utils/auth_service.dart';
-import 'package:instagrow/utils/cache_service.dart';
+import 'package:instagrow/utils/dimension_config.dart';
+import 'package:instagrow/utils/local_storage_service.dart';
+import 'package:image/image.dart' as imageUtils;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 
 class DatabaseService {
   static final DatabaseReference _database =
       FirebaseDatabase.instance.reference();
+
+  static final StorageReference _storage = FirebaseStorage.instance.ref();
 
   static Future<void> createUserInstance(FirebaseUser newUser) async {
     String userId = newUser.uid;
@@ -18,16 +26,21 @@ class DatabaseService {
     });
   }
 
-  static Stream<Event> profileImageStream(FirebaseUser user) {
-    return _database.child('users').child(user.uid).child('imageUrl').onValue;
-  }
+  // static Stream<Event> profileImageStream(FirebaseUser user) {
+  //   return _storage.child('profileImages').getStorage()
+  //   return _database.child('users').child(user.uid).child('imageUrl').onValue;
+  // }
 
   static Stream<Event> displayNameStream(FirebaseUser user) {
     return _database.child('users').child(user.uid).child('name').onValue;
   }
 
   static Stream<Event> userDescriptionStream(FirebaseUser user) {
-    return _database.child('users').child(user.uid).child('description').onValue;
+    return _database
+        .child('users')
+        .child(user.uid)
+        .child('description')
+        .onValue;
   }
 
   static Future<List<DashBoardPlant>> getMyPlants(
@@ -44,12 +57,12 @@ class DatabaseService {
     });
 
     if (dataSnapshot == null) {
-      return await CacheService.loadMyPlants();
+      return await LocalStorageService.loadMyPlants();
     }
 
     List<DashBoardPlant> plants =
         DashBoardPlant.fromMap(dataSnapshot.value, refreshedTime);
-    CacheService.saveMyPlants(plants);
+    LocalStorageService.saveMyPlants(plants);
     return plants;
   }
 
@@ -62,10 +75,10 @@ class DatabaseService {
     });
 
     if (plants == null) {
-      return CacheService.loadFollowingPlants();
+      return LocalStorageService.loadFollowingPlants();
     }
 
-    CacheService.saveFollowingPlants(plants);
+    LocalStorageService.saveFollowingPlants(plants);
     return plants;
   }
 
@@ -99,5 +112,42 @@ class DatabaseService {
     }
     plants.add(DashBoardPlant.fromQueryData(
         plantId.toString(), queryResult.value, refreshedTime));
+  }
+
+  static Future<void> updateProfileImage(File selectedImage) async {
+    imageUtils.Image tempImage =
+        imageUtils.decodeImage(selectedImage.readAsBytesSync());
+    imageUtils.Image resizedImage = imageUtils.copyResize(tempImage,
+        width: PROFILE_IMAGE_SIZE.round(), height: PROFILE_IMAGE_SIZE.round());
+
+    FirebaseUser user = await AuthService.getUser();
+    String storagePath = "profileImages/${user.uid}.png";
+    Directory tempDir = await getTemporaryDirectory();
+    String tempLocalPath = tempDir.path;
+
+    List<int> pngBytes = imageUtils.encodePng(resizedImage);
+    File resizedImageFile = File("$tempLocalPath/temp.png");
+    resizedImageFile.writeAsBytesSync(pngBytes);
+
+    _storage.child(storagePath).putFile(resizedImageFile);
+  }
+
+  static Future<String> getProfileImageUrl(FirebaseUser user) async {
+    try {
+      String url = await _storage.child('profileImages').child('${user.uid}.png').getDownloadURL();
+      print(">>"+url);
+      return url;
+    } on PlatformException catch (_) {}
+    return null;
+  }
+
+  static Future<void> updateDisplayName(String name) async {
+    FirebaseUser user = await AuthService.getUser();
+    await _database.child('users').child(user.uid).child('name').set(name);
+  }
+
+  static Future<void> updateDescription(String description) async {
+    FirebaseUser user = await AuthService.getUser();
+    await _database.child('users').child(user.uid).child('description').set(description);
   }
 }

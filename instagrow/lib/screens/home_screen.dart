@@ -7,7 +7,7 @@ import 'package:instagrow/screens/setting_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
 
 class HomeScreen extends StatelessWidget {
-  FirebaseUser user;
+  final FirebaseUser user;
 
   HomeScreen(this.user);
 

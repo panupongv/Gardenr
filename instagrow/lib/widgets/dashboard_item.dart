@@ -60,7 +60,7 @@ class DashBoardItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(plant.name),
+                      Text(plant.name, style: Theme.of(context).textTheme.title.merge(TextStyle(color: Colors.red)),),
                       Text(plant.timeOffset)
                     ],
                   ),
