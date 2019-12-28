@@ -17,6 +17,7 @@ class MainApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.error == null && snapshot.hasData) {
+              print("Continue as ${snapshot.data.uid}");
               return HomeScreen(snapshot.data);
             } else {
               return SignInScreen();

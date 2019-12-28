@@ -67,6 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CupertinoTextField(
+              
               controller: _emailController,
               placeholder: "Email",
               onChanged: (currentText) {

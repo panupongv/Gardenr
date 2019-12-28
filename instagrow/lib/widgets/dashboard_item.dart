@@ -1,40 +1,35 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagrow/models/dashboard_plant.dart';
-import 'package:instagrow/screens/plant_info_screen.dart';
+import 'package:instagrow/models/plant.dart';
+import 'package:instagrow/screens/plant_profile_screen.dart';
 
 class DashBoardItem extends StatelessWidget {
   final int index;
-  final DashBoardPlant plant;
-  final bool lastItem;
+  final Plant plant;
+  final bool isMyPlant, lastItem;
 
-  DashBoardItem({this.index, this.plant, this.lastItem});
+  DashBoardItem({this.index, this.plant, this.isMyPlant, this.lastItem});
 
   @override
   Widget build(BuildContext context) {
     final Container defaultImage = Container(
       width: 78,
       height: 78,
-      decoration: BoxDecoration(color: Colors.amber),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage('assets/defaultplant.png')), color: CupertinoColors.inactiveGray),
     );
 
     final SafeArea item = SafeArea(
       top: false,
       bottom: false,
-      minimum: const EdgeInsets.only(
-        left: 8,
-        top: 8,
-        bottom: 8,
-        right: 8,
-      ),
+      minimum: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.circular(38),
             child: CachedNetworkImage(
-              imageUrl: "https://picsum.photos/78",
+              imageUrl: plant.imageUrl,
               imageBuilder: (BuildContext context, ImageProvider imageProvider) {
                 return Container(
                   decoration: BoxDecoration(
@@ -104,7 +99,7 @@ class DashBoardItem extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       onTap: () {
         Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-          return PlantInfoScreen(plant);
+          return PlantProfileScreen(plant, isMyPlant);
         }));
       },
       child: Container(

@@ -54,7 +54,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else {
       try {
         FirebaseUser user = await AuthService.signUp(_email, _password);
-        DatabaseService.createUserInstance(user);
+        await DatabaseService.createUserInstance(user);
 
         showCupertinoDialog(
           context: context,

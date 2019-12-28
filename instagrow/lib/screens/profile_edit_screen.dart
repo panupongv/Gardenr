@@ -8,12 +8,19 @@ import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
+enum PreviousScreen {
+  UserProfile,
+  AddMyPlant,
+  EditMyPlant,
+}
+
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
-  final String currentDisplayName, currentDescription;
+  final String currentDisplayName, currentDescription, plantId;
+  final PreviousScreen previousScreen;
 
   ProfileEditScreen(
-      this.profileImage, this.currentDisplayName, this.currentDescription);
+      this.profileImage, this.currentDisplayName, this.currentDescription, this.previousScreen, this.plantId);
 
   @override
   State<StatefulWidget> createState() => _ProfileEditScreenState();
@@ -55,10 +62,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       sourcePath: image.path,
       aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
     );
-
     if (croppedImage == null) {
       return;
     }
+
     selectedImage = croppedImage;
     setState(() {
       _imageChanged = true;
@@ -69,14 +76,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Future<void> _applyChanges() async {
     if (_allowSave()) {
       if (_imageChanged) {
-        DatabaseService.updateProfileImage(selectedImage);
+        if (widget.previousScreen == PreviousScreen.UserProfile) {
+          DatabaseService.updateProfileImage(selectedImage);
+        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+          DatabaseService.updatePlantProfileImage(widget.plantId, selectedImage);
+        }
         setState(() {
           _imageChanged = false;
         });
       }
       if (_displayNameChanged) {
         String newName = displayNameController.text;
-        DatabaseService.updateDisplayName(newName);
+        if (widget.previousScreen == PreviousScreen.UserProfile) {
+          DatabaseService.updateDisplayName(newName);
+        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+          DatabaseService.updatePlantName(widget.plantId, newName);
+        }
         setState(() {
           currentDisplayName = newName;
           _displayNameChanged = false;
@@ -84,7 +99,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
       if (_descriptionChanged) {
         String newDescription = descriptionController.text;
-        DatabaseService.updateDescription(newDescription);
+        if (widget.previousScreen == PreviousScreen.UserProfile) {
+          DatabaseService.updateDescription(newDescription);
+        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+          DatabaseService.updatePlantDescription(widget.plantId, newDescription);
+        }
         setState(() {
           currentDescription = newDescription;
           _descriptionChanged = false;

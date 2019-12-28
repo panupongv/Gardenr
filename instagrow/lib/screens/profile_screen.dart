@@ -23,6 +23,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _userDisplayName;
   String _userDescription;
 
+  Future<void> _openEditScreen() async {
+    Navigator.of(context).push(PageTransition(
+        type: PageTransitionType.fade,
+        child: ProfileEditScreen(_profileImage, _userDisplayName,
+            _userDescription, PreviousScreen.UserProfile, null)));
+  }
+
   @override
   Widget build(BuildContext context) {
     Container defaultImage = Container(
@@ -38,15 +45,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Padding(
         padding: EdgeInsets.all(30),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(PROFILE_IMAGE_SIZE / 2),
-          child: FutureBuilder<String>(
-            future: DatabaseService.getProfileImageUrl(widget.user),
+          borderRadius: BorderRadius.circular(PROFILE_IMAGE_CIRCULAR_BORDER),
+          child: StreamBuilder<Event>(
+            stream: DatabaseService.profileImageStream(widget.user),
             builder:
-                (BuildContext context, AsyncSnapshot<String> asyncSnapshot) {
+                (BuildContext context, AsyncSnapshot<Event> asyncSnapshot) {
               String streamedUrl;
-              if (asyncSnapshot.connectionState == ConnectionState.done) {
+              if (asyncSnapshot.data != null) {
                 print("Not null");
-                streamedUrl = asyncSnapshot.data;
+                streamedUrl = asyncSnapshot.data.snapshot.value;
                 return CachedNetworkImage(
                   imageUrl: streamedUrl,
                   imageBuilder:
@@ -79,12 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.transparent,
       navigationBar: CupertinoNavigationBar(
         border: null,
-        trailing: navigationBarTextButton("Edit", () {
-          Navigator.of(context).push(PageTransition(
-              type: PageTransitionType.fade,
-              child: ProfileEditScreen(
-                  _profileImage, _userDisplayName, _userDescription)));
-        }),
+        trailing: navigationBarTextButton(
+          "Edit",
+          _openEditScreen,
+        ),
       ),
       child: SafeArea(
         top: true,
@@ -101,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   builder: (BuildContext context,
                       AsyncSnapshot<Event> asyncSnapshot) {
                     String displayName = (asyncSnapshot.data == null)
-                        ? "Display Name"
+                        ? ""
                         : asyncSnapshot.data.snapshot.value.toString();
                     _userDisplayName = displayName;
                     return Text(
@@ -121,13 +126,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   stream: DatabaseService.userDescriptionStream(widget.user),
                   builder: (BuildContext context,
                       AsyncSnapshot<Event> asyncSnapshot) {
-                    if (asyncSnapshot.data != null) {
-                      String description =
-                          asyncSnapshot.data.snapshot.value.toString();
-                      _userDescription = description;
-                      return Text(description);
-                    }
-                    return Text("");
+                    String description = (asyncSnapshot.data == null)
+                        ? ""
+                        : asyncSnapshot.data.snapshot.value.toString();
+                    _userDescription = description;
+                    return Text(description);
                   },
                 ),
               ),
@@ -138,49 +141,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-// class ProfileScreen_ extends StatefulWidget {
-
-//   final FirebaseUser user;
-
-//   ProfileScreen(this.user);
-
-//   @override
-//   State<StatefulWidget> createState() => _ProfileScreenState();
-// }
-
-// class _ProfileScreenState extends State<ProfileScreen> {
-
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return CupertinoPageScaffold(
-//       navigationBar: CupertinoNavigationBar(
-//         middle: navigationBarTitle("Profile"),
-//         trailing: navigationBarTextButton("Edit", () {
-//           print("edit yo");
-//         }),
-//       ),
-//       child: Center(
-//         child: StreamBuilder<Event>(
-//           // stream: DatabaseService.displayNameStream(widget.user),
-//           stream: FirebaseDatabase.instance.reference().child('users').child(widget.user.uid).child('name').onValue,
-//           builder: (context, AsyncSnapshot<Event> string) {
-//             print(string.toString());
-//             print(string.data.runtimeType);
-//             if(string.data != null) {
-//               print(">> " + string.data.toString());
-//               // return CupertinoTextField(placeholder: string.data.snapshot.value.toString(),);
-//               return Text(string.data.snapshot.value.toString());
-//             }
-//             return Text("nothing");
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }

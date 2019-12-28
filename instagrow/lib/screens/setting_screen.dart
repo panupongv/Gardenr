@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/signin_screen.dart';
@@ -5,6 +7,7 @@ import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
 class SettingScreen extends StatelessWidget {
+  
   Future<void> logOut(BuildContext context) async {
     showCupertinoDialog(
       context: context,
