@@ -95,16 +95,17 @@ class DashBoardItem extends StatelessWidget {
         ],
       );
     }
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-          return PlantProfileScreen(plant, isMyPlant);
-        }));
-      },
-      child: Container(
-        child: listItem,
-      ),
-    );
+    return listItem;
+    // return GestureDetector(
+    //   behavior: HitTestBehavior.translucent,
+    //   onTap: () {
+    //     Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
+    //       return PlantProfileScreen(plant, isMyPlant);
+    //     }));
+    //   },
+    //   child: Container(
+    //     child: listItem,
+    //   ),
+    // );
   }
 }

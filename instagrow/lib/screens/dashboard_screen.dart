@@ -4,27 +4,54 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/qr_validator.dart';
+import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
+import 'package:instagrow/widgets/search_bar.dart';
 
 class DashBoardScreen extends StatefulWidget {
   final String _title;
   final Function _query;
 
-  DashBoardScreen(this._title, this._query);
+  const DashBoardScreen(this._title, this._query);
 
   @override
   _DashBoardScreenState createState() => _DashBoardScreenState();
 }
 
-class _DashBoardScreenState extends State<DashBoardScreen> {
+class _DashBoardScreenState extends State<DashBoardScreen>
+    with SingleTickerProviderStateMixin {
+  bool showSearch;
   List<Plant> plants = List();
+
+  TextEditingController _searchTextController = new TextEditingController();
+  FocusNode _searchFocusNode = new FocusNode();
+  Animation _animation;
+  AnimationController _animationController;
 
   @override
   initState() {
     super.initState();
+
+    showSearch = false;
     _onRefresh();
+
+    _animationController = AnimationController(
+      duration: new Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeInOut,
+    );
+    // _animation = ProxyAnimation();
+    _searchFocusNode.addListener(() {
+      if (!_animationController.isAnimating) {
+        _animationController.forward();
+      }
+    });
   }
 
   Future<void> _onAddPressed() async {
@@ -51,10 +78,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       case "Following":
         {
           print("scan to follow");
+          _onRefresh();
           break;
         }
     }
-    // String xx = BarcodeScanner.scan();
   }
 
   Future<void> _onRefresh() async {
@@ -63,6 +90,18 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     setState(() {
       this.plants = queriedPlants;
     });
+  }
+
+  void _onItemPressed(int index) {
+    setState(() {
+      showSearch = false;
+    });
+    Route plantProfileScreen = CupertinoPageRoute(
+      builder: (context) {
+        return PlantProfileScreen(plants[index], widget._title == "My Garden");
+      },
+    );
+    Navigator.of(context).push(plantProfileScreen);
   }
 
   @override
@@ -81,11 +120,19 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return DashBoardItem(
-                  index: index,
-                  plant: plants[index],
-                  isMyPlant: widget._title == "My Garden",
-                  lastItem: index == plants.length - 1,
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    _onItemPressed(index);
+                  },
+                  child: Container(
+                    child: DashBoardItem(
+                      index: index,
+                      plant: plants[index],
+                      isMyPlant: widget._title == "My Garden",
+                      lastItem: index == plants.length - 1,
+                    ),
+                  ),
                 );
               },
               childCount: plants.length,
@@ -95,16 +142,57 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
       ],
     );
 
+    Widget searchIcon = showSearch
+        ? null
+        : GestureDetector(
+            child: Icon(CupertinoIcons.search),
+            onTap: () {
+              setState(() {
+                showSearch = true;
+              });
+            },
+          );
+    Widget middleWidget = showSearch
+        ? IOSSearchBar(
+            controller: _searchTextController,
+            focusNode: _searchFocusNode,
+            animation: _animation,
+            onCancel: _cancelSearch,
+            onClear: _clearSearch,
+            onUpdate: (String x) {
+              print(x);
+            },
+          )
+        : navigationBarTitle(widget._title);
+
+    Widget addIcon = showSearch
+        ? null
+        : GestureDetector(
+            child: Icon(CupertinoIcons.add),
+            onTap: _onAddPressed,
+          );
+
     return CupertinoPageScaffold(
       key: GlobalKey<ScaffoldState>(debugLabel: widget._title),
       navigationBar: CupertinoNavigationBar(
-        middle: navigationBarTitle(widget._title),
-        trailing: GestureDetector(
-          child: Icon(CupertinoIcons.add),
-          onTap: _onAddPressed,
-        ),
+        leading: searchIcon,
+        middle: middleWidget,
+        trailing: addIcon,
       ),
       child: scrollView,
     );
+  }
+
+  void _cancelSearch() {
+    _searchTextController.clear();
+    _searchFocusNode.unfocus();
+    _animationController.reverse();
+    setState(() {
+      showSearch = false;
+    });
+  }
+
+  void _clearSearch() {
+    _searchTextController.clear();
   }
 }
