@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
+import 'package:instagrow/widgets/quick_dialog.dart';
 
 enum PreviousScreen {
   UserProfile,
@@ -17,10 +19,11 @@ enum PreviousScreen {
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
   final String currentDisplayName, currentDescription, plantId;
+  final List<Plant> plantList; 
   final PreviousScreen previousScreen;
 
   ProfileEditScreen(
-      this.profileImage, this.currentDisplayName, this.currentDescription, this.previousScreen, this.plantId);
+      this.profileImage, this.currentDisplayName, this.currentDescription, this.previousScreen, this.plantId, this.plantList);
 
   @override
   State<StatefulWidget> createState() => _ProfileEditScreenState();
@@ -73,12 +76,56 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     });
   }
 
+  Future<bool> _confirmDuplicatePlantName(String name) async {
+    bool confirmed;
+    await showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Caution"),
+          content: Text("A Plant named $name exists in your collection, would you like to proceed"),
+          actions: <Widget>[
+            CupertinoButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                confirmed = false;
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "Confirm",
+              ),
+              onPressed: () {
+                confirmed = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return confirmed;
+  }
+
   Future<void> _applyChanges() async {
+    PreviousScreen previousScreen = widget.previousScreen;
     if (_allowSave()) {
+
+      if (_displayNameChanged && (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant)) {
+        String name = displayNameController.text;
+        if (Plant.hasDuplicateName(widget.plantId, name, widget.plantList)) {
+          bool confirmed = await _confirmDuplicatePlantName(name);
+          if (!confirmed) {
+            return;
+          }
+        }
+      }
+
       if (_imageChanged) {
-        if (widget.previousScreen == PreviousScreen.UserProfile) {
+        if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateProfileImage(selectedImage);
-        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+        } else if (previousScreen == PreviousScreen.EditMyPlant) {
           DatabaseService.updatePlantProfileImage(widget.plantId, selectedImage);
         }
         setState(() {
@@ -87,9 +134,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
       if (_displayNameChanged) {
         String newName = displayNameController.text;
-        if (widget.previousScreen == PreviousScreen.UserProfile) {
+        if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDisplayName(newName);
-        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+        } else if (previousScreen == PreviousScreen.EditMyPlant) {
           DatabaseService.updatePlantName(widget.plantId, newName);
         }
         setState(() {
@@ -99,9 +146,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
       if (_descriptionChanged) {
         String newDescription = descriptionController.text;
-        if (widget.previousScreen == PreviousScreen.UserProfile) {
+        if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDescription(newDescription);
-        } else if (widget.previousScreen == PreviousScreen.EditMyPlant) {
+        } else if (previousScreen == PreviousScreen.EditMyPlant) {
           DatabaseService.updatePlantDescription(widget.plantId, newDescription);
         }
         setState(() {

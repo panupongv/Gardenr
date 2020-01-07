@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.of(context).push(PageTransition(
         type: PageTransitionType.fade,
         child: ProfileEditScreen(_profileImage, _userDisplayName,
-            _userDescription, PreviousScreen.UserProfile, null)));
+            _userDescription, PreviousScreen.UserProfile, null, null)));
   }
 
   @override

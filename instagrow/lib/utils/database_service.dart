@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instagrow/models/plant.dart';
+import 'package:instagrow/models/sensor_data.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/utils/local_storage_service.dart';
@@ -72,7 +73,7 @@ class DatabaseService {
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
     final int waitDurationInSec = 5;
-    List<Plant> plants = await _getFollowingPlants(refreshedTime)
+    List<Plant> plants = await _getFollowingPlantsHelper(refreshedTime)
         .timeout(Duration(seconds: waitDurationInSec), onTimeout: () {
       return null;
     });
@@ -85,7 +86,8 @@ class DatabaseService {
     return plants;
   }
 
-  static Future<List<Plant>> _getFollowingPlants(DateTime refreshedTime) async {
+  static Future<List<Plant>> _getFollowingPlantsHelper(
+      DateTime refreshedTime) async {
     FirebaseUser user = await AuthService.getUser();
     String userId = user.uid;
     DataSnapshot plantIdsSnapshot = await _database
@@ -212,5 +214,14 @@ class DatabaseService {
         .child(plantId)
         .child('description')
         .set(description);
+  }
+
+  static Future<SensorData> getSensorData(String plantId, String date) async {
+    DataSnapshot dataSnapshot =
+        await _database.child('sensorValues').child(plantId).child(date).once();
+    if (dataSnapshot != null && dataSnapshot.value != null) {
+      return SensorData.fromMap(dataSnapshot.value);
+    }
+    return null;
   }
 }
