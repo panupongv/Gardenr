@@ -8,7 +8,6 @@ import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
-import 'package:instagrow/widgets/quick_dialog.dart';
 
 enum PreviousScreen {
   UserProfile,
@@ -31,29 +30,31 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   bool _imageChanged, _displayNameChanged, _descriptionChanged;
-  File selectedImage;
-  ImageProvider profileImage;
-  String currentDisplayName, currentDescription;
-  TextEditingController displayNameController, descriptionController;
+  File _selectedImage;
+  ImageProvider _profileImage;
+  String _currentDisplayName, _currentDescription;
+  TextEditingController _displayNameController, _descriptionController;
+
+  static const MAX_DESCRIPTION_LENGTH = 200;
 
   @override
   void initState() {
-    selectedImage = null;
+    _selectedImage = null;
     _imageChanged = _displayNameChanged = _descriptionChanged = false;
-    profileImage =
+    _profileImage =
         widget.profileImage ?? AssetImage('assets/defaultprofile.png');
 
-    displayNameController = TextEditingController();
-    descriptionController = TextEditingController();
+    _displayNameController = TextEditingController();
+    _descriptionController = TextEditingController();
 
-    displayNameController.text = currentDisplayName = widget.currentDisplayName;
-    descriptionController.text = currentDescription = widget.currentDescription;
+    _displayNameController.text = _currentDisplayName = widget.currentDisplayName;
+    _descriptionController.text = _currentDescription = widget.currentDescription;
     super.initState();
   }
 
   bool _allowSave() {
     return (_imageChanged || _displayNameChanged || _descriptionChanged) &&
-        displayNameController.text != '';
+        _displayNameController.text != '';
   }
 
   Future<void> _getImage() async {
@@ -69,10 +70,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       return;
     }
 
-    selectedImage = croppedImage;
+    _selectedImage = croppedImage;
     setState(() {
       _imageChanged = true;
-      profileImage = AssetImage(croppedImage.path);
+      _profileImage = AssetImage(croppedImage.path);
     });
   }
 
@@ -113,7 +114,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (_allowSave()) {
 
       if (_displayNameChanged && (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant)) {
-        String name = displayNameController.text;
+        String name = _displayNameController.text;
         if (Plant.hasDuplicateName(widget.plantId, name, widget.plantList)) {
           bool confirmed = await _confirmDuplicatePlantName(name);
           if (!confirmed) {
@@ -124,48 +125,51 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
       if (_imageChanged) {
         if (previousScreen == PreviousScreen.UserProfile) {
-          DatabaseService.updateProfileImage(selectedImage);
-        } else if (previousScreen == PreviousScreen.EditMyPlant) {
-          DatabaseService.updatePlantProfileImage(widget.plantId, selectedImage);
+          DatabaseService.updateProfileImage(_selectedImage);
+        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
+          DatabaseService.updatePlantProfileImage(widget.plantId, _selectedImage);
         }
         setState(() {
           _imageChanged = false;
         });
       }
       if (_displayNameChanged) {
-        String newName = displayNameController.text;
+        String newName = _displayNameController.text;
         if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDisplayName(newName);
-        } else if (previousScreen == PreviousScreen.EditMyPlant) {
+        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
           DatabaseService.updatePlantName(widget.plantId, newName);
         }
         setState(() {
-          currentDisplayName = newName;
+          _currentDisplayName = newName;
           _displayNameChanged = false;
         });
       }
       if (_descriptionChanged) {
-        String newDescription = descriptionController.text;
+        String newDescription = _descriptionController.text;
         if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDescription(newDescription);
-        } else if (previousScreen == PreviousScreen.EditMyPlant) {
+        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
           DatabaseService.updatePlantDescription(widget.plantId, newDescription);
         }
         setState(() {
-          currentDescription = newDescription;
+          _currentDescription = newDescription;
           _descriptionChanged = false;
         });
       }
+
+      if (previousScreen == PreviousScreen.AddMyPlant) {
+        
+      }
+
       Navigator.of(context).pop();
-    } else {
-      print("NO changes");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Image currentImageDisplay = Image(
-      image: profileImage,
+      image: _profileImage,
       width: PROFILE_IMAGE_SIZE,
       height: PROFILE_IMAGE_SIZE,
       fit: BoxFit.cover,
@@ -216,10 +220,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               textAlign: TextAlign.left,
             ),
             CupertinoTextField(
-              controller: displayNameController,
-              onChanged: (displayNameText) {
+              controller: _displayNameController,
+              onChanged: (String displayNameText) {
                 setState(() {
-                  _displayNameChanged = currentDisplayName != displayNameText;
+                  _displayNameChanged = _currentDisplayName != displayNameText;
                 });
               },
             ),
@@ -228,13 +232,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               textAlign: TextAlign.left,
             ),
             CupertinoTextField(
-              controller: descriptionController,
-              onChanged: (descriptionText) {
+              keyboardType: TextInputType.multiline,
+              maxLines: 5,
+              maxLengthEnforced: true,
+              maxLength: MAX_DESCRIPTION_LENGTH,
+              controller: _descriptionController,
+              onChanged: (String descriptionText) {
                 setState(() {
-                  _descriptionChanged = currentDescription != descriptionText;
+                  _descriptionChanged = _currentDescription != descriptionText;
                 });
               },
             ),
+            Text("${_descriptionController.text.length} out of $MAX_DESCRIPTION_LENGTH characters", textAlign: TextAlign.right,),
           ],
         ),
       ),

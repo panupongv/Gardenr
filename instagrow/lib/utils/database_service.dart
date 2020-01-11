@@ -203,6 +203,11 @@ class DatabaseService {
         .set(description);
   }
 
+  static Future<void> updateOwnerId(String plantId) async {
+    FirebaseUser user = await AuthService.getUser();
+    await _database.child('plants').child(plantId).child('ownerId').set(user.uid);
+  }
+
   static Future<void> updatePlantName(String plantId, String name) async {
     await _database.child('plants').child(plantId).child('name').set(name);
   }

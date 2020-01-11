@@ -3,14 +3,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/sensor_data.dart';
+import 'package:instagrow/screens/graph_focus_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/dimension_config.dart';
-import 'package:instagrow/widgets/date_picker.dart';
+import 'package:instagrow/widgets/description_expandable.dart';
+import 'package:instagrow/widgets/graph_title.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:instagrow/widgets/time_series_graphs.dart';
-import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PlantProfileScreen extends StatefulWidget {
@@ -25,10 +26,11 @@ class PlantProfileScreen extends StatefulWidget {
 }
 
 class _PlantProfileScreenState extends State<PlantProfileScreen> {
+  static const int DATE_RANGE = 7;
+
   Plant _plant;
   int _selectedDateIndex;
   List<DateTime> _datesAvailable;
-  DateFormat _datePickerItemFormat, _databaseDataFormat;
 
   ImageProvider _imageProvider;
   OverlayState _overlayState;
@@ -38,9 +40,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   @override
   void initState() {
     _plant = widget.plant;
-    _selectedDateIndex = 6;
-    _datePickerItemFormat = DateFormat("EEEE, do MMMM yyyy");
-    _databaseDataFormat = DateFormat("yyyyMMdd");
+    _selectedDateIndex = DATE_RANGE - 1;
     _scrollController =
         FixedExtentScrollController(initialItem: _selectedDateIndex);
     _calculateDatesAvailable();
@@ -54,45 +54,75 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
       }
     });
     _overlayState = Overlay.of(context);
-    _datePickerOverlay = OverlayEntry(
+    _datePickerOverlay = _buildOverlay();
+    super.initState();
+  }
+
+  String _displayDateFormat(DateTime date) {
+    return Jiffy(date).format("EEEE, MMMM do yyyy");
+  }
+
+  String _databaseDateFormat(DateTime date) {
+    return Jiffy(date).format("yyyyMMdd");
+  }
+
+  void _calculateDatesAvailable() {
+    DateTime utcTime = DateTime.now().toUtc();
+    DateTime plantTime = utcTime.add(Duration(hours: _plant.utcTimeZone));
+
+    _datesAvailable = List.generate(DATE_RANGE, (int value) {
+      return plantTime.add(Duration(days: -value));
+    }).reversed.toList();
+  }
+
+  OverlayEntry _buildOverlay() {
+    EdgeInsets textInsets = EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+
+    return OverlayEntry(
       builder: (BuildContext context) {
         SafeArea overlayWidgets = SafeArea(
           top: true,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
                 child: Container(
                   color: Color.fromARGB(128, 0, 0, 0),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  navigationBarTextButton("Cancel", () {
-                    _datePickerOverlay.remove();
-                  }),
-                  navigationBarTextButton(
-                    "Done",
-                    () {
-                      _datePickerOverlay.remove();
-                      setState(() {
-                        _selectedDateIndex = _scrollController.selectedItem;
-                      });
-                      _scrollController = FixedExtentScrollController(
-                          initialItem: _selectedDateIndex);
-                    },
-                  ),
-                ],
+              Container(
+                color: CupertinoColors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: textInsets,
+                      child: navigationBarTextButton("Cancel", () {
+                        _datePickerOverlay.remove();
+                      }),
+                    ),
+                    navigationBarTextButton(
+                      "Done",
+                      () {
+                        _datePickerOverlay.remove();
+                        setState(() {
+                          _selectedDateIndex = _scrollController.selectedItem;
+                        });
+                        _scrollController = FixedExtentScrollController(
+                            initialItem: _selectedDateIndex);
+                      },
+                    ),
+                  ],
+                ),
               ),
               Container(
                 height: 100,
                 child: CupertinoPicker(
                   scrollController: _scrollController,
-                  backgroundColor: CupertinoColors.inactiveGray,
+                  backgroundColor: CupertinoColors.white,
                   children: _datesAvailable
-                      .map((DateTime date) =>
-                          Text(_datePickerItemFormat.format(date)))
+                      .map((DateTime date) => Text(_displayDateFormat(date)))
                       .toList(),
                   itemExtent: 30,
                   onSelectedItemChanged: null,
@@ -105,24 +135,19 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         return overlayWidgets;
       },
     );
-    super.initState();
-  }
-
-  void _calculateDatesAvailable() {
-    DateTime utcTime = DateTime.now().toUtc();
-    DateTime plantTime = utcTime.add(Duration(hours: _plant.utcTimeZone));
-
-    _datesAvailable = List.generate(7, (int value) {
-      return plantTime.add(Duration(days: -value));
-    }).reversed.toList();
   }
 
   Future<void> _openPlantEditScreen() async {
     Navigator.of(context).push(
       PageTransition(
         type: PageTransitionType.fade,
-        child: ProfileEditScreen(_imageProvider, _plant.name,
-            _plant.description, PreviousScreen.EditMyPlant, _plant.id, widget.plantList),
+        child: ProfileEditScreen(
+            _imageProvider,
+            _plant.name,
+            _plant.description,
+            PreviousScreen.EditMyPlant,
+            _plant.id,
+            widget.plantList),
       ),
     );
   }
@@ -131,6 +156,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   Widget build(BuildContext context) {
     Container defaultPlantImage = Container(
       decoration: BoxDecoration(
+        color: CupertinoColors.inactiveGray,
         image: DecorationImage(
           image: AssetImage('assets/defaultplant.png'),
         ),
@@ -158,7 +184,6 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     );
 
     return CupertinoPageScaffold(
-      // child: imageWidget,
       navigationBar: CupertinoNavigationBar(
         trailing: widget.isMyPlant
             ? navigationBarTextButton("Edit", () {
@@ -166,56 +191,103 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
               })
             : null,
       ),
-      child: SafeArea(
-        top: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          child: SafeArea(
+            top: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: imageWidget,
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: imageWidget,
+                    ),
+                    Text(
+                      _plant.name,
+                      textAlign: TextAlign.left,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                Text(
-                  _plant.name,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                DescriptionExpandable(_plant.description),
+                CupertinoButton(
+                  child: Text(
+                      _displayDateFormat(_datesAvailable[_selectedDateIndex])),
+                  onPressed: () {
+                    _overlayState.insert(_datePickerOverlay);
+                  },
+                ),
+                Container(
+                  height: 1,
+                  color: CupertinoColors.inactiveGray,
+                ),
+                Container(
+                  child: FutureBuilder(
+                    future: DatabaseService.getSensorData(
+                        _plant.id,
+                        _databaseDateFormat(
+                            _datesAvailable[_selectedDateIndex])),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot != null && snapshot.data != null) {
+                        TimeSeriesGraphs graphs =
+                            TimeSeriesGraphs(snapshot.data);
+                        Widget moistureGraph = graphs.moistureGraph(),
+                            temperatureGraph = graphs.temperatureGraph();
+                        return Column(
+                          children: <Widget>[
+                            GraphTitle(
+                              "Moisture",
+                              () {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  CupertinoPageRoute(
+                                    fullscreenDialog: true,
+                                    builder: (context) {
+                                      return GraphFocusScreen(moistureGraph);
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                            moistureGraph,
+                            GraphTitle(
+                              "Temperature",
+                              () {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  CupertinoPageRoute(
+                                    fullscreenDialog: true,
+                                    builder: (context) {
+                                      return GraphFocusScreen(temperatureGraph);
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                            temperatureGraph,
+                          ],
+                        );
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done) {
+                        return Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: Text(
+                            "NO SENSOR DATA AVAILABLE",
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      } else {
+                        return UnconstrainedBox(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  ),
                 ),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 12, right: 12, bottom: 16),
-              child: Text(_plant.description ?? ""),
-            ),
-            CupertinoButton(
-              child: Text(_datePickerItemFormat
-                  .format(_datesAvailable[_selectedDateIndex])),
-              onPressed: () {
-                _overlayState.insert(_datePickerOverlay);
-                print(_selectedDateIndex);
-
-                _scrollController.jumpToItem(_selectedDateIndex);
-              },
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                  child: FutureBuilder(
-                future: DatabaseService.getSensorData(
-                    _plant.id,
-                    _databaseDataFormat
-                        .format(_datesAvailable[_selectedDateIndex])),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  print(_databaseDataFormat
-                      .format(_datesAvailable[_selectedDateIndex]));
-                  if (snapshot != null && snapshot.data != null) {
-                    return TimeSeriesGraphs(snapshot.data);
-                  }
-                  return Text('wait');
-                },
-              )),
-            )
-          ],
+          ),
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/qr_validator.dart';
+import 'package:instagrow/screens/graph_focus_screen.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/widgets/dashboard_item.dart';
@@ -89,7 +90,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         return PlantProfileScreen(plants[index], false, null);
       },
     );
-    Navigator.of(context).push(plantProfileScreen).then((dynamic _) {
+    Navigator.of(context).push(plantProfileScreen).then((_) {
       if (showSearch) {
         _searchFocusNode.requestFocus();
       }

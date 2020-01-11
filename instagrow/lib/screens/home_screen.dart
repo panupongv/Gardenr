@@ -34,10 +34,10 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      tabBuilder: (context, i) {
+      tabBuilder: (BuildContext context, int index) {
         return CupertinoTabView(
           builder: (context) {
-            switch (i) {
+            switch (index) {
               case 0:
                 return DashBoardScreen(
                   "My Garden",

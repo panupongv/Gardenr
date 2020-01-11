@@ -9,7 +9,8 @@ class Plant {
   Plant(this.id, this.name, this.timeOffset, this.utcTimeZone, this.moisture,
       this.temperature, this.imageUrl, this.description);
 
-  factory Plant.fromQueryData(String id, dynamic data, DateTime refreshedTime) {
+  factory Plant.fromQueryData(
+      String id, LinkedHashMap data, DateTime refreshedTime) {
     DateTime timeData = DateTime.parse(data['timeUpdated']);
     String timeAgo =
         TimeAgo.format(timeData, locale: 'en_short', clock: refreshedTime);
@@ -21,14 +22,14 @@ class Plant {
         data['moisture'],
         data['temperature'],
         data['imageUrl'] ?? "",
-        data['description']);
+        data['description'] ?? "");
   }
 
   static List<Plant> fromMap(LinkedHashMap map, DateTime refreshedTime) {
     List<Plant> plants = List();
-    map.forEach((k, v) {
-      if (k != null && v != null)
-        plants.add(Plant.fromQueryData(k, v, refreshedTime));
+    map.forEach((plantId, dataMap) {
+      if (plantId != null && dataMap != null)
+        plants.add(Plant.fromQueryData(plantId, dataMap, refreshedTime));
     });
     return plants;
   }
@@ -45,17 +46,23 @@ class Plant {
         parsedJson['description']);
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      '\"id\"': '\"$id\"',
-      '\"name\"': '\"$name\"',
-      '\"timeOffset\"': '\"$timeOffset\"',
-      '\"utcTimeZone\"': utcTimeZone,
-      '\"moisture\"': moisture,
-      '\"temperature\"': temperature,
-      '\"imageUrl\"': '\"$imageUrl\"',
-      '\"description\"': '\"$description\"',
-    };
+  String toJson() {
+    String descriptionEscaped = this
+        .description
+        .replaceAll("\n", "\\n")
+        .replaceAll('\"', '\\"');
+
+    String json = "{";
+    json += '"id": "$id", ';
+    json += '"name": "$name", ';
+    json += '"timeOffset": "$timeOffset", ';
+    json += '"utcTimeZone": $utcTimeZone, ';
+    json += '"moisture": $moisture, ';
+    json += '"temperature": $temperature, ';
+    json += '"imageUrl": "$imageUrl", ';
+    json += '"description": "$descriptionEscaped"';
+    json += "}";
+    return json;
   }
 
   static bool hasDuplicateName(

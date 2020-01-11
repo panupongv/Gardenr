@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:instagrow/models/auth_field_validator.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signup_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
+import 'package:tuple/tuple.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -12,13 +15,11 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  String _email, _password;
   TextEditingController _emailController, _passwordController;
 
   @override
   initState() {
     super.initState();
-    _email = _password = "";
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
   }
@@ -26,12 +27,13 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> navigateToSignUpScreen() async {
     Route route = CupertinoPageRoute(builder: (context) => SignUpScreen());
     String newEmail = (await Navigator.push(context, route)) as String;
-    _email = _emailController.text = newEmail;
-    _password = _passwordController.text = "";
+    _emailController.text = newEmail;
+    _passwordController.text = "";
   }
 
   Future<void> signIn() async {
-    bool hasEmptyField = _email == "" || _password == "";
+    String email = _emailController.text, password = _passwordController.text;
+    bool hasEmptyField = AuthFieldValidator.hasEmptyField([email, password]);
 
     if (hasEmptyField) {
       showCupertinoDialog(
@@ -40,21 +42,26 @@ class _SignInScreenState extends State<SignInScreen> {
           return getQuickAlertDialog(
               context,
               "Missing Field",
-              "Please enter your " + (_email == "" ? "email" : "password"),
+              "Please enter your " + (email == "" ? "email" : "password"),
               "Dismiss");
         },
       );
     } else {
-      try {
-        FirebaseUser user = await AuthService.signIn(_email, _password);
-        if (!user.isEmailVerified) {
-          throw Exception("NOT_VERIFIED");
-        }
+      Tuple2<FirebaseUser, String> signInResult = await AuthService.signIn(email, password);
+
+      if (signInResult.item1 != null) {
+        FirebaseUser user = signInResult.item1;
         Route route =
             CupertinoPageRoute(builder: (context) => HomeScreen(user));
         Navigator.pushReplacement(context, route);
-      } catch (e) {
-        print("Exception while Logging in: " + e.message);
+      } else {
+        String message = signInResult.item2;
+        showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return getQuickAlertDialog(context, "Authentication Error", message, "Dismiss");
+          }
+        );
       }
     }
   }
@@ -67,20 +74,13 @@ class _SignInScreenState extends State<SignInScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CupertinoTextField(
-              
               controller: _emailController,
               placeholder: "Email",
-              onChanged: (currentText) {
-                _email = currentText;
-              },
             ),
             CupertinoTextField(
               controller: _passwordController,
               placeholder: "Password",
               obscureText: true,
-              onChanged: (currentText) {
-                _password = currentText;
-              },
             ),
             CupertinoButton.filled(
               borderRadius: BorderRadius.all(Radius.circular(8)),

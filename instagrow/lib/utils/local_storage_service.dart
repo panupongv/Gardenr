@@ -13,7 +13,7 @@ class LocalStorageService {
         plants.map((Plant plant) => plant.id.toString()).toList();
     preferences.setStringList("${user.uid}/$pathOption/IDS", ids);
     plants.forEach((Plant plant) {
-      preferences.setString("${user.uid}/$pathOption/CACHE/${plant.id}", plant.toJson().toString());
+      preferences.setString("${user.uid}/$pathOption/CACHE/${plant.id}", plant.toJson());
     });
   }
 
@@ -28,6 +28,7 @@ class LocalStorageService {
     ids.forEach((String plantId) {
       String jsonString = preferences.getString("${user.uid}/$pathOption/CACHE/$plantId") ?? null;
       if (jsonString != null) {
+        print("json string: " + jsonString);
         Map plantJson = jsonDecode(jsonString);
         Plant plant = Plant.fromJson(plantJson);
         plants.add(plant);

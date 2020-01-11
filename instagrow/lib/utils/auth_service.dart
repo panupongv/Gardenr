@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
+
+import 'package:tuple/tuple.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -8,22 +11,32 @@ class AuthService {
     return _auth.currentUser();
   }
 
-  static Future<FirebaseUser> signIn(String email, String password) async {
+  static Future<Tuple2<FirebaseUser, String>> signIn(
+      String email, String password) async {
     try {
-      AuthResult result = await _auth
-          .signInWithEmailAndPassword(email: email, password: password);
-      return result.user;
-    } catch (e) {
-      throw new AuthException(e.code, e.message);
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (!result.user.isEmailVerified) {
+        throw PlatformException(
+            code: '', message: "The account has not been verified.");
+      }
+      return Tuple2<FirebaseUser, String>(result.user, null);
+    } on PlatformException catch (e) {
+      return Tuple2<FirebaseUser, String>(null, e.message);
     }
   }
 
-  static Future<FirebaseUser> signUp(String email, String password) async {
-    AuthResult result = await _auth
-        .createUserWithEmailAndPassword(email: email, password: password);
-    FirebaseUser user = result.user;
-    user.sendEmailVerification();
-    return user;
+  static Future<Tuple2<FirebaseUser, String>> signUp(
+      String email, String password) async {
+    try {
+      AuthResult result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      FirebaseUser user = result.user;
+      user.sendEmailVerification();
+      return Tuple2<FirebaseUser, String>(user, null);
+    } on PlatformException catch (e) {
+      return Tuple2<FirebaseUser, String>(null, e.message);
+    }
   }
 
   static Future<void> logOut() async {

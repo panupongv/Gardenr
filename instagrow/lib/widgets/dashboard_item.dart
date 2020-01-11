@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/screens/plant_profile_screen.dart';
 
 class DashBoardItem extends StatelessWidget {
   final int index;
@@ -16,7 +15,9 @@ class DashBoardItem extends StatelessWidget {
     final Container defaultImage = Container(
       width: 78,
       height: 78,
-      decoration: BoxDecoration(image: DecorationImage(image: AssetImage('assets/defaultplant.png')), color: CupertinoColors.inactiveGray),
+      decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage('assets/defaultplant.png')),
+          color: CupertinoColors.inactiveGray),
     );
 
     final SafeArea item = SafeArea(
@@ -30,7 +31,8 @@ class DashBoardItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(38),
             child: CachedNetworkImage(
               imageUrl: plant.imageUrl,
-              imageBuilder: (BuildContext context, ImageProvider imageProvider) {
+              imageBuilder:
+                  (BuildContext context, ImageProvider imageProvider) {
                 return Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -55,7 +57,13 @@ class DashBoardItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(plant.name, style: Theme.of(context).textTheme.title.merge(TextStyle(color: Colors.red)),),
+                      Text(
+                        plant.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .title
+                            .merge(TextStyle(color: Colors.red)),
+                      ),
                       Text(plant.timeOffset)
                     ],
                   ),
@@ -82,30 +90,14 @@ class DashBoardItem extends StatelessWidget {
       listItem = Column(
         children: <Widget>[
           item,
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 0,
-              right: 0,
-            ),
-            child: Container(
-              height: 1,
-              color: CupertinoColors.lightBackgroundGray,
-            ),
+          Container(
+            height: 1,
+            // color: CupertinoColors.lightBackgroundGray,
           ),
         ],
       );
     }
+
     return listItem;
-    // return GestureDetector(
-    //   behavior: HitTestBehavior.translucent,
-    //   onTap: () {
-    //     Navigator.of(context).push(CupertinoPageRoute(builder: (context) {
-    //       return PlantProfileScreen(plant, isMyPlant);
-    //     }));
-    //   },
-    //   child: Container(
-    //     child: listItem,
-    //   ),
-    // );
   }
 }
