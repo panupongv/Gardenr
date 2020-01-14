@@ -2,52 +2,27 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
+import 'package:instagrow/utils/size_config.dart';
+import 'package:instagrow/utils/style.dart';
+import 'package:instagrow/widgets/circular_cached_image.dart';
+import 'package:instagrow/widgets/default_images.dart';
 
 class DashBoardItem extends StatelessWidget {
-  final int index;
-  final Plant plant;
-  final bool isMyPlant, lastItem;
+  final Plant _plant;
 
-  DashBoardItem({this.index, this.plant, this.isMyPlant, this.lastItem});
+  DashBoardItem(this._plant);
 
   @override
   Widget build(BuildContext context) {
-    final Container defaultImage = Container(
-      width: 78,
-      height: 78,
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/defaultplant.png')),
-          color: CupertinoColors.inactiveGray),
-    );
-
-    final SafeArea item = SafeArea(
+    return SafeArea(
       top: false,
       bottom: false,
       minimum: const EdgeInsets.all(8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(38),
-            child: CachedNetworkImage(
-              imageUrl: plant.imageUrl,
-              imageBuilder:
-                  (BuildContext context, ImageProvider imageProvider) {
-                return Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  width: 78,
-                  height: 78,
-                );
-              },
-              placeholder: (context, url) => defaultImage,
-              errorWidget: (context, url, error) => defaultImage,
-            ),
-          ),
+          CircularCachedImage(_plant.imageUrl, DASHBOARD_IMAGE_SIZE,
+              progressIndicator(context), defaultPlantImage(context)),
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
@@ -58,20 +33,23 @@ class DashBoardItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        plant.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .title
-                            .merge(TextStyle(color: Colors.red)),
+                        _plant.name,
+                        style: Styles.dashboardItemTitle(context),
                       ),
-                      Text(plant.timeOffset)
+                      Text(_plant.timeOffset)
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text(plant.moisture.toString() + "   "),
-                      Text(plant.temperature.toString())
+                      Text(
+                        _plant.moisture.toString() + "   ",
+                        style: Styles.dashboardItemDetail(context),
+                      ),
+                      Text(
+                        _plant.temperature.toString(),
+                        style: Styles.dashboardItemDetail(context),
+                      ),
                     ],
                   )
                 ],
@@ -81,23 +59,5 @@ class DashBoardItem extends StatelessWidget {
         ],
       ),
     );
-
-    Widget listItem;
-
-    if (lastItem) {
-      listItem = item;
-    } else {
-      listItem = Column(
-        children: <Widget>[
-          item,
-          Container(
-            height: 1,
-            // color: CupertinoColors.lightBackgroundGray,
-          ),
-        ],
-      );
-    }
-
-    return listItem;
   }
 }

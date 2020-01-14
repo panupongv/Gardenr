@@ -5,6 +5,7 @@ import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:instagrow/screens/profile_screen.dart';
 import 'package:instagrow/screens/setting_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/widgets/custom_icons.dart';
 
 class HomeScreen extends StatelessWidget {
   final FirebaseUser user;
@@ -13,24 +14,26 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.brightness),
-            title: Text("My Garden"),
+            icon: Icon(CupertinoIcons.home),
+            // title: Text("My Garden"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.group),
-            title: Text("Following"),
+            icon: Icon(CustomIcons.star),
+            // title: Text("Following"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.person),
-            title: Text("My Profile"),
+            // title: Text("My Profile"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear),
-            title: Text("Setting"),
+            // title: Text("Setting"),
           ),
         ],
       ),
@@ -40,14 +43,12 @@ class HomeScreen extends StatelessWidget {
             switch (index) {
               case 0:
                 return DashBoardScreen(
-                  "My Garden",
-                  DatabaseService.getMyPlants,
+                  DashBoardContentType.MyPlants,
                 );
                 break;
               case 1:
                 return DashBoardScreen(
-                  "Following",
-                  DatabaseService.getFollowingPlants,
+                  DashBoardContentType.Following,
                 );
                 break;
               case 2:

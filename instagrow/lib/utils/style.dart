@@ -7,6 +7,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class Styles {
+  static Color _dynamicColor(
+      BuildContext context, Color normalColor, Color darkModeColor) {
+    return CupertinoTheme.brightnessOf(context) == Brightness.dark
+        ? darkModeColor
+        : normalColor;
+  }
+
+  static TextStyle navigationBarTitle(context) {
+    return TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color:
+          _dynamicColor(context, CupertinoColors.black, CupertinoColors.white),
+    );
+  }
+
+  static TextStyle dashboardItemTitle(context) {
+    return TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color:
+          _dynamicColor(context, CupertinoColors.black, CupertinoColors.white),
+    );
+  }
+
+  static TextStyle plantProfileName(context) {
+    return TextStyle(
+        color: _dynamicColor(
+            context, CupertinoColors.black, CupertinoColors.white),
+        fontSize: 20,
+        fontWeight: FontWeight.bold);
+  }
+
+  static TextStyle ownerNameActive(context) {
+    return TextStyle(
+      fontSize: 14,
+      color: CupertinoColors.activeBlue,
+      decoration: TextDecoration.underline,
+    );
+  }
+
+  static TextStyle ownerNameInactive(context) {
+    return TextStyle(
+      fontSize: 14,
+      color: dynamicGray(context),
+    );
+  }
+
+  static Color dynamicGray(context) {
+    return _dynamicColor(
+      context,
+      CupertinoColors.inactiveGray.color,
+      CupertinoColors.inactiveGray.darkColor,
+    );
+  }
+
+  static TextStyle dashboardItemDetail(context) {
+    return TextStyle(color: dynamicGray(context));
+  }
+
+  static Color separatorLine(context) {
+    return _dynamicColor(context, Color(0x80E0E0E0), Color(0x80E0E0E0));
+  }
+
   static const TextStyle productRowItemName = TextStyle(
     color: Color.fromRGBO(0, 0, 0, 0.8),
     fontSize: 18,

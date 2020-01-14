@@ -28,7 +28,6 @@ class LocalStorageService {
     ids.forEach((String plantId) {
       String jsonString = preferences.getString("${user.uid}/$pathOption/CACHE/$plantId") ?? null;
       if (jsonString != null) {
-        print("json string: " + jsonString);
         Map plantJson = jsonDecode(jsonString);
         Plant plant = Plant.fromJson(plantJson);
         plants.add(plant);

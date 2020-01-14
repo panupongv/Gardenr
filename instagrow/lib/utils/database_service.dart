@@ -3,14 +3,15 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/sensor_data.dart';
+import 'package:instagrow/models/user_information.dart';
 import 'package:instagrow/utils/auth_service.dart';
-import 'package:instagrow/utils/dimension_config.dart';
 import 'package:instagrow/utils/local_storage_service.dart';
 import 'package:image/image.dart' as imageUtils;
+import 'package:instagrow/utils/size_config.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart';
 
 class DatabaseService {
   static final DatabaseReference _database =
@@ -30,20 +31,24 @@ class DatabaseService {
     _database.child('users').child(userId).child("imageUrl").set("");
   }
 
-  static Stream<Event> profileImageStream(FirebaseUser user) {
-    return _database.child('users').child(user.uid).child('imageUrl').onValue;
-  }
+  // static Stream<Event> profileImageStream(FirebaseUser user) {
+  //   return _database.child('users').child(user.uid).child('imageUrl').onValue;
+  // }
 
-  static Stream<Event> displayNameStream(FirebaseUser user) {
-    return _database.child('users').child(user.uid).child('name').onValue;
-  }
+  // static Stream<Event> displayNameStream(FirebaseUser user) {
+  //   return _database.child('users').child(user.uid).child('name').onValue;
+  // }
 
-  static Stream<Event> userDescriptionStream(FirebaseUser user) {
-    return _database
-        .child('users')
-        .child(user.uid)
-        .child('description')
-        .onValue;
+  // static Stream<Event> userDescriptionStream(FirebaseUser user) {
+  //   return _database
+  //       .child('users')
+  //       .child(user.uid)
+  //       .child('description')
+  //       .onValue;
+  // }
+
+  static Stream<Event> userProfileStream(FirebaseUser user) {
+    return _database.child('users').child(user.uid).onValue;
   }
 
   static Stream<Event> plantProfileStream(String plantId) {
@@ -52,15 +57,13 @@ class DatabaseService {
 
   static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
     String userId = (await AuthService.getUser()).uid;
-    int waitDurationInSeconds = 3;
+    int waitDurationInSeconds = 6;
     DataSnapshot dataSnapshot = await _database
         .child('plants')
         .orderByChild('ownerId')
         .equalTo(userId)
         .once()
-        .timeout(Duration(seconds: waitDurationInSeconds), onTimeout: () {
-      return null;
-    });
+        .timeout(Duration(seconds: waitDurationInSeconds), onTimeout: null);
 
     if (dataSnapshot == null || dataSnapshot.value == null) {
       return await LocalStorageService.loadMyPlants();
@@ -72,11 +75,9 @@ class DatabaseService {
   }
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
-    final int waitDurationInSec = 5;
+    final int waitDurationInSec = 8;
     List<Plant> plants = await _getFollowingPlantsHelper(refreshedTime)
-        .timeout(Duration(seconds: waitDurationInSec), onTimeout: () {
-      return null;
-    });
+        .timeout(Duration(seconds: waitDurationInSec), onTimeout: null);
 
     if (plants == null) {
       return LocalStorageService.loadFollowingPlants();
@@ -90,19 +91,14 @@ class DatabaseService {
       DateTime refreshedTime) async {
     FirebaseUser user = await AuthService.getUser();
     String userId = user.uid;
-    DataSnapshot plantIdsSnapshot = await _database
-        .child('users')
-        .child(userId)
-        .child('followingPlants')
-        .once();
+    DataSnapshot plantIdsSnapshot =
+        await _database.child('followingPlants').child(userId).once();
     if (plantIdsSnapshot == null || plantIdsSnapshot.value == null) return [];
 
     List<dynamic> plantIds = plantIdsSnapshot.value;
-    print("IDs: " + plantIds.toString());
     List<Plant> plants = List();
     List<Future> futures = List();
     for (String plantId in plantIds) {
-      print(plantId);
       futures.add(_addQueriedPlantToList(plantId, plants, refreshedTime));
     }
     await Future.wait(futures);
@@ -111,13 +107,35 @@ class DatabaseService {
 
   static Future<void> _addQueriedPlantToList(
       String plantId, List<Plant> plants, DateTime refreshedTime) async {
+    DataSnapshot isPublicResult =
+        await _database.child('plants').child(plantId).child('isPublic').once();
+    if (isPublicResult == null ||
+        isPublicResult.value == null ||
+        isPublicResult.value == false) {
+      return;
+    }
+
     DataSnapshot queryResult =
         await _database.child('plants').child(plantId).once();
     if (queryResult == null || queryResult.value == null) {
       return;
     }
-    print("xxx " + queryResult.value.toString());
     plants.add(Plant.fromQueryData(plantId, queryResult.value, refreshedTime));
+  }
+
+  static Future<List<Plant>> getOtherUserPlants(
+      String userId, DateTime refreshedTime) async {
+    String queryKey = "${userId}_true";
+    DataSnapshot publicPlantsResult = await _database
+        .child('plants')
+        .orderByChild('ownerId_isPublic')
+        .equalTo(queryKey)
+        .once();
+    //TODO: Add timeout
+    if (publicPlantsResult != null && publicPlantsResult.value != null) {
+      return Plant.fromMap(publicPlantsResult.value, refreshedTime);
+    }
+    return null;
   }
 
   static Future<void> updateProfileImage(File selectedImage) async {
@@ -142,8 +160,8 @@ class DatabaseService {
   }
 
   static Future<void> updatePlantProfileImage(
-      String plantId, File selectedImage) async {
-    String storagePath = "plantProfileImages/$plantId.png";
+      Plant plant, File selectedImage) async {
+    String storagePath = "plantProfileImages/${plant.id}.png";
 
     File resizedImageFile =
         await _resizedImage(selectedImage, PROFILE_IMAGE_SIZE.round());
@@ -156,7 +174,7 @@ class DatabaseService {
       String imageUrl = await _storage.child(storagePath).getDownloadURL();
       await _database
           .child('plants')
-          .child(plantId)
+          .child(plant.id)
           .child('imageUrl')
           .set(imageUrl);
     });
@@ -178,17 +196,6 @@ class DatabaseService {
     return resizedImageFile;
   }
 
-  // static Future<String> getProfileImageUrl(FirebaseUser user) async {
-  //   try {
-  //     String url = await _storage
-  //         .child('profileImages')
-  //         .child('${user.uid}.png')
-  //         .getDownloadURL();
-  //     return url;
-  //   } on PlatformException catch (_) {}
-  //   return null;
-  // }
-
   static Future<void> updateDisplayName(String name) async {
     FirebaseUser user = await AuthService.getUser();
     await _database.child('users').child(user.uid).child('name').set(name);
@@ -203,22 +210,42 @@ class DatabaseService {
         .set(description);
   }
 
-  static Future<void> updateOwnerId(String plantId) async {
+  static Future<void> updateOwnerId(Plant plant) async {
     FirebaseUser user = await AuthService.getUser();
-    await _database.child('plants').child(plantId).child('ownerId').set(user.uid);
+    await _database
+        .child('plants')
+        .child(plant.id)
+        .child('ownerId')
+        .set(user.uid);
   }
 
-  static Future<void> updatePlantName(String plantId, String name) async {
-    await _database.child('plants').child(plantId).child('name').set(name);
+  static Future<void> updatePlantName(Plant plant, String name) async {
+    await _database.child('plants').child(plant.id).child('name').set(name);
   }
 
   static Future<void> updatePlantDescription(
-      String plantId, String description) async {
+      Plant plant, String description) async {
     await _database
         .child('plants')
-        .child(plantId)
+        .child(plant.id)
         .child('description')
         .set(description);
+  }
+
+  static Future<void> updatePlantPrivacy(Plant plant, bool isPublic) async {
+    FirebaseUser user = await AuthService.getUser();
+
+    await _database
+        .child('plants')
+        .child(plant.id)
+        .child('isPublic')
+        .set(isPublic);
+
+    await _database
+        .child('plants')
+        .child(plant.id)
+        .child('ownerId_isPublic')
+        .set("${user.uid}_$isPublic");
   }
 
   static Future<SensorData> getSensorData(String plantId, String date) async {
@@ -229,4 +256,16 @@ class DatabaseService {
     }
     return null;
   }
+
+  static Future<UserInformation> getOtherUserInformation(String userId) async {
+    DataSnapshot dataSnapshot =
+        await _database.child('users').child(userId).once();
+    if (dataSnapshot != null && dataSnapshot.value != null) {
+      return UserInformation.fromQueryData(userId, dataSnapshot.value);
+    }
+    return null;
+  }
+
+  // static Future<String> getOtherUserName(String userId) async {
+
 }

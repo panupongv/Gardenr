@@ -50,12 +50,9 @@ class TimeSeriesGraphs {
       double yMaximum, double yInterval, String yFormat) {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
-      // title: ChartTitle(
-      //   text: title,
-      // ),
       primaryXAxis: CategoryAxis(
           minimum: 0,
-          maximum: SensorData.MAX_LENGTH.toDouble() - 1,
+          maximum: SensorData.MAX_LENGTH.toDouble(),
           interval: 6,
           majorGridLines: MajorGridLines(width: 0),
           labelPlacement: LabelPlacement.onTicks),

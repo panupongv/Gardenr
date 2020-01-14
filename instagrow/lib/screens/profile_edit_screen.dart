@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/utils/database_service.dart';
-import 'package:instagrow/utils/dimension_config.dart';
+import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
 enum PreviousScreen {
@@ -17,22 +18,23 @@ enum PreviousScreen {
 
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
-  final String currentDisplayName, currentDescription, plantId;
-  final List<Plant> plantList; 
+  final String currentDisplayName, currentDescription;
+  final Plant plant;
+  final List<Plant> plantList;
   final PreviousScreen previousScreen;
 
-  ProfileEditScreen(
-      this.profileImage, this.currentDisplayName, this.currentDescription, this.previousScreen, this.plantId, this.plantList);
+  ProfileEditScreen(this.profileImage, this.currentDisplayName,
+      this.currentDescription, this.previousScreen, this.plant, this.plantList);
 
   @override
   State<StatefulWidget> createState() => _ProfileEditScreenState();
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  bool _imageChanged, _displayNameChanged, _descriptionChanged;
+  bool _imageChanged, _displayNameChanged, _descriptionChanged, _privacyChanged;
+  bool _isPublic;
   File _selectedImage;
   ImageProvider _profileImage;
-  String _currentDisplayName, _currentDescription;
   TextEditingController _displayNameController, _descriptionController;
 
   static const MAX_DESCRIPTION_LENGTH = 200;
@@ -40,20 +42,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   void initState() {
     _selectedImage = null;
-    _imageChanged = _displayNameChanged = _descriptionChanged = false;
-    _profileImage =
-        widget.profileImage ?? AssetImage('assets/defaultprofile.png');
+    _imageChanged =
+        _displayNameChanged = _descriptionChanged = _privacyChanged = false;
+    _profileImage = widget.profileImage ??
+        AssetImage(widget.previousScreen == PreviousScreen.UserProfile
+            ? 'assets/defaultprofile.png'
+            : 'assets/defaultplant.png');
+
+    _isPublic = widget.previousScreen != PreviousScreen.UserProfile
+        ? widget.plant.isPublic
+        : false;
 
     _displayNameController = TextEditingController();
     _descriptionController = TextEditingController();
 
-    _displayNameController.text = _currentDisplayName = widget.currentDisplayName;
-    _descriptionController.text = _currentDescription = widget.currentDescription;
+    _displayNameController.text = widget.currentDisplayName;
+    _descriptionController.text = widget.currentDescription;
     super.initState();
   }
 
   bool _allowSave() {
-    return (_imageChanged || _displayNameChanged || _descriptionChanged) &&
+    return (_imageChanged ||
+            _displayNameChanged ||
+            _descriptionChanged ||
+            _privacyChanged) &&
         _displayNameController.text != '';
   }
 
@@ -84,7 +96,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       builder: (context) {
         return CupertinoAlertDialog(
           title: Text("Caution"),
-          content: Text("A Plant named $name exists in your collection, would you like to proceed"),
+          content: Text(
+              "A Plant named $name exists in your collection, would you like to proceed"),
           actions: <Widget>[
             CupertinoButton(
               child: Text("Cancel"),
@@ -112,10 +125,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Future<void> _applyChanges() async {
     PreviousScreen previousScreen = widget.previousScreen;
     if (_allowSave()) {
-
-      if (_displayNameChanged && (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant)) {
+      if (_displayNameChanged &&
+          (previousScreen == PreviousScreen.EditMyPlant ||
+              previousScreen == PreviousScreen.AddMyPlant)) {
         String name = _displayNameController.text;
-        if (Plant.hasDuplicateName(widget.plantId, name, widget.plantList)) {
+        if (Plant.hasDuplicateName(widget.plant, widget.plantList)) {
           bool confirmed = await _confirmDuplicatePlantName(name);
           if (!confirmed) {
             return;
@@ -126,44 +140,90 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (_imageChanged) {
         if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateProfileImage(_selectedImage);
-        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
-          DatabaseService.updatePlantProfileImage(widget.plantId, _selectedImage);
+        } else if (previousScreen == PreviousScreen.EditMyPlant ||
+            previousScreen == PreviousScreen.AddMyPlant) {
+          DatabaseService.updatePlantProfileImage(widget.plant, _selectedImage);
         }
-        setState(() {
-          _imageChanged = false;
-        });
       }
       if (_displayNameChanged) {
         String newName = _displayNameController.text;
         if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDisplayName(newName);
-        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
-          DatabaseService.updatePlantName(widget.plantId, newName);
+        } else if (previousScreen == PreviousScreen.EditMyPlant ||
+            previousScreen == PreviousScreen.AddMyPlant) {
+          DatabaseService.updatePlantName(widget.plant, newName);
         }
-        setState(() {
-          _currentDisplayName = newName;
-          _displayNameChanged = false;
-        });
       }
       if (_descriptionChanged) {
         String newDescription = _descriptionController.text;
         if (previousScreen == PreviousScreen.UserProfile) {
           DatabaseService.updateDescription(newDescription);
-        } else if (previousScreen == PreviousScreen.EditMyPlant || previousScreen == PreviousScreen.AddMyPlant) {
-          DatabaseService.updatePlantDescription(widget.plantId, newDescription);
+        } else if (previousScreen == PreviousScreen.EditMyPlant ||
+            previousScreen == PreviousScreen.AddMyPlant) {
+          DatabaseService.updatePlantDescription(widget.plant, newDescription);
         }
-        setState(() {
-          _currentDescription = newDescription;
-          _descriptionChanged = false;
-        });
+      }
+      if (_privacyChanged) {
+        DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
       }
 
       if (previousScreen == PreviousScreen.AddMyPlant) {
-        
+        DatabaseService.updateOwnerId(widget.plant);
       }
 
       Navigator.of(context).pop();
     }
+  }
+
+  Widget _togglePublicSwitch() {
+    return widget.previousScreen != PreviousScreen.UserProfile
+        ? Column(
+            children: <Widget>[
+              Container(
+                height: 30,
+                decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Color.fromARGB(128, 225, 225, 225),
+                            width: 1))),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 8,
+                    ),
+                    child: Text(
+                      "Public Plant",
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 8,
+                      top: 4,
+                      bottom: 4,
+                    ),
+                    child: CupertinoSwitch(
+                      value: _isPublic,
+                      dragStartBehavior: DragStartBehavior.down,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isPublic = value;
+                          _privacyChanged = _isPublic != widget.plant.isPublic;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: 1,
+                color: Color.fromARGB(128, 225, 225, 225),
+              ),
+            ],
+          )
+        : Container();
   }
 
   @override
@@ -223,7 +283,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               controller: _displayNameController,
               onChanged: (String displayNameText) {
                 setState(() {
-                  _displayNameChanged = _currentDisplayName != displayNameText;
+                  _displayNameChanged =
+                      widget.currentDisplayName != displayNameText;
                 });
               },
             ),
@@ -239,11 +300,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               controller: _descriptionController,
               onChanged: (String descriptionText) {
                 setState(() {
-                  _descriptionChanged = _currentDescription != descriptionText;
+                  _descriptionChanged =
+                      widget.currentDescription != descriptionText;
                 });
               },
             ),
-            Text("${_descriptionController.text.length} out of $MAX_DESCRIPTION_LENGTH characters", textAlign: TextAlign.right,),
+            Text(
+              "${_descriptionController.text.length} out of $MAX_DESCRIPTION_LENGTH characters",
+              textAlign: TextAlign.right,
+            ),
+            _togglePublicSwitch(),
           ],
         ),
       ),

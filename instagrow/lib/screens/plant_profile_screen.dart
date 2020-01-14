@@ -3,10 +3,15 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
+import 'package:instagrow/models/user_information.dart';
 import 'package:instagrow/screens/graph_focus_screen.dart';
+import 'package:instagrow/screens/other_user_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
-import 'package:instagrow/utils/dimension_config.dart';
+import 'package:instagrow/utils/size_config.dart';
+import 'package:instagrow/utils/style.dart';
+import 'package:instagrow/widgets/circular_cached_image.dart';
+import 'package:instagrow/widgets/default_images.dart';
 import 'package:instagrow/widgets/description_expandable.dart';
 import 'package:instagrow/widgets/graph_title.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
@@ -36,6 +41,8 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   OverlayState _overlayState;
   OverlayEntry _datePickerOverlay;
   FixedExtentScrollController _scrollController;
+
+  UserInformation _ownerInformation;
 
   @override
   void initState() {
@@ -146,43 +153,52 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             _plant.name,
             _plant.description,
             PreviousScreen.EditMyPlant,
-            _plant.id,
+            _plant,
             widget.plantList),
       ),
     );
   }
 
+  Widget _ownerText() {
+    if (widget.isMyPlant) {
+      return Text(
+        'owned by you',
+        style: Styles.ownerNameInactive(context),
+        textAlign: TextAlign.left,
+      );
+    }
+    return FutureBuilder<UserInformation>(
+      future: DatabaseService.getOtherUserInformation(widget.plant.ownerId),
+      builder: (BuildContext context, AsyncSnapshot<UserInformation> snapshot) {
+        if (snapshot != null &&
+            snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data != null) {
+            _ownerInformation = snapshot.data;
+            return GestureDetector(
+                child: Text(
+                  _ownerInformation.name,
+                  style: Styles.ownerNameActive(context),
+                  textAlign: TextAlign.left,
+                ),
+                onTap: () {
+                  Route otherUserProfile = CupertinoPageRoute(
+                      builder: (BuildContext context) =>
+                          OtherUserScreen(snapshot.data));
+                  Navigator.of(context).push(otherUserProfile);
+                });
+          }
+        }
+        return Text(
+          "...",
+          style: Styles.ownerNameInactive(context),
+          textAlign: TextAlign.left,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Container defaultPlantImage = Container(
-      decoration: BoxDecoration(
-        color: CupertinoColors.inactiveGray,
-        image: DecorationImage(
-          image: AssetImage('assets/defaultplant.png'),
-        ),
-      ),
-      width: PLANT_PROFILE_IMAGE_SIZE,
-      height: PLANT_PROFILE_IMAGE_SIZE,
-    );
-    ClipRRect imageWidget = ClipRRect(
-      borderRadius: BorderRadius.circular(PLANT_PROFILE_IMAGE_CIRCULAR_BORDER),
-      child: CachedNetworkImage(
-        imageUrl: _plant.imageUrl,
-        imageBuilder: (BuildContext context, ImageProvider imageProvider) {
-          _imageProvider = imageProvider;
-          return Container(
-            width: PLANT_PROFILE_IMAGE_SIZE,
-            height: PLANT_PROFILE_IMAGE_SIZE,
-            decoration: BoxDecoration(
-              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-            ),
-          );
-        },
-        placeholder: (context, url) => defaultPlantImage,
-        errorWidget: (context, url, error) => defaultPlantImage,
-      ),
-    );
-
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         trailing: widget.isMyPlant
@@ -202,14 +218,22 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.all(16),
-                      child: imageWidget,
+                      child: CircularCachedImage(
+                          widget.plant.imageUrl,
+                          PLANT_PROFILE_IMAGE_SIZE,
+                          progressIndicator(context),
+                          defaultPlantImage(context)),
                     ),
-                    Text(
-                      _plant.name,
-                      textAlign: TextAlign.left,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+                    Column(
+                      children: <Widget>[
+                        Text(
+                          _plant.name,
+                          textAlign: TextAlign.left,
+                          style: Styles.plantProfileName(context),
+                        ),
+                        _ownerText(),
+                      ],
+                    )
                   ],
                 ),
                 DescriptionExpandable(_plant.description),
@@ -279,7 +303,10 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                         );
                       } else {
                         return UnconstrainedBox(
-                          child: CircularProgressIndicator(),
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: CircularProgressIndicator(),
+                          ),
                         );
                       }
                     },
