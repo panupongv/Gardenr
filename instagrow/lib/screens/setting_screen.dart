@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/signin_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
-import 'package:instagrow/widgets/time_series_graphs.dart';
+import 'package:instagrow/utils/style.dart';
 
 class SettingScreen extends StatelessWidget {
   Future<void> logOut(BuildContext context) async {
@@ -22,7 +22,7 @@ class SettingScreen extends StatelessWidget {
             CupertinoButton(
               child: Text(
                 "Logout",
-                style: TextStyle(color: Colors.red),
+                style: Styles.logOutButton(context),
               ),
               onPressed: () async {
                 await AuthService.logOut().then(

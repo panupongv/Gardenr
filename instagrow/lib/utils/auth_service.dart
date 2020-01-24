@@ -33,6 +33,7 @@ class AuthService {
           email: email, password: password);
       FirebaseUser user = result.user;
       user.sendEmailVerification();
+      logOut();
       return Tuple2<FirebaseUser, String>(user, null);
     } on PlatformException catch (e) {
       return Tuple2<FirebaseUser, String>(null, e.message);

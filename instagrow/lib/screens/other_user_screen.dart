@@ -1,26 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/user_information.dart';
+import 'package:instagrow/models/user_profile.dart';
+import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/dashboard.dart';
 
 class OtherUserScreen extends StatefulWidget {
-  final UserInformation userInformation;
+  final UserProfile userProfile;
 
-  OtherUserScreen(this.userInformation);
+  OtherUserScreen(this.userProfile);
 
   @override
   _OtherUserScreenState createState() => _OtherUserScreenState();
 }
 
 class _OtherUserScreenState extends State<OtherUserScreen> {
-  UserInformation _userInformation;
+  UserProfile _userProfile;
 
   List<Plant> _plants;
 
   @override
   void initState() {
-    _userInformation = widget.userInformation;
+    _userProfile = widget.userProfile;
     _plants = [];
     _onRefresh();
     super.initState();
@@ -28,23 +31,37 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
 
   Future<void> _onRefresh() async {
     DateTime refreshedTime = DateTime.now().toUtc();
-    List<Plant> updatedPlants =  await DatabaseService.getOtherUserPlants(_userInformation.id, refreshedTime);
+
+    UserProfile updateProfile =
+        await DatabaseService.getOtherUserProfile(_userProfile.id);
+    List<Plant> updatedPlants = await DatabaseService.getOtherUserPlants(
+        _userProfile.id, refreshedTime);
     setState(() {
-      _plants = updatedPlants;
+      if (updateProfile != null) {
+        _userProfile = updateProfile;
+      }
+      if (updatedPlants != null) {
+        _plants = updatedPlants;
+      }
     });
   }
 
   Future<void> _onItemPressed(int index) async {
-    print("Item pressed");
-    return;
-  } 
+    Route plantProfileScreen = CupertinoPageRoute(
+      builder: (context) {
+        return PlantProfileScreen(_plants[index], false, null);
+      },
+    );
+    Navigator.of(context).push(plantProfileScreen);
+  }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(),
+      navigationBar: CupertinoNavigationBar(middle: Text("Profile", style: Styles.navigationBarTitle(context)),),
       child: SafeArea(
-        child: DashBoard(_plants, _onRefresh, _onItemPressed, _userInformation),
+        child: DashBoard(_plants, List.generate(_plants.length, (_) => true),
+            _onRefresh, _onItemPressed, _userProfile),
       ),
     );
   }

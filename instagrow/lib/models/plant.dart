@@ -24,16 +24,26 @@ class Plant {
     DateTime timeData = DateTime.parse(dataMap['timeUpdated']);
     DateTime timeUpdatedInUtc =
         timeData.add(Duration(hours: dataMap['utcTimeZone']));
-    String timeAgo =
-        TimeAgo.format(timeUpdatedInUtc, locale: 'en_short', clock: refreshedTime);
+    String timeAgo = TimeAgo.format(timeUpdatedInUtc,
+        locale: 'en_short', clock: refreshedTime);
+
+    if (dataMap['timeUpdated'] != null && dataMap['utcTimeZone'] != null) {
+      timeData = DateTime.parse(dataMap['timeUpdated']);
+      timeUpdatedInUtc = timeData.add(Duration(hours: dataMap['utcTimeZone']));
+      timeAgo = TimeAgo.format(timeUpdatedInUtc,
+          locale: 'en_short', clock: refreshedTime);
+    } else {
+      timeAgo = "";
+    }
+
     return Plant(
         id,
         dataMap['name'],
         dataMap['ownerId'],
         timeAgo,
-        dataMap['utcTimeZone'],
-        dataMap['moisture'],
-        dataMap['temperature'],
+        dataMap['utcTimeZone'] ?? 0,
+        dataMap['moisture'] ?? 0,
+        dataMap['temperature'] ?? 0,
         dataMap['imageUrl'] ?? "",
         dataMap['description'] ?? "",
         dataMap['isPublic']);
@@ -42,8 +52,8 @@ class Plant {
   static List<Plant> fromMap(LinkedHashMap nestedMap, DateTime refreshedTime) {
     List<Plant> plants = List();
     nestedMap.forEach((plantId, dataMap) {
-      if (plantId != null && dataMap != null)
-        plants.add(Plant.fromQueryData(plantId, dataMap, refreshedTime));
+      if (plantId != null && dataMap != null) print(plantId);
+      plants.add(Plant.fromQueryData(plantId, dataMap, refreshedTime));
     });
     return plants;
   }
@@ -81,10 +91,11 @@ class Plant {
     return json;
   }
 
-  static bool hasDuplicateName(Plant plant, List<Plant> plants) {
+  static bool hasDuplicateName(
+      String plantId, String name, List<Plant> plants) {
     return plants
-        .where((Plant current) => current.id != plant.id)
-        .where((Plant current) => current.name == plant.name)
+        .where((Plant current) => current.id != plantId)
+        .where((Plant current) => current.name == name)
         .isNotEmpty;
   }
 }

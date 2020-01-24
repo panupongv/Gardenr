@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:instagrow/models/auth_field_validator.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/utils/style.dart';
+import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:tuple/tuple.dart';
@@ -36,7 +37,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         AuthFieldValidator.hasEmptyField([email, password, confirmPassword]);
     bool passwordMismatch =
         AuthFieldValidator.passwordMismatch(password, confirmPassword);
-    bool passwordTooShort = AuthFieldValidator.passwordTooShort(password);
 
     if (hasEmptyField) {
       showCupertinoDialog(
@@ -51,23 +51,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
     } else if (passwordMismatch) {
       showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return getQuickAlertDialog(context, "Passwords Mismatch",
-                "Please make sure entered passwords are identical", "Dismiss");
-          });
-    } else if (passwordTooShort) {
-      showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return getQuickAlertDialog(context, "Password Too Short",
-                "The minimum length of password is 6 characters", "Dismiss");
-          });
+        context: context,
+        builder: (BuildContext context) {
+          return getQuickAlertDialog(context, "Passwords Mismatch",
+              "Please make sure entered passwords are identical", "Dismiss");
+        },
+      );
     } else {
       Tuple2<FirebaseUser, String> signUpResult =
           await AuthService.signUp(email, password);
 
       if (signUpResult.item1 != null) {
+        DatabaseService.createUserInstance(signUpResult.item1);
         showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
@@ -84,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(email);
                   },
-                )
+                ),
               ],
             );
           },
@@ -105,28 +100,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      child: Form(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: Center(
+        child: ListView(
+          shrinkWrap: true,
           children: <Widget>[
+            fieldNameText(context, "Email"),
             CupertinoTextField(
+              decoration: Styles.testFieldDecoratino(context),
               controller: _emailController,
-              placeholder: "Email",
             ),
+            Container(
+              height: 16,
+            ),
+            fieldNameText(context, "Password"),
             CupertinoTextField(
+              decoration: Styles.testFieldDecoratino(context),
               controller: _passwordController,
-              placeholder: "Password",
               obscureText: true,
             ),
+            Container(
+              height: 16,
+            ),
+            fieldNameText(context, "Confirm Password"),
             CupertinoTextField(
+              decoration: Styles.testFieldDecoratino(context),
               controller: _confirmPasswordController,
-              placeholder: "Confirm Password",
               obscureText: true,
             ),
-            CupertinoButton.filled(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              child: Text("Sign Up"),
-              onPressed: signUp,
+            Container(
+              height: 24,
+            ),
+            UnconstrainedBox(
+              child: CupertinoButton.filled(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                child: Text("Sign Up"),
+                onPressed: signUp,
+              ),
             ),
           ],
         ),

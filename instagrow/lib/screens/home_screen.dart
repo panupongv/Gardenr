@@ -9,13 +9,17 @@ import 'package:instagrow/widgets/custom_icons.dart';
 
 class HomeScreen extends StatelessWidget {
   final FirebaseUser user;
+  static const int TABS = 4;
+
+  GlobalKey<NavigatorState> navigatorKey0 = GlobalKey<NavigatorState>(),
+      navigatorKey1 = GlobalKey<NavigatorState>(),
+      navigatorKey2 = GlobalKey<NavigatorState>(),
+      navigatorKey3 = GlobalKey<NavigatorState>();
 
   HomeScreen(this.user);
 
   @override
   Widget build(BuildContext context) {
-
-
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         items: [
@@ -36,31 +40,49 @@ class HomeScreen extends StatelessWidget {
             // title: Text("Setting"),
           ),
         ],
+        onTap: (int index) {
+          switch (index) {
+            case 0:
+              navigatorKey0.currentState.popUntil((Route r) => r.isFirst);
+              break;
+            case 1:
+              navigatorKey1.currentState.popUntil((Route r) => r.isFirst);
+              break;
+            case 2:
+              navigatorKey2.currentState.popUntil((Route r) => r.isFirst);
+              break;
+            case 3:
+              navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
+              break;
+          }
+        },
       ),
       tabBuilder: (BuildContext context, int index) {
-        return CupertinoTabView(
-          builder: (context) {
-            switch (index) {
-              case 0:
-                return DashBoardScreen(
-                  DashBoardContentType.MyPlants,
-                );
-                break;
-              case 1:
-                return DashBoardScreen(
-                  DashBoardContentType.Following,
-                );
-                break;
-              case 2:
-                return ProfileScreen(user);
-                break;
-              case 3:
-                return SettingScreen();
-                break;
-            }
-            return null;
-          },
-        );
+        switch (index) {
+          case 0:
+            return CupertinoTabView(
+              navigatorKey: navigatorKey0,
+              builder: (BuildContext context) =>
+                  DashBoardScreen(DashBoardContentType.MyPlants),
+            );
+          case 1:
+            return CupertinoTabView(
+              navigatorKey: navigatorKey1,
+              builder: (BuildContext context) =>
+                  DashBoardScreen(DashBoardContentType.Following),
+            );
+          case 2:
+            return CupertinoTabView(
+              navigatorKey: navigatorKey2,
+              builder: (BuildContext context) => ProfileScreen(user),
+            );
+          case 3:
+            return CupertinoTabView(
+              navigatorKey: navigatorKey3,
+              builder: (BuildContext context) => SettingScreen(),
+            );
+        }
+        return null;
       },
     );
   }

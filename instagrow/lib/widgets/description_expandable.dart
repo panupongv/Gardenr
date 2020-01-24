@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/utils/style.dart';
 
 class DescriptionExpandable extends StatefulWidget {
   final String _description;
@@ -26,7 +27,7 @@ class _DescriptionExpandableState extends State<DescriptionExpandable> {
       child: Text(
         showingMore ? "\nshow less" : "\n... more",
         textAlign: TextAlign.left,
-        style: TextStyle(color: CupertinoColors.inactiveGray),
+        style: Styles.moreLessButton(context),
       ),
       onTap: () {
         setState(() {
@@ -53,16 +54,21 @@ class _DescriptionExpandableState extends State<DescriptionExpandable> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               showingMore
-                  ? Text(widget._description)
+                  ? Text(
+                      widget._description,
+                      style: Styles.descriptionExpandableText(context),
+                    )
                   : Text(
                       widget._description,
                       maxLines: DescriptionExpandable.MAX_LINES_FIXED_BOX,
+                      style: Styles.descriptionExpandableText(context),
                     ),
               _showLessOrMoreButton(),
             ],
           );
         } else {
-          descriptionBox = Text(widget._description);
+          descriptionBox = Text(widget._description,
+              style: Styles.descriptionExpandableText(context));
         }
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),

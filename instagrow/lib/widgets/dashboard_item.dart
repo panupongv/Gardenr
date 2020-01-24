@@ -36,9 +36,10 @@ class DashBoardItem extends StatelessWidget {
                         _plant.name,
                         style: Styles.dashboardItemTitle(context),
                       ),
-                      Text(_plant.timeOffset)
+                      Text(_plant.timeOffset, style: Styles.plantTimeText(context),)
                     ],
                   ),
+                  Container(height: 4,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[

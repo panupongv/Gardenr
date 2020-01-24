@@ -4,11 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:instagrow/utils/style.dart';
 
 class SearchBar extends StatelessWidget {
-  const SearchBar({
-    @required this.controller,
-    @required this.focusNode,
-    this.onUpdate
-  });
+  const SearchBar(
+      {@required this.controller, @required this.focusNode, this.onUpdate});
 
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -19,40 +16,45 @@ class SearchBar extends StatelessWidget {
     if (onUpdate != null) {
       controller.addListener(onUpdate);
     }
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Styles.searchBackground,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 4,
-          vertical: 4,
+    return Container(
+      color: Styles.navigationBarBackground(context),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Styles.searchBackground(context),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Row(
-          children: [
-            const Icon(
-              CupertinoIcons.search,
-              color: Styles.searchIconColor,
-            ),
-            Expanded(
-              child: CupertinoTextField(
-                autofocus: true,
-                decoration: BoxDecoration(color: Styles.searchBackground),
-                controller: controller,
-                focusNode: focusNode,
-                style: Styles.searchText,
-                cursorColor: Styles.searchCursorColor,
-              ),
-            ),
-            GestureDetector(
-              onTap: controller.clear,
-              child: const Icon(
-                CupertinoIcons.clear_thick_circled,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 4,
+            vertical: 4,
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                CupertinoIcons.search,
                 color: Styles.searchIconColor,
               ),
-            ),
-          ],
+              Expanded(
+                child: CupertinoTextField(
+                  autofocus: true,
+                  decoration: BoxDecoration(
+                    color: Styles.searchBackground(context),
+                  ),
+                  controller: controller,
+                  focusNode: focusNode,
+                  style: Styles.searchText(context),
+                  cursorColor: Styles.searchCursorColor,
+                ),
+              ),
+              GestureDetector(
+                onTap: controller.clear,
+                child: const Icon(
+                  CupertinoIcons.clear_thick_circled,
+                  color: Styles.searchIconColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signin_screen.dart';
+import 'package:instagrow/utils/auth_service.dart';
 
 void main() => runApp(MainApp());
 
@@ -12,13 +13,15 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoApp(
       theme: CupertinoTheme.of(context),
-      home: FutureBuilder(
-        future: FirebaseAuth.instance.currentUser(),
-        builder: (context, snapshot) {
+      home: FutureBuilder<FirebaseUser>(
+        future: AuthService.getUser(),
+        builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.error == null && snapshot.hasData) {
-              print("Continue as ${snapshot.data.uid}");
-              return HomeScreen(snapshot.data);
+            if (snapshot.error == null && snapshot.hasData && snapshot.data != null) {
+              FirebaseUser user = snapshot.data;
+              // if (user.displayName)
+              print("Continue as ${user.uid}");
+              return HomeScreen(user);
             } else {
               return SignInScreen();
             }

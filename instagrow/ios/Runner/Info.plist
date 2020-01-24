@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Instagrow</string>
+	<string>Gardenr</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -42,8 +42,8 @@
 	<false/>
 
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>hello</string>
+	<string>Photos from library are used as profile images for you and your plants.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>hello</string>
+	<string>Camera is used for capturing profile images and QR codes.</string>
 </dict>
 </plist>

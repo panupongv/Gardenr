@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:instagrow/models/user_information.dart';
+import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/utils/size_config.dart';
+import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/default_images.dart';
 
 import 'circular_cached_image.dart';
 import 'description_expandable.dart';
 
 class OtherUserProfileSection extends StatelessWidget {
-  final UserInformation _userInformation;
+  final UserProfile _userProfile;
 
-  OtherUserProfileSection(this._userInformation);
+  OtherUserProfileSection(this._userProfile);
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +22,26 @@ class OtherUserProfileSection extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(16),
               child: CircularCachedImage(
-                  _userInformation.imageUrl,
+                  _userProfile.imageUrl,
                   PLANT_PROFILE_IMAGE_SIZE,
                   progressIndicator(context),
                   defaultPlantImage(context)),
             ),
             Text(
-              _userInformation.name,
+              _userProfile.name,
               textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Styles.plantProfileName(context)
             ),
           ],
         ),
-        DescriptionExpandable(_userInformation.description)
+        DescriptionExpandable(_userProfile.description),
+        Padding(
+          padding: EdgeInsets.only(top: 12),
+          child: Container(
+            height: 1,
+            color: Styles.dynamicGray(context),
+          ),
+        ),
       ],
     );
   }

@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/user_information.dart';
+import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/widgets/other_user_profile_section.dart';
 
 import 'dashboard_item.dart';
 
 class DashBoard extends StatelessWidget {
   final List<Plant> _plants;
+  final List<bool> _filteredPlants;
   final Function _parentOnRefresh, _onItemPressed;
-  final UserInformation _otherUser;
+  final UserProfile _otherUser;
   final bool _isForOtherUser;
 
-  DashBoard(this._plants, this._parentOnRefresh, this._onItemPressed,
+  DashBoard(this._plants, this._filteredPlants, this._parentOnRefresh, this._onItemPressed,
       [this._otherUser])
       : _isForOtherUser = _otherUser != null;
 
@@ -33,6 +34,9 @@ class DashBoard extends StatelessWidget {
                     return OtherUserProfileSection(_otherUser);
                   }
                   index--;
+                }
+                if (!_filteredPlants[index]) {
+                  return Container(height: 0,);
                 }
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,

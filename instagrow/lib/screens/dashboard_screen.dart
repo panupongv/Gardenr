@@ -1,19 +1,18 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/qr_validator.dart';
-import 'package:instagrow/screens/graph_focus_screen.dart';
+import 'package:instagrow/models/qr_translator.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/widgets/dashboard.dart';
-import 'package:instagrow/widgets/dashboard_item.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
+import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:instagrow/widgets/search_bar.dart';
 import 'package:instagrow/utils/style.dart';
+import 'package:tuple/tuple.dart';
 
 enum DashBoardContentType {
   MyPlants,
@@ -33,7 +32,8 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     with SingleTickerProviderStateMixin {
   String _title;
   bool _isMyPlant, _showSearch;
-  List<Plant> _plants, _filteredPlants;
+  List<Plant> _plants;
+  List<bool> _filteredPlants;
 
   TextEditingController _searchTextController;
   FocusNode _searchFocusNode;
@@ -52,40 +52,84 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     _searchTextController = TextEditingController();
     _searchFocusNode = FocusNode();
     _showSearch = false;
-    _filteredPlants = _plants = List();
+    _plants = List<Plant>();
+    _filteredPlants = List<bool>();
 
     _onRefresh();
   }
 
   Future<void> _onAddPressed() async {
-    String xx = "something scanned";
-    if (xx == null) {
+    String scanned = await BarcodeScanner.scan();
+    print(scanned);
+    if (scanned == null) {
       return;
     }
 
-    switch (_title) {
-      case "My Garden":
-        {
-          // AWAIT CREATE INSTANCE
-          if (QRValidator.addMyPlants(xx)) {
-            Route newPlantPageRoute = CupertinoPageRoute(
-                builder: (context) => ProfileEditScreen(
-                    null,
-                    "",
-                    "",
-                    PreviousScreen.AddMyPlant,
-                    Plant(xx, "", "", "", 0, 0, 0, "", "", true),
-                    _plants));
-            Navigator.of(context).push(newPlantPageRoute);
-          }
-          break;
-        }
-      case "Following":
-        {
-          print("scan to follow");
-          _onRefresh();
-          break;
-        }
+    if (_isMyPlant) {
+      _claimScannedCode(scanned);
+    } else {
+      _followScannedCode(scanned);
+    }
+  }
+
+  Future<void> _claimScannedCode(String scanned) async {
+    Tuple2<QrScanResult, String> claimResult =
+        await DatabaseService.claimWithQr(scanned);
+    if (claimResult.item1 == QrScanResult.Success) {
+      Route newPlantPageRoute = CupertinoPageRoute(
+          builder: (context) => ProfileEditScreen(
+              null,
+              "",
+              "",
+              PreviousScreen.AddMyPlant,
+              Plant(claimResult.item2, "", "", "", 0, 0, 0, "", "", true),
+              _plants));
+      Navigator.of(context).push(newPlantPageRoute);
+    } else if (claimResult.item1 == QrScanResult.AlreadyHasOwner) {
+      showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) => CupertinoAlertDialog(
+                title: Text("Oops"),
+                content: Text(claimResult.item2),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    child: Text("Dismiss"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text("Dismiss"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _followScannedCode(scanned);
+                    },
+                  ),
+                ],
+              ));
+    } else {
+      showCupertinoDialog(
+          context: context,
+          builder: (BuildContext context) => getQuickAlertDialog(
+              context, "Error", claimResult.item2, "Dismiss"));
+    }
+  }
+
+  Future<void> _followScannedCode(String scanned) async {
+    Tuple2<QrScanResult, String> followResult =
+        await DatabaseService.followWithQr(scanned);
+    if (followResult.item1 == QrScanResult.Success) {
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) => getQuickAlertDialog(
+            context, "Success", followResult.item2, "Dismiss"),
+      );
+    } else {
+      showCupertinoDialog(
+        context: context,
+        builder: (BuildContext context) => getQuickAlertDialog(
+            context, "Error", followResult.item2, "Dismiss"),
+      );
     }
   }
 
@@ -98,13 +142,13 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     _updateFilteredPlants();
   }
 
-  void _onItemPressed(int index) {
+  void _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
         if (_isMyPlant) {
-          return PlantProfileScreen(_filteredPlants[index], true, _plants);
+          return PlantProfileScreen(_plants[index], true, _plants);
         }
-        return PlantProfileScreen(_filteredPlants[index], false, null);
+        return PlantProfileScreen(_plants[index], false, null);
       },
     );
     Navigator.of(context).push(plantProfileScreen).then((_) {
@@ -115,11 +159,10 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   }
 
   void _updateFilteredPlants() {
-    String searchText = _searchTextController.text;
+    String searchText = _searchTextController.text.toLowerCase();
     setState(() {
       _filteredPlants = _plants
-          .where((Plant plant) =>
-              plant.name.toLowerCase().contains(searchText.toLowerCase()))
+          .map((Plant plant) => plant.name.toLowerCase().contains(searchText))
           .toList();
     });
   }
@@ -176,7 +219,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         middle: _navigationBarMiddleWidget(),
         trailing: _navigationBarTrailingWidget(),
       ),
-      child: DashBoard(_filteredPlants, _onRefresh, _onItemPressed),
+      child: DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed),
     );
   }
 }

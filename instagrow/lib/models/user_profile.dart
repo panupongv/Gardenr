@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-class UserInformation {
+class UserProfile {
   final String _id, _name, _description, _imageUrl;
-  UserInformation(this._id, this._name, this._description, this._imageUrl);
+  UserProfile(this._id, this._name, this._description, this._imageUrl);
 
   String get id {
     return _id;
@@ -20,7 +20,7 @@ class UserInformation {
     return _imageUrl;
   }
 
-  factory UserInformation.fromQueryData(String id, LinkedHashMap dataMap) {
-    return UserInformation(id, dataMap['name'], dataMap['description'], dataMap['imageUrl']);
+  factory UserProfile.fromQueryData(String id, LinkedHashMap dataMap) {
+    return UserProfile(id, dataMap['name'], dataMap['description'], dataMap['imageUrl']);
   }
 }
