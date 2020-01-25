@@ -2,6 +2,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/qr_translator.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
@@ -14,10 +15,7 @@ import 'package:instagrow/widgets/search_bar.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:tuple/tuple.dart';
 
-enum DashBoardContentType {
-  MyPlants,
-  Following,
-}
+
 
 class DashBoardScreen extends StatefulWidget {
   final DashBoardContentType _contentType;
@@ -145,10 +143,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   void _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
-        if (_isMyPlant) {
-          return PlantProfileScreen(_plants[index], true, _plants);
-        }
-        return PlantProfileScreen(_plants[index], false, null);
+        return PlantProfileScreen(_plants[index], _isMyPlant, _plants);
       },
     );
     Navigator.of(context).push(plantProfileScreen).then((_) {
@@ -197,7 +192,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     return _showSearch
         ? Padding(
             padding: EdgeInsets.only(left: 8),
-            child: navigationBarTextButton("Cancel", () {
+            child: navigationBarTextButton(context, "Cancel", () {
               _searchTextController.clear();
               _searchFocusNode.unfocus();
               setState(() {
@@ -219,7 +214,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         middle: _navigationBarMiddleWidget(),
         trailing: _navigationBarTrailingWidget(),
       ),
-      child: DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed),
+      child: DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed, []),
     );
   }
 }

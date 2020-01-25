@@ -6,11 +6,13 @@ import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/circular_cached_image.dart';
 import 'package:instagrow/widgets/default_images.dart';
+import 'package:sprintf/sprintf.dart';
 
 class DashBoardItem extends StatelessWidget {
   final Plant _plant;
+  final Widget _moistureIcon, _tempratureIcon;
 
-  DashBoardItem(this._plant);
+  DashBoardItem(this._plant, this._moistureIcon, this._tempratureIcon);
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +41,19 @@ class DashBoardItem extends StatelessWidget {
                       Text(_plant.timeOffset, style: Styles.plantTimeText(context),)
                     ],
                   ),
-                  Container(height: 4,),
+                  Container(height: 6,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        _plant.moisture.toString() + "   ",
+                      _moistureIcon,
+                      Text(sprintf("%05.2f\%", [_plant.moisture]),
                         style: Styles.dashboardItemDetail(context),
                       ),
+                      Container(width: 8,),
+                      _tempratureIcon,
                       Text(
-                        _plant.temperature.toString(),
+                        sprintf("%.2f°C", [_plant.temperature]),
                         style: Styles.dashboardItemDetail(context),
                       ),
                     ],

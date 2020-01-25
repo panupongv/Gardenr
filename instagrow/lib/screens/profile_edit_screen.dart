@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/size_config.dart';
@@ -12,11 +13,7 @@ import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
-enum PreviousScreen {
-  UserProfile,
-  AddMyPlant,
-  EditMyPlant,
-}
+
 
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
@@ -285,7 +282,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         leading: Align(
           widthFactor: 1.0,
           alignment: Alignment.center,
-          child: navigationBarTextButton("Cancel", () {
+          child: navigationBarTextButton(context, "Cancel", () {
             Navigator.of(context).pop();
           }),
         ),
@@ -294,8 +291,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             "Save",
             style: TextStyle(
               color: _allowSave()
-                  ? CupertinoColors.activeBlue
-                  : CupertinoColors.inactiveGray,
+                  ? Styles.dynamicBlue(context)
+                  : Styles.dynamicGray(context),
             ),
           ),
           onTap: _applyChanges,

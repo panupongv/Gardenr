@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/semantics.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
@@ -27,21 +28,12 @@ class OtherUserProfileSection extends StatelessWidget {
                   progressIndicator(context),
                   defaultPlantImage(context)),
             ),
-            Text(
-              _userProfile.name,
-              textAlign: TextAlign.left,
-              style: Styles.plantProfileName(context)
-            ),
+            Text(_userProfile.name,
+                textAlign: TextAlign.left,
+                style: Styles.plantProfileName(context)),
           ],
         ),
         DescriptionExpandable(_userProfile.description),
-        Padding(
-          padding: EdgeInsets.only(top: 12),
-          child: Container(
-            height: 1,
-            color: Styles.dynamicGray(context),
-          ),
-        ),
       ],
     );
   }

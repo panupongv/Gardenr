@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
@@ -68,6 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       navigationBar: CupertinoNavigationBar(
         border: null,
         trailing: navigationBarTextButton(
+          context, 
           "Edit",
           _openEditScreen,
         ),

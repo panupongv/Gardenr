@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/graph_focus_screen.dart';
@@ -97,13 +98,14 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
               children: <Widget>[
                 Padding(
                   padding: textInsets,
-                  child: navigationBarTextButton("Cancel", () {
+                  child: navigationBarTextButton(context, "Cancel", () {
                     Navigator.of(context).pop();
                   }),
                 ),
                 Padding(
                   padding: textInsets,
                   child: navigationBarTextButton(
+                    context, 
                     "Done",
                     () {
                       setState(() {
@@ -233,7 +235,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                 onTap: () {
                   Route otherUserProfile = CupertinoPageRoute(
                       builder: (BuildContext context) =>
-                          OtherUserScreen(snapshot.data));
+                          OtherUserScreen(snapshot.data, widget.plantList));
                   Navigator.of(context).push(otherUserProfile);
                 });
           }
@@ -265,7 +267,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         if (asyncSnapshot != null) {
           if (asyncSnapshot.connectionState == ConnectionState.done) {
             _following = asyncSnapshot.data;
-            return navigationBarTextButton(_following ? "Unfollow" : "Follow",
+            return navigationBarTextButton(context, _following ? "Unfollow" : "Follow",
                 () async {
               bool toggleFollowingResult =
                   await DatabaseService.toggleFollowPlant(_plant);

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/utils/style.dart';
 
 Text navigationBarTitle(String title) {
   return Text(
@@ -8,11 +9,11 @@ Text navigationBarTitle(String title) {
   );
 }
 
-GestureDetector navigationBarTextButton(String text, Function onTapCallback) {
+GestureDetector navigationBarTextButton(BuildContext context, String text, Function onTapCallback) {
   return GestureDetector(
     child: Text(
       text,
-      style: TextStyle(color: CupertinoColors.activeBlue),
+      style: TextStyle(color: Styles.dynamicBlue(context)),
     ),
     onTap: onTapCallback,
   );

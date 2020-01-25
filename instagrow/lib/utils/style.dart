@@ -1,7 +1,3 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,6 +16,22 @@ abstract class Styles {
 
   static Color _defaultBackground(context) {
     return _dynamicColor(context, CupertinoColors.white, CupertinoColors.black);
+  }
+
+  static Color dynamicGray(context) {
+    return _dynamicColor(
+      context,
+      CupertinoColors.inactiveGray.color,
+      CupertinoColors.inactiveGray.darkColor,
+    );
+  }
+
+  static Color dynamicBlue(context) {
+    return _dynamicColor(
+      context,
+      CupertinoColors.activeBlue.color,
+      CupertinoColors.activeBlue.darkColor,
+    );
   }
 
   static TextStyle navigationBarTitle(context) {
@@ -50,7 +62,7 @@ abstract class Styles {
   static TextStyle ownerNameActive(context) {
     return TextStyle(
       fontSize: 14,
-      color: CupertinoColors.activeBlue,
+      color: dynamicBlue(context),
       decoration: TextDecoration.underline,
     );
   }
@@ -137,14 +149,6 @@ abstract class Styles {
     );
   }
 
-  static Color dynamicGray(context) {
-    return _dynamicColor(
-      context,
-      CupertinoColors.inactiveGray.color,
-      CupertinoColors.inactiveGray.darkColor,
-    );
-  }
-
   static Color separatorLine(context) {
     return _dynamicColor(context, Color(0x80E0E0E0), Color(0x80E0E0E0));
   }
@@ -168,6 +172,17 @@ abstract class Styles {
   static Color navigationBarBackground(context) {
     return _dynamicColor(context, Color(0xfff9f9f9), Color(0xff1b1b1b));
   }
+
+  static TextStyle segmentControl = TextStyle(
+    fontSize: 14,
+  );
+
+  static Color segmentControlSelected(context) => dynamicBlue(context);
+  static Color segmentControlPressed(context) => _dynamicColor(
+        context,
+        Color.fromARGB(128, 0, 122, 255),
+        Color.fromARGB(128, 10, 132, 255),
+      );
 
   static Color searchCursorColor = Color.fromRGBO(128, 128, 128, 1);
 

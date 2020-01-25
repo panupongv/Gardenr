@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
+import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:instagrow/screens/profile_screen.dart';
 import 'package:instagrow/screens/setting_screen.dart';
@@ -8,6 +9,7 @@ import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/widgets/custom_icons.dart';
 
 class HomeScreen extends StatelessWidget {
+  int _currentIndex = 0;
   final FirebaseUser user;
   static const int TABS = 4;
 
@@ -41,20 +43,23 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
         onTap: (int index) {
-          switch (index) {
-            case 0:
-              navigatorKey0.currentState.popUntil((Route r) => r.isFirst);
-              break;
-            case 1:
-              navigatorKey1.currentState.popUntil((Route r) => r.isFirst);
-              break;
-            case 2:
-              navigatorKey2.currentState.popUntil((Route r) => r.isFirst);
-              break;
-            case 3:
-              navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
-              break;
+          if (_currentIndex == index) {
+            switch (index) {
+              case 0:
+                navigatorKey0.currentState.popUntil((Route r) => r.isFirst);
+                break;
+              case 1:
+                navigatorKey1.currentState.popUntil((Route r) => r.isFirst);
+                break;
+              case 2:
+                navigatorKey2.currentState.popUntil((Route r) => r.isFirst);
+                break;
+              case 3:
+                navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
+                break;
+            }
           }
+          _currentIndex = index;
         },
       ),
       tabBuilder: (BuildContext context, int index) {
