@@ -106,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: <Widget>[
             fieldNameText(context, "Email"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _emailController,
             ),
             Container(
@@ -114,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             fieldNameText(context, "Password"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _passwordController,
               obscureText: true,
             ),
@@ -123,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             fieldNameText(context, "Confirm Password"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _confirmPasswordController,
               obscureText: true,
             ),

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
+import 'package:instagrow/models/sensor_data.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/graph_focus_screen.dart';
 import 'package:instagrow/screens/other_user_screen.dart';
@@ -36,7 +40,10 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   static const int DATE_RANGE = 7;
 
   Plant _plant;
-  UserProfile _ownerInformation;
+  UserProfile _ownerProfile;
+  SensorData _sensorData;
+  bool _loadingData;
+
   int _selectedDateIndex;
   bool _following;
   List<DateTime> _datesAvailable;
@@ -44,6 +51,8 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   FixedExtentScrollController _scrollController;
 
   CircularCachedImage _circularCachedImage;
+
+  StreamSubscription _streamSubscription;
 
   @override
   void initState() {
@@ -53,7 +62,34 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         FixedExtentScrollController(initialItem: _selectedDateIndex);
     _calculateDatesAvailable();
 
-    DatabaseService.plantProfileStream(_plant.id).listen((Event event) {
+    _ownerProfile = null;
+    DatabaseService.getOtherUserProfile(_plant.ownerId)
+        .then((UserProfile profile) {
+      setState(() {
+        if (profile != null) {
+          _ownerProfile = profile;
+        }
+      });
+    });
+
+    _sensorData = null;
+    _loadingData = true;
+    DatabaseService.getSensorData(
+            _plant.id, _datesAvailable[_selectedDateIndex])
+        .then((SensorData data) {
+      setState(() {
+        _sensorData = data;
+        _loadingData = false;
+      });
+    });
+
+    _following = null;
+    DatabaseService.plantIsFollowed(_plant).then((bool following) {
+      _following = following;
+    });
+
+    _streamSubscription =
+        DatabaseService.plantProfileStream(_plant.id).listen((Event event) {
       if (event != null &&
           event.snapshot != null &&
           event.snapshot.value != null) {
@@ -105,15 +141,24 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                 Padding(
                   padding: textInsets,
                   child: navigationBarTextButton(
-                    context, 
+                    context,
                     "Done",
                     () {
                       setState(() {
                         _selectedDateIndex = _scrollController.selectedItem;
+                        _loadingData = true;
                       });
                       _scrollController = FixedExtentScrollController(
                         initialItem: _selectedDateIndex,
                       );
+                      DatabaseService.getSensorData(
+                              _plant.id, _datesAvailable[_selectedDateIndex])
+                          .then((SensorData data) {
+                        setState(() {
+                          _sensorData = data;
+                          _loadingData = false;
+                        });
+                      });
                       Navigator.of(context).pop();
                     },
                   ),
@@ -143,9 +188,6 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   }
 
   Future<void> _moreOptions() async {
-    // await DatabaseService.createQrInstance(_plant);
-    // return;
-
     int optionPicked = 0;
     await showCupertinoModalPopup(
         useRootNavigator: false,
@@ -211,6 +253,26 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         builder: (BuildContext context) => QRScreen(_plant)));
   }
 
+  Widget _followButton() {
+    if (_following == null) {
+      return Text("...", style: Styles.navigationBarTextInActive(context));
+    }
+
+    return navigationBarTextButton(context, _following ? "Unfollow" : "Follow",
+        () async {
+      setState(() {
+        _following = null;
+      });
+      bool toggleFollowingResult =
+          await DatabaseService.toggleFollowPlant(_plant);
+      if (toggleFollowingResult != null) {
+        setState(() {
+          _following = toggleFollowingResult;
+        });
+      }
+    });
+  }
+
   Widget _ownerText() {
     if (widget.isMyPlant) {
       return Text(
@@ -219,33 +281,27 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         textAlign: TextAlign.left,
       );
     }
-    return FutureBuilder<UserProfile>(
-      future: DatabaseService.getOtherUserProfile(_plant.ownerId),
-      builder: (BuildContext context, AsyncSnapshot<UserProfile> snapshot) {
-        if (snapshot != null &&
-            snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data != null) {
-            _ownerInformation = snapshot.data;
-            return GestureDetector(
-                child: Text(
-                  _ownerInformation.name,
-                  style: Styles.ownerNameActive(context),
-                  textAlign: TextAlign.left,
-                ),
-                onTap: () {
-                  Route otherUserProfile = CupertinoPageRoute(
-                      builder: (BuildContext context) =>
-                          OtherUserScreen(snapshot.data, widget.plantList));
-                  Navigator.of(context).push(otherUserProfile);
-                });
-          }
-        }
-        return Text(
-          "...",
-          style: Styles.ownerNameInactive(context),
+
+    if (_ownerProfile != null) {
+      return GestureDetector(
+        child: Text(
+          _ownerProfile.name,
+          style: Styles.ownerNameActive(context),
           textAlign: TextAlign.left,
-        );
-      },
+        ),
+        onTap: () {
+          Route otherUserProfile = CupertinoPageRoute(
+              builder: (BuildContext context) =>
+                  OtherUserScreen(_ownerProfile, widget.plantList));
+          Navigator.of(context).push(otherUserProfile);
+        },
+      );
+    }
+
+    return Text(
+      "Not available",
+      style: Styles.ownerNameInactive(context),
+      textAlign: TextAlign.left,
     );
   }
 
@@ -260,36 +316,60 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     );
   }
 
-  Widget _followButton() {
-    return FutureBuilder<bool>(
-      future: DatabaseService.plantIsFollowed(_plant),
-      builder: (BuildContext context, AsyncSnapshot<bool> asyncSnapshot) {
-        if (asyncSnapshot != null) {
-          if (asyncSnapshot.connectionState == ConnectionState.done) {
-            _following = asyncSnapshot.data;
-            return navigationBarTextButton(context, _following ? "Unfollow" : "Follow",
-                () async {
-              bool toggleFollowingResult =
-                  await DatabaseService.toggleFollowPlant(_plant);
-              setState(() {
-                _following = toggleFollowingResult;
-              });
-            });
-          }
-        }
-        return Container();
-      },
+  Widget _graphSection() {
+    if (_loadingData) {
+      return UnconstrainedBox(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    if (_sensorData == null) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Text(
+          "NO SENSOR DATA AVAILABLE",
+          textAlign: TextAlign.center,
+          style: Styles.noDataAvailable(context),
+        ),
+      );
+    }
+    TimeSeriesGraphs graphs = TimeSeriesGraphs(_sensorData);
+    Widget moistureGraph = graphs.moistureGraph(),
+        temperatureGraph = graphs.temperatureGraph();
+    return Column(
+      children: <Widget>[
+        GraphTitle(
+          "Moisture",
+          () {
+            Navigator.of(context, rootNavigator: true).push(
+              CupertinoPageRoute(
+                fullscreenDialog: true,
+                builder: (context) {
+                  return GraphFocusScreen(moistureGraph);
+                },
+              ),
+            );
+          },
+        ),
+        moistureGraph,
+        GraphTitle(
+          "Temperature",
+          () {
+            Navigator.of(context, rootNavigator: true).push(
+              CupertinoPageRoute(
+                fullscreenDialog: true,
+                builder: (context) {
+                  return GraphFocusScreen(temperatureGraph);
+                },
+              ),
+            );
+          },
+        ),
+        temperatureGraph,
+      ],
     );
-  }
-
-  Widget _circularImage(BuildContext context) {
-    _circularCachedImage = CircularCachedImage(
-      _plant.imageUrl,
-      PLANT_PROFILE_IMAGE_SIZE,
-      progressIndicator(context),
-      defaultPlantImage(context),
-    );
-    return _circularCachedImage;
   }
 
   @override
@@ -297,7 +377,6 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         trailing: widget.isMyPlant
-            // ? navigationBarTextButton("Edit", _openPlantEditScreen)
             ? GestureDetector(
                 child: Icon(CupertinoIcons.ellipsis),
                 onTap: _moreOptions,
@@ -316,30 +395,30 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.all(16),
-                      child: _circularImage(context),
+                      child: CircularCachedImage(
+                        _plant.imageUrl,
+                        PLANT_PROFILE_IMAGE_SIZE,
+                        progressIndicator(context),
+                        defaultPlantImage(context),
+                      ),
                     ),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(right: 12),
+                        padding: EdgeInsets.only(left: 8),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  _plant.name,
-                                  textAlign: TextAlign.left,
-                                  style: Styles.plantProfileName(context),
-                                ),
-                                _plantLocalTimeText(),
-                              ],
+                            Text(
+                              _plant.name,
+                              textAlign: TextAlign.left,
+                              style: Styles.plantProfileName(context),
                             ),
-                            Row(
-                              children: <Widget>[
-                                _ownerText(),
-                              ],
+                            _ownerText(),
+                            Container(
+                              height: 8,
                             ),
+                            _plantLocalTimeText(),
                           ],
                         ),
                       ),
@@ -359,77 +438,20 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                 ),
                 Container(
                   height: 1,
-                  color: CupertinoColors.inactiveGray,
+                  color: Styles.dynamicGray(context),
                 ),
-                Container(
-                  child: FutureBuilder(
-                    future: DatabaseService.getSensorData(
-                        _plant.id,
-                        _datesAvailable[_selectedDateIndex]),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot != null && snapshot.data != null) {
-                        TimeSeriesGraphs graphs =
-                            TimeSeriesGraphs(snapshot.data);
-                        Widget moistureGraph = graphs.moistureGraph(),
-                            temperatureGraph = graphs.temperatureGraph();
-                        return Column(
-                          children: <Widget>[
-                            GraphTitle(
-                              "Moisture",
-                              () {
-                                Navigator.of(context, rootNavigator: true).push(
-                                  CupertinoPageRoute(
-                                    fullscreenDialog: true,
-                                    builder: (context) {
-                                      return GraphFocusScreen(moistureGraph);
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                            moistureGraph,
-                            GraphTitle(
-                              "Temperature",
-                              () {
-                                Navigator.of(context, rootNavigator: true).push(
-                                  CupertinoPageRoute(
-                                    fullscreenDialog: true,
-                                    builder: (context) {
-                                      return GraphFocusScreen(temperatureGraph);
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                            temperatureGraph,
-                          ],
-                        );
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.done) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Text(
-                            "NO SENSOR DATA AVAILABLE",
-                            textAlign: TextAlign.center,
-                            style: Styles.noDataAvailable(context),
-                          ),
-                        );
-                      } else {
-                        return UnconstrainedBox(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24),
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                _graphSection(),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
   }
 }

@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
             return CupertinoTabView(
               navigatorKey: navigatorKey0,
               builder: (BuildContext context) =>
-                  DashBoardScreen(DashBoardContentType.MyPlants),
+                  DashBoardScreen(DashBoardContentType.Garden),
             );
           case 1:
             return CupertinoTabView(

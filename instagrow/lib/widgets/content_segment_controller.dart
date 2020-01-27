@@ -17,7 +17,7 @@ class _ContentSegmentControllerState extends State<ContentSegmentController> {
 
   @override
   void initState() {
-    _selectedValue = DashBoardContentType.MyPlants;
+    _selectedValue = DashBoardContentType.Garden;
     super.initState();
   }
 
@@ -28,7 +28,7 @@ class _ContentSegmentControllerState extends State<ContentSegmentController> {
       child: CupertinoSegmentedControl(
         groupValue: _selectedValue,
         children: Map.fromIterables([
-          DashBoardContentType.MyPlants,
+          DashBoardContentType.Garden,
           DashBoardContentType.Following
         ], [
           Text(

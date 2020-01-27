@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/qr_translator.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
@@ -14,8 +13,6 @@ import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:instagrow/widgets/search_bar.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:tuple/tuple.dart';
-
-
 
 class DashBoardScreen extends StatefulWidget {
   final DashBoardContentType _contentType;
@@ -41,7 +38,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   @override
   initState() {
     super.initState();
-    _isMyPlant = widget._contentType == DashBoardContentType.MyPlants;
+    _isMyPlant = widget._contentType == DashBoardContentType.Garden;
     _title = _isMyPlant ? "My Garden" : "Following";
     _querySource = _isMyPlant
         ? DatabaseService.getMyPlants
@@ -134,10 +131,12 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Future<void> _onRefresh() async {
     DateTime refreshedTime = DateTime.now().toUtc();
     List<Plant> queriedPlants = await _querySource(refreshedTime);
-    setState(() {
-      _plants = queriedPlants;
-    });
-    _updateFilteredPlants();
+    if (queriedPlants != null) {
+      setState(() {
+        _plants = queriedPlants;
+      });
+      _updateFilteredPlants();
+    }
   }
 
   void _onItemPressed(int index) async {
@@ -214,7 +213,8 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         middle: _navigationBarMiddleWidget(),
         trailing: _navigationBarTrailingWidget(),
       ),
-      child: DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed, []),
+      child:
+          DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed, []),
     );
   }
 }

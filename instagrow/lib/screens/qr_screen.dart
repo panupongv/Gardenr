@@ -1,11 +1,9 @@
-import 'dart:collection';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/qr_translator.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/utils/style.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRScreen extends StatefulWidget {
@@ -41,7 +39,6 @@ class _QRScreenState extends State<QRScreen> {
       return Container(
         width: size,
         height: size,
-        color: Colors.amberAccent,
       );
     } else {
       return Padding(
@@ -94,6 +91,10 @@ class _QRScreenState extends State<QRScreen> {
                                   setState(() {
                                     _displayedCode = newCode;
                                   });
+                                } else {
+                                  setState(() {
+                                    _displayedCode = "";
+                                  });
                                 }
                                 Navigator.of(context).pop();
                               });
@@ -111,14 +112,4 @@ class _QRScreenState extends State<QRScreen> {
       ),
     );
   }
-
-  // @override
-  // void dispose() {
-  //   // setState(() {
-  //   //   _displayedCode = "";
-  //   // });
-  //   _displayedCode = "";
-  //   print("code: " + _displayedCode);
-  //   super.dispose();
-  // }
 }

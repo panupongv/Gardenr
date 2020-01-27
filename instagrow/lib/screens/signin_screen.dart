@@ -111,13 +111,13 @@ class _SignInScreenState extends State<SignInScreen> {
             _appLogo(),
             fieldNameText(context, "Email"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _emailController,
             ),
             _space(),
             fieldNameText(context, "Password"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _passwordController,
               obscureText: true,
             ),

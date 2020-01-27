@@ -1,5 +1,5 @@
 enum DashBoardContentType {
-  MyPlants,
+  Garden,
   Following,
 }
 

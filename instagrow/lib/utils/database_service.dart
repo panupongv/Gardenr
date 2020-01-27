@@ -19,10 +19,24 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 
 class DatabaseService {
+  //
+  //
+  // Setup
+  //
+  //
+
   static final DatabaseReference _database =
       FirebaseDatabase.instance.reference();
 
   static final StorageReference _storage = FirebaseStorage.instance.ref();
+
+  //
+  //
+  //
+  // User Profile Management----------------------------------------------
+  //
+  //
+  //
 
   static Future<void> createUserInstance(FirebaseUser newUser) async {
     String userId = newUser.uid;
@@ -41,154 +55,6 @@ class DatabaseService {
     return _database.child('users').child(user.uid).onValue;
   }
 
-  static Stream<Event> plantProfileStream(String plantId) {
-    return _database.child('plants').child(plantId).onValue;
-  }
-
-  static Future<Plant> getPlantById(String plantId, DateTime refreshedTime) async {
-    DataSnapshot snapshot =
-        await _database.child('plants').child(plantId).once();
-    if (snapshot != null && snapshot.value != null) {
-      return Plant.fromQueryData(
-          plantId, snapshot.value, refreshedTime);
-    }
-    return null;
-  }
-
-  static Future<Plant> getPublicPlantById(String plantId, DateTime refreshedTime) async {
-    DataSnapshot privacySnapshot =
-        await _database.child('plants').child(plantId).child('isPublic').once();
-    if (privacySnapshot != null && privacySnapshot.value == true) {
-      DataSnapshot plantSnapshot =
-          await _database.child('plants').child(plantId).once();
-      if (plantSnapshot != null && plantSnapshot.value != null) {
-        return Plant.fromQueryData(
-            plantId, plantSnapshot.value, refreshedTime);
-      }
-    }
-    return null;
-  }
-
-  static Future<List<String>> getMyPlantIds() async {
-    FirebaseUser user = await AuthService.getUser();
-    return _getPlantIds('ownedPlants', user.uid);
-  }
-
-  static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
-    int waitDurationInSeconds = 8;
-    // DataSnapshot dataSnapshot = await _database
-    //     .child('plants')
-    //     .orderByChild('ownerId')
-    //     .equalTo(userId)
-    //     .once()
-    //     .timeout(Duration(seconds: waitDurationInSeconds),
-    //         onTimeout: () => null);
-
-    // if (dataSnapshot == null) {
-    //   return await LocalStorageService.loadMyPlants();
-    // } else if (dataSnapshot.value == null) {
-    //   return [];
-    // }
-    List<Plant> plants = await _getPlantsHelper('ownedPlants', refreshedTime)
-        .timeout(Duration(seconds: waitDurationInSeconds),
-            onTimeout: () => null);
-
-    if (plants == null) {
-      return LocalStorageService.loadMyPlants();
-    }
-
-    LocalStorageService.saveMyPlants(plants);
-    return plants;
-
-    // List<Plant> plants = Plant.fromMap(dataSnapshot.value, refreshedTime);
-    // LocalStorageService.saveMyPlants(plants);
-    // return plants;
-  }
-
-  static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
-    final int waitDurationInSec = 8;
-    List<Plant> plants = await _getPlantsHelper(
-            'followingPlants', refreshedTime)
-        .timeout(Duration(seconds: waitDurationInSec), onTimeout: () => null);
-
-    if (plants == null) {
-      return LocalStorageService.loadFollowingPlants();
-    }
-
-    LocalStorageService.saveFollowingPlants(plants);
-    return plants;
-  }
-
-  static Future<List<Plant>> _getPlantsHelper(
-      String path, DateTime refreshedTime) async {
-    FirebaseUser user = await AuthService.getUser();
-    String userId = user.uid;
-    DataSnapshot plantIdsSnapshot =
-        await _database.child(path).child(userId).once();
-    if (plantIdsSnapshot == null || plantIdsSnapshot.value == null) return [];
-
-    LinkedHashMap<dynamic, dynamic> plantIds = plantIdsSnapshot.value;
-
-    List<Plant> plants = List();
-    List<Future> futures = List();
-
-    plantIds.forEach((_, plantId) {
-      futures.add(_addQueriedPlantToList(plantId, plants, refreshedTime));
-    });
-    await Future.wait(futures);
-    return plants;
-  }
-
-  static Future<void> _addQueriedPlantToList(
-      String plantId, List<Plant> plants, DateTime refreshedTime) async {
-    // DataSnapshot isPublicResult =
-    //     await _database.child('plants').child(plantId).child('isPublic').once();
-    // if (isPublicResult == null ||
-    //     isPublicResult.value == null ||
-    //     isPublicResult.value == false) {
-    //   return;
-    // }
-
-    DataSnapshot queryResult =
-        await _database.child('plants').child(plantId).once();
-    if (queryResult == null || queryResult.value == null) {
-      return;
-    }
-    plants.add(Plant.fromQueryData(plantId, queryResult.value, refreshedTime));
-  }
-
-  static Future<List<Plant>> getOtherUserPlants(
-      String otherUserId, DateTime refreshedTime) async {
-    int waitDurationInSeconds = 8;
-    String queryKey = "${otherUserId}_true";
-    DataSnapshot publicPlantsResult = await _database
-        .child('plants')
-        .orderByChild('ownerId_isPublic')
-        .equalTo(queryKey)
-        .once()
-        .timeout(Duration(seconds: waitDurationInSeconds),
-            onTimeout: () => null);
-
-    if (publicPlantsResult != null && publicPlantsResult.value != null) {
-      return Plant.fromMap(publicPlantsResult.value, refreshedTime);
-    }
-    return null;
-  }
-
-  static Future<List<String>> getOtherUserFollowingPlantIds(
-      String userId) async {
-    return _getPlantIds('followingPlants', userId);
-  }
-
-  static Future<List<String>> _getPlantIds(String path, String userId) async {
-    DataSnapshot snapshot = await _database.child(path).child(userId).once();
-    if (snapshot != null && snapshot.value != null) {
-      LinkedHashMap<dynamic, dynamic> hashMap = snapshot.value;
-      return hashMap.values.map((x) => x.toString()).toList();
-    }
-    return [];
-  }
-
   static Future<void> updateProfileImage(File selectedImage) async {
     FirebaseUser user = await AuthService.getUser();
     String storagePath = "profileImages/${user.uid}.png";
@@ -205,27 +71,6 @@ class DatabaseService {
       await _database
           .child('users')
           .child(user.uid)
-          .child('imageUrl')
-          .set(imageUrl);
-    });
-  }
-
-  static Future<void> updatePlantProfileImage(
-      Plant plant, File selectedImage) async {
-    String storagePath = "plantProfileImages/${plant.id}.png";
-
-    File resizedImageFile =
-        await _resizedImage(selectedImage, PROFILE_IMAGE_SIZE.round());
-
-    _storage
-        .child(storagePath)
-        .putFile(resizedImageFile)
-        .onComplete
-        .then((StorageTaskSnapshot snapshot) async {
-      String imageUrl = await _storage.child(storagePath).getDownloadURL();
-      await _database
-          .child('plants')
-          .child(plant.id)
           .child('imageUrl')
           .set(imageUrl);
     });
@@ -259,6 +104,49 @@ class DatabaseService {
         .child(user.uid)
         .child('description')
         .set(description);
+  }
+
+  static Future<UserProfile> getOtherUserProfile(String userId) async {
+    DataSnapshot dataSnapshot =
+        await _database.child('users').child(userId).once();
+    if (dataSnapshot != null && dataSnapshot.value != null) {
+      return UserProfile.fromQueryData(userId, dataSnapshot.value);
+    }
+    return null;
+  }
+
+  //
+  //
+  //
+  //
+  // Plant Profile Management----------------------------------------------
+  //
+  //
+  //
+
+  static Stream<Event> plantProfileStream(String plantId) {
+    return _database.child('plants').child(plantId).onValue;
+  }
+
+  static Future<void> updatePlantProfileImage(
+      Plant plant, File selectedImage) async {
+    String storagePath = "plantProfileImages/${plant.id}.png";
+
+    File resizedImageFile =
+        await _resizedImage(selectedImage, PROFILE_IMAGE_SIZE.round());
+
+    _storage
+        .child(storagePath)
+        .putFile(resizedImageFile)
+        .onComplete
+        .then((StorageTaskSnapshot snapshot) async {
+      String imageUrl = await _storage.child(storagePath).getDownloadURL();
+      await _database
+          .child('plants')
+          .child(plant.id)
+          .child('imageUrl')
+          .set(imageUrl);
+    });
   }
 
   static Future<void> updateOwnerId(Plant plant) async {
@@ -299,6 +187,126 @@ class DatabaseService {
         .set("${user.uid}_$isPublic");
   }
 
+  //
+  //
+  //
+  // Plant and id queries------------------------------------------------
+  //
+  //
+  //
+
+  static Future<Plant> getPlantById(
+      String plantId, DateTime refreshedTime) async {
+    DataSnapshot snapshot =
+        await _database.child('plants').child(plantId).once();
+    if (snapshot != null && snapshot.value != null) {
+      return Plant.fromQueryData(plantId, snapshot.value, refreshedTime);
+    }
+    return null;
+  }
+
+  static Future<Plant> getPublicPlantById(
+      String plantId, DateTime refreshedTime) async {
+    DataSnapshot privacySnapshot =
+        await _database.child('plants').child(plantId).child('isPublic').once();
+    if (privacySnapshot != null && privacySnapshot.value == true) {
+      DataSnapshot plantSnapshot =
+          await _database.child('plants').child(plantId).once();
+      if (plantSnapshot != null && plantSnapshot.value != null) {
+        return Plant.fromQueryData(plantId, plantSnapshot.value, refreshedTime);
+      }
+    }
+    return null;
+  }
+
+  static Future<List<String>> getMyPlantIds() async {
+    FirebaseUser user = await AuthService.getUser();
+    return _getPlantIds('ownedPlants', user.uid);
+  }
+
+  static Future<List<String>> getMyFollowingIds() async {
+    FirebaseUser user = await AuthService.getUser();
+    return _getPlantIds('followingPlants', user.uid);
+  }
+
+  static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
+    FirebaseUser user = await AuthService.getUser();
+    int waitDurationInSeconds = 8;
+
+    List<Plant> plants =
+        await _getPlantsHelper('ownedPlants', user.uid, refreshedTime).timeout(
+            Duration(seconds: waitDurationInSeconds),
+            onTimeout: () => null);
+
+    if (plants == null) {
+      return LocalStorageService.loadMyPlants();
+    }
+
+    LocalStorageService.saveMyPlants(plants);
+    return plants;
+  }
+
+  static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
+    FirebaseUser user = await AuthService.getUser();
+    final int waitDurationInSec = 8;
+    List<Plant> plants = await _getPlantsHelper(
+            'followingPlants', user.uid, refreshedTime)
+        .timeout(Duration(seconds: waitDurationInSec), onTimeout: () => null);
+
+    if (plants == null) {
+      return LocalStorageService.loadFollowingPlants();
+    }
+
+    LocalStorageService.saveFollowingPlants(plants);
+    return plants;
+  }
+
+  static Future<List<Plant>> _getPlantsHelper(
+      String path, String userId, DateTime refreshedTime) async {
+    DataSnapshot plantIdsSnapshot =
+        await _database.child(path).child(userId).once();
+    if (plantIdsSnapshot == null || plantIdsSnapshot.value == null) return [];
+
+    LinkedHashMap<dynamic, dynamic> plantIds = plantIdsSnapshot.value;
+
+    List<Plant> plants = List();
+    List<Future> futures = List();
+
+    plantIds.forEach((_, plantId) {
+      futures.add(_addQueriedPlantToList(plantId, plants, refreshedTime));
+    });
+    await Future.wait(futures);
+    return plants;
+  }
+
+  static Future<void> _addQueriedPlantToList(
+      String plantId, List<Plant> plants, DateTime refreshedTime) async {
+    DataSnapshot queryResult =
+        await _database.child('plants').child(plantId).once();
+    if (queryResult == null || queryResult.value == null) {
+      return;
+    }
+    plants.add(Plant.fromQueryData(plantId, queryResult.value, refreshedTime));
+  }
+
+  static Future<List<String>> getOtherUserPlantIds(String userId) async {
+    return _getPlantIds('ownedPlants', userId);
+  }
+
+  static Future<List<String>> getOtherUserFollowingPlantIds(
+      String userId) async {
+    return _getPlantIds('followingPlants', userId);
+  }
+
+  static Future<List<String>> _getPlantIds(String path, String userId) async {
+    DataSnapshot snapshot = await _database.child(path).child(userId).once();
+    if (snapshot != null && snapshot.value != null) {
+      LinkedHashMap<dynamic, dynamic> hashMap = snapshot.value;
+      return hashMap.values.map((x) => x.toString()).toList();
+    }
+    return [];
+  }
+
   static Future<SensorData> getSensorData(String plantId, DateTime date) async {
     String dateString = Jiffy(date).format("yyyyMMdd");
     DataSnapshot dataSnapshot = await _database
@@ -312,29 +320,41 @@ class DatabaseService {
     return null;
   }
 
-  static Future<UserProfile> getOtherUserProfile(String userId) async {
-    DataSnapshot dataSnapshot =
-        await _database.child('users').child(userId).once();
-    if (dataSnapshot != null && dataSnapshot.value != null) {
-      return UserProfile.fromQueryData(userId, dataSnapshot.value);
-    }
-    return null;
+  //
+  //
+  //
+  // Following Utilities
+  //
+  //
+  //
+
+  static Future<Tuple2<bool, String>> _checkPlantExistsInGarden(
+      String plantId) async {
+    return _checkExistHelper(plantId, 'ownedPlants');
   }
 
   static Future<Tuple2<bool, String>> _checkPlantExistsInCollection(
       String plantId) async {
+    return _checkExistHelper(plantId, 'followingPlants');
+  }
+
+  static Future<Tuple2<bool, String>> _checkExistHelper(
+      String plantId, String collectionPath) async {
     FirebaseUser user = await AuthService.getUser();
 
     DataSnapshot dataSnapshot = await _database
-        .child('followingPlants')
+        .child(collectionPath)
         .child(user.uid)
         .orderByValue()
         .equalTo(plantId)
         .once();
     if (dataSnapshot == null || dataSnapshot.value == null) {
-      return Tuple2<bool, String>(false, null);
+      return Tuple2(false, null);
     }
     LinkedHashMap<dynamic, dynamic> pair = dataSnapshot.value;
+    if (pair.isEmpty) {
+      return Tuple2(false, null);
+    }
     String reference = pair.keys.first;
     return Tuple2(true, reference);
   }
@@ -366,6 +386,14 @@ class DatabaseService {
       return true;
     }
   }
+
+  //
+  //
+  //
+  // QR Utilities
+  //
+  //
+  //
 
   static Future<Tuple2<QrScanResult, String>> claimWithQr(
       String scanned) async {
@@ -420,29 +448,31 @@ class DatabaseService {
     if (decoded != null && decoded.length == 3) {
       String plantId = decoded[0], key = decoded[1], hashValue = decoded[2];
 
-      print(plantId);
-      print(key);
-      print(hashValue);
-
       DataSnapshot qrSearchResult =
           await _database.child('qrInstances').child(plantId).child(key).once();
 
       if (qrSearchResult != null && qrSearchResult.value == hashValue) {
-        Tuple2<bool, String> alreadyFollowing =
-            await _checkPlantExistsInCollection(plantId);
+        Tuple2 alreadyFollowing = await _checkPlantExistsInCollection(plantId);
         if (alreadyFollowing.item1) {
           return Tuple2(QrScanResult.IsYourPlant,
               "The plant is already in your collection.");
-        } else {
-          FirebaseUser user = await AuthService.getUser();
-          await _database
-              .child('followingPlants')
-              .child(user.uid)
-              .push()
-              .set(plantId);
-          return Tuple2(
-              QrScanResult.Success, "The plant is added to your collection.");
         }
+
+        Tuple2 isMyPlant = await _checkPlantExistsInGarden(plantId);
+
+        if (isMyPlant.item1) {
+          return Tuple2(QrScanResult.IsYourPlant,
+              "The plant is yours.");
+        }
+        
+        FirebaseUser user = await AuthService.getUser();
+        await _database
+            .child('followingPlants')
+            .child(user.uid)
+            .push()
+            .set(plantId);
+        return Tuple2(
+            QrScanResult.Success, "The plant is added to your collection.");
       }
     }
     return Tuple2(QrScanResult.InvalidQr,

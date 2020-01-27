@@ -9,11 +9,12 @@ Text navigationBarTitle(String title) {
   );
 }
 
-GestureDetector navigationBarTextButton(BuildContext context, String text, Function onTapCallback) {
+GestureDetector navigationBarTextButton(
+    BuildContext context, String text, Function onTapCallback) {
   return GestureDetector(
     child: Text(
       text,
-      style: TextStyle(color: Styles.dynamicBlue(context)),
+      style: Styles.navigationBarTextActive(context),
     ),
     onTap: onTapCallback,
   );

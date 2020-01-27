@@ -116,6 +116,14 @@ abstract class Styles {
     );
   }
 
+  static TextStyle navigationBarTextActive(context) {
+    return TextStyle(color: dynamicBlue(context));
+  }
+
+  static TextStyle navigationBarTextInActive(context) {
+    return TextStyle(color: dynamicGray(context));
+  }
+
   static TextStyle toggleVisible(context) {
     return TextStyle(
       color: _defaultText(context),
@@ -165,7 +173,7 @@ abstract class Styles {
     return _dynamicColor(context, Color(0xffe0e0e0), Color(0xff121212));
   }
 
-  static BoxDecoration testFieldDecoratino(context) {
+  static BoxDecoration testFieldDecoration(context) {
     return BoxDecoration(color: textFieldBackground(context));
   }
 

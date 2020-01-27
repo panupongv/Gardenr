@@ -13,8 +13,6 @@ import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
-
-
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
   final String currentDisplayName, currentDescription;
@@ -181,7 +179,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           await DatabaseService.updateProfileImage(_selectedImage);
         } else if (previousScreen == PreviousScreen.EditMyPlant ||
             previousScreen == PreviousScreen.AddMyPlant) {
-          await DatabaseService.updatePlantProfileImage(widget.plant, _selectedImage);
+          await DatabaseService.updatePlantProfileImage(
+              widget.plant, _selectedImage);
         }
       }
       if (_displayNameChanged) {
@@ -199,10 +198,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           await DatabaseService.updateDescription(newDescription);
         } else if (previousScreen == PreviousScreen.EditMyPlant ||
             previousScreen == PreviousScreen.AddMyPlant) {
-          await DatabaseService.updatePlantDescription(widget.plant, newDescription);
+          await DatabaseService.updatePlantDescription(
+              widget.plant, newDescription);
         }
       }
-      
+
       if (_privacyChanged || previousScreen == PreviousScreen.AddMyPlant) {
         await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
       }
@@ -289,11 +289,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         trailing: GestureDetector(
           child: Text(
             "Save",
-            style: TextStyle(
-              color: _allowSave()
-                  ? Styles.dynamicBlue(context)
-                  : Styles.dynamicGray(context),
-            ),
+            style: _allowSave()
+                ? Styles.navigationBarTextActive(context)
+                : Styles.navigationBarTextInActive(context),
           ),
           onTap: _applyChanges,
         ),
@@ -316,7 +314,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             ),
             fieldNameText(context, "Display Name"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               controller: _displayNameController,
               onChanged: (String displayNameText) {
                 setState(() {
@@ -330,7 +328,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             ),
             fieldNameText(context, "Description"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoratino(context),
+              decoration: Styles.testFieldDecoration(context),
               keyboardType: TextInputType.multiline,
               maxLines: 5,
               maxLengthEnforced: true,
@@ -351,7 +349,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 style: Styles.editFieldText(context),
               ),
             ),
-            Container(height: 32,),
+            Container(
+              height: 32,
+            ),
             _togglePublicSwitch(),
           ],
         ),

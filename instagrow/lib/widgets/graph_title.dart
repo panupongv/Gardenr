@@ -8,17 +8,18 @@ class GraphTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    EdgeInsets insets = EdgeInsets.symmetric(horizontal: 8, vertical: 4);
+    EdgeInsets textPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        iconPadding = EdgeInsets.only(right: 12);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Padding(
-          padding: insets,
+          padding: textPadding,
           child: Text(title),
         ),
         Padding(
-          padding: insets,
+          padding: iconPadding,
           child: GestureDetector(
             child: Icon(
               CupertinoIcons.fullscreen,
