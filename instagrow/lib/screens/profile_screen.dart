@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -31,6 +32,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   CircularCachedImage _imageDisplay;
 
+  StreamSubscription _streamSubscription;
+
   Future<void> _openEditScreen() async {
     Navigator.of(context).push(PageTransition(
         type: PageTransitionType.fade,
@@ -42,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     _userId = widget.user.uid;
     _myProfile = UserProfile(widget.user.uid, "", "", "");
-    DatabaseService.userProfileStream(widget.user).listen((Event event) {
+    _streamSubscription = DatabaseService.userProfileStream(widget.user).listen((Event event) {
       if (event != null &&
           event.snapshot != null &&
           event.snapshot.value != null) {
@@ -104,5 +107,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
   }
 }
