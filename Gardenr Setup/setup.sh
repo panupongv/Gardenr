@@ -1,9 +1,8 @@
 # Python dependencies
 
-#pip install pyrebase
-#pip install pyqrcode
-#pip install pytz
-
+pip install pyrebase
+pip install pyqrcode
+pip install pytz
 
 
 # Overwrite validation (for repeated execution)
@@ -44,7 +43,6 @@ touch temppathfile
 currentPath="$(pwd)"
 echo $currentPath > temppathfile
 escapedPath="$(sed 's/ /\\ /g' temppathfile)"
-echo $escapedPath
 rm temppathfile
 
 touch tempfile
