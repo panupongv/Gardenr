@@ -3,7 +3,7 @@
 # Edit at https://www.gitignore.io/?templates=python
 
 private.py
-Gardenr Setup/plant_id.txt
+Gardenr Setup/python scripts/plant_id.txt
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

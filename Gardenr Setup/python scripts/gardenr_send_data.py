@@ -1,13 +1,15 @@
+from private import api_keys
+
 import pyrebase
 import os
 
-from read_sensors import SensorReader
+from gardenr_read_sensors import SensorReader
 
+from time import sleep
 from datetime import datetime
 from random import randint
-from private import api_keys
 
-def main():
+def main(delayed=True):
     firebase = pyrebase.initialize_app(api_keys)
     print(os.path.dirname(os.path.realpath(__file__)))
     plant_id = None
@@ -24,7 +26,8 @@ def main():
 
         date, time = timestamp.split()
 
-        #delay(randint(0, 90) * 1000)
+        if delayed:
+            sleep(randint(0, 30))
 
         db.child('plants').child(plant_id).child('moisture').set(moisture)
         db.child('plants').child(plant_id).child('temperature').set(temperature)
