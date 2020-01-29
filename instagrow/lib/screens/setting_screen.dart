@@ -45,6 +45,7 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         middle: Text("Setting"),
       ),
       child: SafeArea(

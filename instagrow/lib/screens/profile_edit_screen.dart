@@ -12,6 +12,7 @@ import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
+import 'package:instagrow/widgets/text_field_separator.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final ImageProvider profileImage;
@@ -254,20 +255,37 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         : Container();
   }
 
-  Widget _imageButton() {
-    return UnconstrainedBox(
-      child: Padding(
-        padding: EdgeInsets.only(top: 30),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(PROFILE_IMAGE_SIZE / 2),
-          child: Container(
-            child: Image(
-              image: _profileImage,
-              width: PROFILE_IMAGE_SIZE,
-              height: PROFILE_IMAGE_SIZE,
-              fit: BoxFit.cover,
+  Widget _changeImageButton() {
+    return Container(
+      color: Styles.textFieldBackground(context),
+      child: CupertinoButton(
+        child: Text(
+          "Change Image",
+          textAlign: TextAlign.center,
+          style: Styles.changeImage(context),
+        ),
+        onPressed: _getImage,
+      ),
+    );
+  }
+
+  Widget _imageDisplay() {
+    return Container(
+      color: Styles.textFieldBackground(context),
+      child: UnconstrainedBox(
+        child: Padding(
+          padding: EdgeInsets.only(top: 30),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(PROFILE_TAB_IMAGE_SIZE / 2),
+            child: Container(
+              child: Image(
+                image: _profileImage,
+                width: PROFILE_TAB_IMAGE_SIZE,
+                height: PROFILE_TAB_IMAGE_SIZE,
+                fit: BoxFit.cover,
+              ),
+              color: Styles.dynamicGray(context),
             ),
-            color: Styles.dynamicGray(context),
           ),
         ),
       ),
@@ -279,6 +297,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false,
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         leading: Align(
           widthFactor: 1.0,
           alignment: Alignment.center,
@@ -298,62 +317,62 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       ),
       child: SafeArea(
         top: true,
-        child: ListView(
-          children: <Widget>[
-            _imageButton(),
-            CupertinoButton(
-              child: Text(
-                "Change Image",
-                textAlign: TextAlign.center,
-                style: Styles.changeImage(context),
+        child: Container(
+          color: Styles.profileEditBackground(context),
+          child: ListView(
+            children: <Widget>[
+              _imageDisplay(),
+              _changeImageButton(),
+              Container(
+                height: 24,
               ),
-              onPressed: _getImage,
-            ),
-            Container(
-              height: 24,
-            ),
-            fieldNameText(context, "Display Name"),
-            CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
-              controller: _displayNameController,
-              onChanged: (String displayNameText) {
-                setState(() {
-                  _displayNameChanged =
-                      widget.currentDisplayName != displayNameText;
-                });
-              },
-            ),
-            Container(
-              height: 16,
-            ),
-            fieldNameText(context, "Description"),
-            CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
-              keyboardType: TextInputType.multiline,
-              maxLines: 5,
-              maxLengthEnforced: true,
-              maxLength: MAX_DESCRIPTION_LENGTH,
-              controller: _descriptionController,
-              onChanged: (String descriptionText) {
-                setState(() {
-                  _descriptionChanged =
-                      widget.currentDescription != descriptionText;
-                });
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 8),
-              child: Text(
-                "${_descriptionController.text.length} out of $MAX_DESCRIPTION_LENGTH characters",
-                textAlign: TextAlign.right,
-                style: Styles.editFieldText(context),
+              // fieldNameText(context, "Display Name"),
+              CupertinoTextField(
+                placeholder: "Display name",
+                keyboardType: TextInputType.text,
+                decoration: Styles.textFieldDecoration(context),
+                controller: _displayNameController,
+                onChanged: (String displayNameText) {
+                  setState(() {
+                    _displayNameChanged =
+                        widget.currentDisplayName != displayNameText;
+                  });
+                },
               ),
-            ),
-            Container(
-              height: 32,
-            ),
-            _togglePublicSwitch(),
-          ],
+              TextFieldSeparator(
+                0.95,
+                Styles.textFieldBackground(context),
+                Styles.profileEditBackground(context),
+              ),
+              CupertinoTextField(
+                placeholder: "Description",
+                decoration: Styles.textFieldDecoration(context),
+                keyboardType: TextInputType.multiline,
+                maxLines: 5,
+                maxLengthEnforced: true,
+                maxLength: MAX_DESCRIPTION_LENGTH,
+                controller: _descriptionController,
+                onChanged: (String descriptionText) {
+                  setState(() {
+                    _descriptionChanged =
+                        widget.currentDescription != descriptionText;
+                  });
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 8, top: 2),
+                child: Text(
+                  "${_descriptionController.text.length} out of $MAX_DESCRIPTION_LENGTH characters",
+                  textAlign: TextAlign.right,
+                  style: Styles.editFieldText(context),
+                ),
+              ),
+              Container(
+                height: 32,
+              ),
+              _togglePublicSwitch(),
+            ],
+          ),
         ),
       ),
     );

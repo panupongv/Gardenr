@@ -174,6 +174,7 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         middle: Text("Profile", style: Styles.navigationBarTitle(context)),
       ),
       child: SafeArea(

@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
@@ -55,7 +54,9 @@ class _QRScreenState extends State<QRScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(),
+      navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
+      ),
       child: SafeArea(
         child: Center(
           child: ListView(
@@ -66,7 +67,7 @@ class _QRScreenState extends State<QRScreen> {
                 height: 32,
               ),
               CupertinoButton(
-                child: Text("Generate QRCode"),
+                child: Text("Generate new QRCode"),
                 onPressed: () async {
                   showCupertinoDialog(
                     context: context,

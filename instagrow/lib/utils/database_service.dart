@@ -60,7 +60,7 @@ class DatabaseService {
     String storagePath = "profileImages/${user.uid}.png";
 
     File resizedImageFile =
-        await _resizedImage(selectedImage, PROFILE_IMAGE_SIZE.round());
+        await _resizedImage(selectedImage, PROFILE_TAB_IMAGE_SIZE.round());
 
     _storage
         .child(storagePath)
@@ -133,7 +133,7 @@ class DatabaseService {
     String storagePath = "plantProfileImages/${plant.id}.png";
 
     File resizedImageFile =
-        await _resizedImage(selectedImage, PROFILE_IMAGE_SIZE.round());
+        await _resizedImage(selectedImage, PROFILE_TAB_IMAGE_SIZE.round());
 
     _storage
         .child(storagePath)

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagrow/utils/style.dart';
 
 class GraphFocusScreen extends StatelessWidget {
   final Widget graph;
@@ -12,7 +13,9 @@ class GraphFocusScreen extends StatelessWidget {
       child: RotatedBox(
         quarterTurns: 1,
         child: CupertinoPageScaffold(
-          navigationBar: CupertinoNavigationBar(),
+          navigationBar: CupertinoNavigationBar(
+            actionsForegroundColor: Styles.activeColor(context),
+          ),
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

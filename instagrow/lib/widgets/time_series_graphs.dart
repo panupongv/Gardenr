@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/sensor_data.dart';
+import 'package:instagrow/utils/style.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class TimeSeriesGraphs {
@@ -9,15 +10,15 @@ class TimeSeriesGraphs {
 
   TimeSeriesGraphs(this._sensorData);
 
-  Widget moistureGraph() {
+  Widget moistureGraph(BuildContext context) {
     return _defaultGraphLayout(
-      splineGraph("Moisture", _sensorData.moistures, 0, 100, 20, "{value}%"),
+      splineGraph(context, "Moisture", _sensorData.moistures, 0, 100, 20, "{value}%"),
     );
   }
 
-  Widget temperatureGraph() {
+  Widget temperatureGraph(BuildContext context) {
     return _defaultGraphLayout(
-      splineGraph("Temperature", _sensorData.temperatures, 0, 40, 5, "{value}°C"),
+      splineGraph(context, "Temperature", _sensorData.temperatures, 0, 40, 5, "{value}°C"),
     );
   }
 
@@ -28,25 +29,7 @@ class TimeSeriesGraphs {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: insets,
-          child: splineGraph(
-              "Moisture", _sensorData.moistures, 0, 100, 20, "{value}%"),
-        ),
-        Padding(
-          padding: insets,
-          child: splineGraph(
-              "Temperature", _sensorData.temperatures, 0, 40, 5, "{value}°C"),
-        ),
-      ],
-    );
-  }
-
-  SfCartesianChart splineGraph(String title, List<double> data, double yMinimum,
+  SfCartesianChart splineGraph(BuildContext context, String title, List<double> data, double yMinimum,
       double yMaximum, double yInterval, String yFormat) {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
@@ -64,7 +47,7 @@ class TimeSeriesGraphs {
           edgeLabelPlacement: EdgeLabelPlacement.none,
           labelFormat: yFormat,
           majorTickLines: MajorTickLines(size: 0)),
-      series: getDefaultSplineSeries(data),
+      series: getDefaultSplineSeries(context, data),
       tooltipBehavior: TooltipBehavior(
         enable: true,
         header: '',
@@ -74,6 +57,7 @@ class TimeSeriesGraphs {
   }
 
   List<SplineSeries<_ChartDataPoint, String>> getDefaultSplineSeries(
+    BuildContext context,
       List<double> data) {
     final List<_ChartDataPoint> chartData =
         List.generate(SensorData.MAX_LENGTH, (int index) {
@@ -81,7 +65,7 @@ class TimeSeriesGraphs {
     });
     return <SplineSeries<_ChartDataPoint, String>>[
       SplineSeries<_ChartDataPoint, String>(
-        color: CupertinoColors.activeBlue,
+        color: Styles.activeColor(context),
         enableTooltip: true,
         dataSource: chartData,
         xValueMapper: (_ChartDataPoint point, _) => point.x,

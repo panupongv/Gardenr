@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:instagrow/utils/style.dart';
 
 class GraphTitle extends StatelessWidget {
-  final String title;
-  final Function iconTapCallBack;
+  final String _title;
+  final Function _iconTapCallBack;
 
-  GraphTitle(this.title, this.iconTapCallBack);
+  GraphTitle(this._title, this._iconTapCallBack);
 
   @override
   Widget build(BuildContext context) {
-    EdgeInsets textPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    EdgeInsets textPadding = EdgeInsets.only(left: 12, top: 8),
         iconPadding = EdgeInsets.only(right: 12);
 
     return Row(
@@ -16,15 +17,19 @@ class GraphTitle extends StatelessWidget {
       children: <Widget>[
         Padding(
           padding: textPadding,
-          child: Text(title),
+          child: Text(
+            _title,
+            style: Styles.graphTitle(context),
+          ),
         ),
         Padding(
           padding: iconPadding,
           child: GestureDetector(
             child: Icon(
               CupertinoIcons.fullscreen,
+              color: Styles.activeColor(context),
             ),
-            onTap: iconTapCallBack,
+            onTap: _iconTapCallBack,
           ),
         ),
       ],

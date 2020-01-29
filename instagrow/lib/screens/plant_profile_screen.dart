@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/enums.dart';
@@ -336,14 +335,14 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
       );
     }
     TimeSeriesGraphs graphs = TimeSeriesGraphs(_sensorData);
-    Widget moistureGraph = graphs.moistureGraph(),
-        temperatureGraph = graphs.temperatureGraph();
+    Widget moistureGraph = graphs.moistureGraph(context),
+        temperatureGraph = graphs.temperatureGraph(context);
     return Column(
       children: <Widget>[
         GraphTitle(
           "Moisture",
-          () {
-            Navigator.of(context, rootNavigator: true).push(
+          () async {
+            await Navigator.of(context).push(
               CupertinoPageRoute(
                 fullscreenDialog: true,
                 builder: (context) {
@@ -356,8 +355,8 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         moistureGraph,
         GraphTitle(
           "Temperature",
-          () {
-            Navigator.of(context, rootNavigator: true).push(
+          () async {
+            await Navigator.of(context, rootNavigator: true).push(
               CupertinoPageRoute(
                 fullscreenDialog: true,
                 builder: (context) {
@@ -372,10 +371,21 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     );
   }
 
+  Widget _imageWidget() {
+    _circularCachedImage = CircularCachedImage(
+      _plant.imageUrl,
+      PROFILE_SCREEN_IMAGE_SIZE,
+      progressIndicator(context),
+      defaultPlantImage(context),
+    );
+    return _circularCachedImage;
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         trailing: widget.isMyPlant
             ? GestureDetector(
                 child: Icon(CupertinoIcons.ellipsis),
@@ -395,12 +405,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.all(16),
-                      child: CircularCachedImage(
-                        _plant.imageUrl,
-                        PLANT_PROFILE_IMAGE_SIZE,
-                        progressIndicator(context),
-                        defaultPlantImage(context),
-                      ),
+                      child: _imageWidget(),
                     ),
                     Expanded(
                       child: Padding(
@@ -426,19 +431,34 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                   ],
                 ),
                 DescriptionExpandable(_plant.description),
-                CupertinoButton(
-                  child: Text(
-                      _displayDateFormat(_datesAvailable[_selectedDateIndex])),
-                  onPressed: () {
-                    showCupertinoModalPopup(
-                        context: context,
-                        useRootNavigator: false,
-                        builder: (_) => _buildOverlay());
-                  },
+                Container(
+                  height: 8,
                 ),
                 Container(
                   height: 1,
                   color: Styles.dynamicGray(context),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Data from: ",
+                      style: Styles.dataFromDate(context),
+                    ),
+                    CupertinoButton(
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                      child: Text(
+                        _displayDateFormat(_datesAvailable[_selectedDateIndex]),
+                        style: Styles.datePickerButton(context),
+                      ),
+                      onPressed: () {
+                        showCupertinoModalPopup(
+                            context: context,
+                            useRootNavigator: false,
+                            builder: (_) => _buildOverlay());
+                      },
+                    )
+                  ],
                 ),
                 _graphSection(),
               ],

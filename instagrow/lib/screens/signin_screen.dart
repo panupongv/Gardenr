@@ -10,6 +10,7 @@ import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
+import 'package:instagrow/widgets/text_field_separator.dart';
 import 'package:tuple/tuple.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -70,34 +71,17 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Widget _fieldNameText(String content) {
-    return Padding(
-      padding: EdgeInsets.only(left: 8),
-      child: Text(
-        content,
-        style: Styles.editFieldText(context),
-        textAlign: TextAlign.left,
-      ),
-    );
-  }
-
   Widget _appLogo() {
     bool darkThemed = CupertinoTheme.brightnessOf(context) == Brightness.dark;
     return Center(
       child: Container(
-        width: PROFILE_IMAGE_SIZE,
-        height: PROFILE_IMAGE_SIZE,
+        width: PROFILE_TAB_IMAGE_SIZE,
+        height: PROFILE_TAB_IMAGE_SIZE,
         child: Image(
           image: AssetImage(
               darkThemed ? 'assets/logo_dark.png' : 'assets/logo_light.png'),
         ),
       ),
-    );
-  }
-
-  Widget _space() {
-    return Container(
-      height: 16,
     );
   }
 
@@ -109,19 +93,37 @@ class _SignInScreenState extends State<SignInScreen> {
           shrinkWrap: true,
           children: <Widget>[
             _appLogo(),
-            fieldNameText(context, "Email"),
+            Container(
+              height: 16
+            ),
+            Container(
+              height: 1,
+              color: Styles.separatorLine(context),
+            ),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
+              placeholder: "Email",
+              keyboardType: TextInputType.emailAddress,
+              decoration: Styles.textFieldDecoration(context),
               controller: _emailController,
             ),
-            _space(),
-            fieldNameText(context, "Password"),
+            TextFieldSeparator(
+              0.95,
+              Colors.transparent,
+              Styles.separatorLine(context),
+            ),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
+              placeholder: "Password",
+              decoration: Styles.textFieldDecoration(context),
               controller: _passwordController,
               obscureText: true,
             ),
-            Container(height: 24,),
+            Container(
+              height: 1,
+              color: Styles.separatorLine(context),
+            ),
+            Container(
+              height: 24,
+            ),
             UnconstrainedBox(
               child: CupertinoButton.filled(
                 borderRadius: BorderRadius.all(Radius.circular(8)),

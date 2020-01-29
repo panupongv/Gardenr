@@ -6,6 +6,7 @@ import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:instagrow/screens/profile_screen.dart';
 import 'package:instagrow/screens/setting_screen.dart';
 import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/custom_icons.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -26,19 +27,23 @@ class HomeScreen extends StatelessWidget {
       tabBar: CupertinoTabBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.home),
+            icon: Icon(CupertinoIcons.home,),
+            activeIcon: Icon(CupertinoIcons.home, color: Styles.activeColor(context),),
             // title: Text("My Garden"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CustomIcons.star),
+            activeIcon: Icon(CustomIcons.star, color: Styles.activeColor(context),),
             // title: Text("Following"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.person),
+            activeIcon: Icon(CupertinoIcons.person, color: Styles.activeColor(context),),
             // title: Text("My Profile"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.gear),
+            activeIcon: Icon(CupertinoIcons.gear, color: Styles.activeColor(context),),
             // title: Text("Setting"),
           ),
         ],

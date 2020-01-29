@@ -24,7 +24,7 @@ class OtherUserProfileSection extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: CircularCachedImage(
                   _userProfile.imageUrl,
-                  PLANT_PROFILE_IMAGE_SIZE,
+                  PROFILE_SCREEN_IMAGE_SIZE,
                   progressIndicator(context),
                   defaultPlantImage(context)),
             ),

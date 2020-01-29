@@ -1,4 +1,4 @@
 const double DASHBOARD_IMAGE_SIZE = 72;
-const double PROFILE_IMAGE_SIZE = 160.0;
-const double PLANT_PROFILE_IMAGE_SIZE = 120.0;
+const double PROFILE_TAB_IMAGE_SIZE = 160.0;
+const double PROFILE_SCREEN_IMAGE_SIZE = 120.0;
 const double DASHBOARD_ICON_SIZE = 16;

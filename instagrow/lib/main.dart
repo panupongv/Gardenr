@@ -19,8 +19,6 @@ class MainApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.error == null && snapshot.hasData && snapshot.data != null) {
               FirebaseUser user = snapshot.data;
-              // if (user.displayName)
-              print("Continue as ${user.uid}");
               return HomeScreen(user);
             } else {
               return SignInScreen();

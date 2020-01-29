@@ -48,6 +48,7 @@ class _ContentSegmentControllerState extends State<ContentSegmentController> {
         },
         selectedColor: Styles.segmentControlSelected(context),
         pressedColor: Styles.segmentControlPressed(context),
+        borderColor: Styles.segmentControlSelected(context),
       ),
     );
   }

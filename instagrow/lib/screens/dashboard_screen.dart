@@ -165,7 +165,9 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     return _showSearch
         ? null
         : GestureDetector(
-            child: Icon(CupertinoIcons.search),
+            child: Icon(
+              CupertinoIcons.search,
+            ),
             onTap: () {
               setState(() {
                 _showSearch = true;
@@ -200,7 +202,9 @@ class _DashBoardScreenState extends State<DashBoardScreen>
             }),
           )
         : GestureDetector(
-            child: Icon(CupertinoIcons.add),
+            child: Icon(
+              CupertinoIcons.add,
+            ),
             onTap: _onAddPressed,
           );
   }
@@ -209,6 +213,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         leading: _navigationBarLeadingWidget(),
         middle: _navigationBarMiddleWidget(),
         trailing: _navigationBarTrailingWidget(),

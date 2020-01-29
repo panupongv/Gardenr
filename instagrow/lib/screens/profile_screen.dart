@@ -64,12 +64,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _imageDisplay = CircularCachedImage(_myProfile.imageUrl, PROFILE_IMAGE_SIZE,
+    _imageDisplay = CircularCachedImage(_myProfile.imageUrl, PROFILE_TAB_IMAGE_SIZE,
         progressIndicator(context), defaultUserImage(context));
 
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
       navigationBar: CupertinoNavigationBar(
+        actionsForegroundColor: Styles.activeColor(context),
         border: null,
         trailing: navigationBarTextButton(
           context, 

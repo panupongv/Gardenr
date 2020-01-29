@@ -7,6 +7,7 @@ import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
+import 'package:instagrow/widgets/text_field_separator.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:tuple/tuple.dart';
 
@@ -104,26 +105,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            fieldNameText(context, "Email"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
+              placeholder: "Email",
+              keyboardType: TextInputType.emailAddress,
+              decoration: Styles.textFieldDecoration(context),
               controller: _emailController,
             ),
-            Container(
-              height: 16,
+            TextFieldSeparator(
+              0.95,
+              Colors.transparent,
+              Styles.separatorLine(context),
             ),
-            fieldNameText(context, "Password"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
+              placeholder: "Password",
+              decoration: Styles.textFieldDecoration(context),
               controller: _passwordController,
               obscureText: true,
             ),
-            Container(
-              height: 16,
+            TextFieldSeparator(
+              0.95,
+              Colors.transparent,
+              Styles.separatorLine(context),
             ),
-            fieldNameText(context, "Confirm Password"),
             CupertinoTextField(
-              decoration: Styles.testFieldDecoration(context),
+              placeholder: "Confirm Password",
+              decoration: Styles.textFieldDecoration(context),
               controller: _confirmPasswordController,
               obscureText: true,
             ),
