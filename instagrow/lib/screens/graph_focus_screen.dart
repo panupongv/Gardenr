@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
-import 'package:zoom_widget/zoom_widget.dart';
 
 class GraphFocusScreen extends StatelessWidget {
+  final String _title;
   final Widget _focusedGraph;
 
-  GraphFocusScreen(this._focusedGraph);
+  GraphFocusScreen(this._title, this._focusedGraph);
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,15 @@ class GraphFocusScreen extends StatelessWidget {
                 Navigator.of(context).pop();
               },
             ),
+            middle: Text(
+              _title,
+              style: Styles.navigationBarTitle(context),
+            ),
             actionsForegroundColor: Styles.activeColor(context),
           ),
-          child: _focusedGraph,
+          child: SafeArea(
+            child: _focusedGraph,
+          ),
         ),
       ),
     );

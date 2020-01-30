@@ -16,7 +16,6 @@ import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/circular_cached_image.dart';
 import 'package:instagrow/widgets/default_images.dart';
 import 'package:instagrow/widgets/description_expandable.dart';
-import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -46,14 +45,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             event.snapshot != null &&
             event.snapshot.value != null) {
           LinkedHashMap userData = event.snapshot.value;
-          setState(
-            () {
-              if (userData != null) {
-                _myProfile =
-                    UserProfile.fromQueryData(_userId, event.snapshot.value);
-              }
-            },
-          );
+          setState(() {
+            if (userData != null) {
+              _myProfile =
+                  UserProfile.fromQueryData(_userId, event.snapshot.value);
+            }
+          });
         }
       },
     );
@@ -69,14 +66,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return CupertinoActionSheet(
           actions: <Widget>[
             CupertinoActionSheetAction(
-              child: Text("Edit Profile", style: Styles.actionSheetAction(context),),
+              child: Text(
+                "Edit Profile",
+                style: Styles.actionSheetAction(context),
+              ),
               onPressed: () {
                 selectedOption = 1;
                 Navigator.of(context).pop();
               },
             ),
             CupertinoActionSheetAction(
-              child: Text("Logout", style: Styles.logOutButton(context),),
+              child: Text(
+                "Logout",
+                style: Styles.logOutButton(context),
+              ),
               onPressed: () {
                 selectedOption = 2;
                 Navigator.of(context).pop();
@@ -142,10 +145,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _openEditScreen() async {
-    Navigator.of(context).push(PageTransition(
+    Navigator.of(context).push(
+      PageTransition(
         type: PageTransitionType.fade,
-        child: ProfileEditScreen(_imageDisplay.imageProvider, _myProfile.name,
-            _myProfile.description, PreviousScreen.UserProfile, null, null)));
+        child: ProfileEditScreen(
+          _imageDisplay.imageProvider,
+          _myProfile.name,
+          _myProfile.description,
+          PreviousScreen.UserProfile,
+          null,
+          null,
+        ),
+      ),
+    );
   }
 
   @override
@@ -161,6 +173,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       navigationBar: CupertinoNavigationBar(
         actionsForegroundColor: Styles.activeColor(context),
         border: null,
+        middle: Text(
+          "Profile",
+          style: Styles.navigationBarTitle(context),
+        ),
         trailing: GestureDetector(
           child: Icon(CupertinoIcons.ellipsis),
           onTap: _showOptionsDialog,
@@ -168,10 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: SafeArea(
         top: true,
-        // child: Center(
         child: ListView(
-          // shrinkWrap: true,
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             UnconstrainedBox(
               child: Padding(
@@ -204,7 +217,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-      // ),
     );
   }
 

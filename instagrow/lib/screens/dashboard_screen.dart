@@ -141,7 +141,11 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   void _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
-        return PlantProfileScreen(_plants[index], _isMyPlant, _plants);
+        return PlantProfileScreen(
+          _plants[index],
+          _isMyPlant,
+          _isMyPlant ? _plants : null,
+        );
       },
     );
     Navigator.of(context).push(plantProfileScreen).then((_) {

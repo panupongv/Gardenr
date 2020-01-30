@@ -303,7 +303,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         onTap: () {
           Route otherUserProfile = CupertinoPageRoute(
               builder: (BuildContext context) =>
-                  OtherUserScreen(_ownerProfile, widget.plantList));
+                  OtherUserScreen(_ownerProfile));
           Navigator.of(context).push(otherUserProfile);
         },
       );
@@ -357,7 +357,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             await showCupertinoModalPopup(
               context: context,
               builder: (BuildContext context) =>
-                  GraphFocusScreen(moistureGraph),
+                  GraphFocusScreen("Soil Moisture Percentage", moistureGraph),
             );
           },
         ),
@@ -368,7 +368,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             await showCupertinoModalPopup(
               context: context,
               builder: (BuildContext context) =>
-                  GraphFocusScreen(temperatureGraph),
+                  GraphFocusScreen("Temperature", temperatureGraph),
             );
           },
         ),

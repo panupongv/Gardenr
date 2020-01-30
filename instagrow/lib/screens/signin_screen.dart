@@ -8,7 +8,6 @@ import 'package:instagrow/screens/signup_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
-import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:instagrow/widgets/text_field_separator.dart';
 import 'package:tuple/tuple.dart';

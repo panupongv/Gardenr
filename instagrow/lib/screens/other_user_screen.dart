@@ -13,9 +13,8 @@ import 'package:instagrow/widgets/other_user_profile_section.dart';
 
 class OtherUserScreen extends StatefulWidget {
   final UserProfile userProfile;
-  final List<Plant> followingPlants;
 
-  OtherUserScreen(this.userProfile, this.followingPlants);
+  OtherUserScreen(this.userProfile);
 
   @override
   _OtherUserScreenState createState() => _OtherUserScreenState();
@@ -48,7 +47,6 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
         _plants = _inGardenPlants;
       });
     });
-
     _updateOtherUserFollowingPlants(refreshedTime);
 
     super.initState();
@@ -155,7 +153,7 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
             ? false
             : _areMyPlants[index];
         return PlantProfileScreen(
-            _plants[index], isMyPlant, widget.followingPlants);
+            _plants[index], isMyPlant, null);
       },
     );
     Navigator.of(context).push(plantProfileScreen);

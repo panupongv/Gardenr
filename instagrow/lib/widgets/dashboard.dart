@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/utils/size_config.dart';
-import 'package:instagrow/widgets/other_user_profile_section.dart';
-
 import 'dashboard_item.dart';
 
 class DashBoard extends StatelessWidget {

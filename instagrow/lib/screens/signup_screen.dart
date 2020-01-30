@@ -5,7 +5,6 @@ import 'package:instagrow/models/auth_field_validator.dart';
 import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/style.dart';
-import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
 import 'package:instagrow/widgets/text_field_separator.dart';
 import 'package:sprintf/sprintf.dart';

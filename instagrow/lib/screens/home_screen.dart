@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:instagrow/screens/profile_screen.dart';
-import 'package:instagrow/screens/setting_screen.dart';
-import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/custom_icons.dart';
 
@@ -34,7 +32,7 @@ class HomeScreen extends StatelessWidget {
               CupertinoIcons.home,
               color: Styles.activeColor(context),
             ),
-            // title: Text("My Garden"),
+            title: Text("My Garden"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CustomIcons.star),
@@ -42,7 +40,7 @@ class HomeScreen extends StatelessWidget {
               CustomIcons.star,
               color: Styles.activeColor(context),
             ),
-            // title: Text("Following"),
+            title: Text("Following"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.person),
@@ -50,13 +48,8 @@ class HomeScreen extends StatelessWidget {
               CupertinoIcons.person,
               color: Styles.activeColor(context),
             ),
-            // title: Text("My Profile"),
+            title: Text("My Profile"),
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(CupertinoIcons.gear),
-          //   activeIcon: Icon(CupertinoIcons.gear, color: Styles.activeColor(context),),
-          //   // title: Text("Setting"),
-          // ),
         ],
         onTap: (int index) {
           if (_currentIndex == index) {
@@ -70,9 +63,6 @@ class HomeScreen extends StatelessWidget {
               case 2:
                 navigatorKey2.currentState.popUntil((Route r) => r.isFirst);
                 break;
-              // case 3:
-              //   navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
-              //   break;
             }
           }
           _currentIndex = index;
@@ -97,11 +87,6 @@ class HomeScreen extends StatelessWidget {
               navigatorKey: navigatorKey2,
               builder: (BuildContext context) => ProfileScreen(user),
             );
-          // case 3:
-          //   return CupertinoTabView(
-          //     navigatorKey: navigatorKey3,
-          //     builder: (BuildContext context) => SettingScreen(),
-          //   );
         }
         return null;
       },
