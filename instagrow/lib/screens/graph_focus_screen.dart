@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/utils/style.dart';
+import 'package:instagrow/widgets/navigation_bar_text.dart';
+import 'package:zoom_widget/zoom_widget.dart';
 
 class GraphFocusScreen extends StatelessWidget {
-  final Widget graph;
+  final Widget _focusedGraph;
 
-  GraphFocusScreen(this.graph);
+  GraphFocusScreen(this._focusedGraph);
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +16,16 @@ class GraphFocusScreen extends StatelessWidget {
         quarterTurns: 1,
         child: CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
+            leading: navigationBarTextButton(
+              context,
+              "Close",
+              () {
+                Navigator.of(context).pop();
+              },
+            ),
             actionsForegroundColor: Styles.activeColor(context),
           ),
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Expanded(
-                  child: graph,
-                )
-              ],
-            ),
-          ),
+          child: _focusedGraph,
         ),
       ),
     );

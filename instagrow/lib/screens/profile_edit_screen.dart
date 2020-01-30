@@ -10,7 +10,6 @@ import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
-import 'package:instagrow/widgets/field_name_text.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:instagrow/widgets/text_field_separator.dart';
 
@@ -208,47 +207,54 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
       }
 
-      if (previousScreen == PreviousScreen.AddMyPlant) {
-        await DatabaseService.updateOwnerId(widget.plant);
-      }
-
       Navigator.of(context).pop();
     }
+  }
+
+  Widget _borderLine() {
+    return Container(height: 1, color: Styles.separatorLine(context));
   }
 
   Widget _togglePublicSwitch() {
     return widget.previousScreen != PreviousScreen.UserProfile
         ? Container(
-            color: Styles.searchBackground(context),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            color: Styles.textFieldBackground(context),
+            child: Column(
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 12,
-                  ),
-                  child: Text(
-                    "Visible",
-                    style: Styles.toggleVisible(context),
-                  ),
+                _borderLine(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 12,
+                      ),
+                      child: Text(
+                        "Visible",
+                        style: Styles.toggleVisible(context),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        right: 12,
+                        top: 4,
+                        bottom: 4,
+                      ),
+                      child: CupertinoSwitch(
+                        value: _isPublic,
+                        dragStartBehavior: DragStartBehavior.down,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _isPublic = value;
+                            _privacyChanged =
+                                _isPublic != widget.plant.isPublic;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 12,
-                    top: 4,
-                    bottom: 4,
-                  ),
-                  child: CupertinoSwitch(
-                    value: _isPublic,
-                    dragStartBehavior: DragStartBehavior.down,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _isPublic = value;
-                        _privacyChanged = _isPublic != widget.plant.isPublic;
-                      });
-                    },
-                  ),
-                ),
+                _borderLine(),
               ],
             ),
           )
@@ -323,10 +329,11 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             children: <Widget>[
               _imageDisplay(),
               _changeImageButton(),
+              _borderLine(),
               Container(
                 height: 24,
               ),
-              // fieldNameText(context, "Display Name"),
+              _borderLine(),
               CupertinoTextField(
                 placeholder: "Display name",
                 keyboardType: TextInputType.text,
@@ -341,8 +348,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               ),
               TextFieldSeparator(
                 0.95,
-                Styles.textFieldBackground(context),
-                Styles.profileEditBackground(context),
+                Colors.transparent,
+                Styles.separatorLine(context),
               ),
               CupertinoTextField(
                 placeholder: "Description",
@@ -359,6 +366,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   });
                 },
               ),
+              _borderLine(),
               Padding(
                 padding: EdgeInsets.only(right: 8, top: 2),
                 child: Text(

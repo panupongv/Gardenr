@@ -55,7 +55,6 @@ class _DashBoardScreenState extends State<DashBoardScreen>
 
   Future<void> _onAddPressed() async {
     String scanned = await BarcodeScanner.scan();
-    print(scanned);
     if (scanned == null) {
       return;
     }

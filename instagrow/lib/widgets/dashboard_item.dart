@@ -41,7 +41,7 @@ class DashBoardItem extends StatelessWidget {
                       Text(_plant.timeOffset, style: Styles.plantTimeText(context),)
                     ],
                   ),
-                  Container(height: 6,),
+                  Container(height: 8,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

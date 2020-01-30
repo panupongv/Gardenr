@@ -101,10 +101,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+      ),
       child: Center(
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
+            Container(
+              height: 1,
+              color: Styles.separatorLine(context),
+            ),
             CupertinoTextField(
               placeholder: "Email",
               keyboardType: TextInputType.emailAddress,
@@ -132,6 +138,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: Styles.textFieldDecoration(context),
               controller: _confirmPasswordController,
               obscureText: true,
+            ),
+            Container(
+              height: 1,
+              color: Styles.separatorLine(context),
             ),
             Container(
               height: 24,

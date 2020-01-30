@@ -30,7 +30,7 @@ abstract class Styles {
     return _dynamicColor(
       context,
       CupertinoColors.activeBlue.color,
-      CupertinoColors.destructiveRed,
+      CupertinoColors.activeBlue.darkColor,
     );
   }
 
@@ -130,6 +130,13 @@ abstract class Styles {
     );
   }
 
+  static TextStyle actionSheetAction(context) {
+    return TextStyle(
+      fontSize: 20,
+      color: activeColor(context),
+    );
+  }
+
   static TextStyle navigationBarTextActive(context) {
     return TextStyle(color: activeColor(context));
   }
@@ -144,10 +151,21 @@ abstract class Styles {
     );
   }
 
+  static TextStyle aboutUser(context) {
+    return TextStyle(
+      fontSize: 14,
+      color: dynamicGray(context),
+    );
+  }
+
   static TextStyle logOutButton(context) {
     return TextStyle(
-      fontSize: 16,
-      color: CupertinoColors.destructiveRed,
+      fontSize: 20,
+      color: _dynamicColor(
+        context,
+        CupertinoColors.systemRed.color,
+        CupertinoColors.systemRed.darkColor,
+      ),
     );
   }
 
@@ -183,7 +201,7 @@ abstract class Styles {
     return _dynamicColor(
       context,
       Color.fromARGB(255, 224, 224, 224),
-      Color.fromARGB(255, 78, 78, 78),
+      Color.fromARGB(255, 48, 48, 48),
     );
   }
 
@@ -197,8 +215,8 @@ abstract class Styles {
   }
 
   static Color textFieldBackground(context) {
-    return _dynamicColor(context, CupertinoColors.white,
-        Color.fromARGB(255, 18, 18, 18));
+    return _dynamicColor(
+        context, CupertinoColors.white, Color.fromARGB(255, 18, 18, 18));
   }
 
   static BoxDecoration textFieldDecoration(context) {
@@ -206,7 +224,8 @@ abstract class Styles {
   }
 
   static Color profileEditBackground(context) {
-    return _dynamicColor(context, Color.fromARGB(255, 224, 224, 224), CupertinoColors.black);
+    return _dynamicColor(
+        context, Color.fromARGB(255, 224, 224, 224), CupertinoColors.black);
   }
 
   static Color navigationBarBackground(context) {
@@ -219,13 +238,17 @@ abstract class Styles {
   );
 
   static Color segmentControlSelected(context) => activeColor(context);
-  static Color segmentControlPressed(context) => _dynamicColor(
-        context,
-        Color.fromARGB(128, 0, 122, 255),
-        Color.fromARGB(128, 255, 69, 58),
-      );
+  static Color segmentControlPressed(context) {
+    Color baseColor = activeColor(context);
+    return Color.fromARGB(
+      128,
+      baseColor.red,
+      baseColor.green,
+      baseColor.blue,
+    );
+  }
 
-  static Color searchCursorColor = Color.fromRGBO(128, 128, 128, 1);
+  static Color searchCursorColor = Color.fromARGB(255, 128, 128, 128);
 
-  static const Color searchIconColor = Color.fromRGBO(128, 128, 128, 1);
+  static const Color searchIconColor = Color.fromARGB(255, 128, 128, 128);
 }

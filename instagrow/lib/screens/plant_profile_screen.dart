@@ -193,17 +193,22 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         context: context,
         builder: (BuildContext context) {
           return CupertinoActionSheet(
-            title: Text("More Options"),
             actions: <Widget>[
               CupertinoActionSheetAction(
-                child: Text("Edit Plant"),
+                child: Text(
+                  "Edit Plant",
+                  style: Styles.actionSheetAction(context),
+                ),
                 onPressed: () {
                   optionPicked = 1;
                   Navigator.of(context).pop();
                 },
               ),
               CupertinoActionSheetAction(
-                child: Text("Share"),
+                child: Text(
+                  "Share",
+                  style: Styles.actionSheetAction(context),
+                ),
                 onPressed: () {
                   optionPicked = 2;
                   Navigator.of(context).pop();
@@ -211,10 +216,11 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
               ),
             ],
             cancelButton: CupertinoActionSheetAction(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              child: Text(
+                "Cancel",
+                style: Styles.actionSheetAction(context),
+              ),
+              onPressed: Navigator.of(context).pop,
             ),
           );
         });
@@ -247,14 +253,20 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   }
 
   Future<void> _openQRScreen() async {
-    Navigator.of(context).push(CupertinoPageRoute(
+    Navigator.of(context).push(
+      CupertinoPageRoute(
         fullscreenDialog: true,
-        builder: (BuildContext context) => QRScreen(_plant)));
+        builder: (BuildContext context) => QRScreen(_plant),
+      ),
+    );
   }
 
   Widget _followButton() {
     if (_following == null) {
-      return Text("...", style: Styles.navigationBarTextInActive(context));
+      return Text(
+        "...",
+        style: Styles.navigationBarTextInActive(context),
+      );
     }
 
     return navigationBarTextButton(context, _following ? "Unfollow" : "Follow",
@@ -340,15 +352,12 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     return Column(
       children: <Widget>[
         GraphTitle(
-          "Moisture",
+          "Soil Moisture",
           () async {
-            await Navigator.of(context).push(
-              CupertinoPageRoute(
-                fullscreenDialog: true,
-                builder: (context) {
-                  return GraphFocusScreen(moistureGraph);
-                },
-              ),
+            await showCupertinoModalPopup(
+              context: context,
+              builder: (BuildContext context) =>
+                  GraphFocusScreen(moistureGraph),
             );
           },
         ),
@@ -356,13 +365,10 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         GraphTitle(
           "Temperature",
           () async {
-            await Navigator.of(context, rootNavigator: true).push(
-              CupertinoPageRoute(
-                fullscreenDialog: true,
-                builder: (context) {
-                  return GraphFocusScreen(temperatureGraph);
-                },
-              ),
+            await showCupertinoModalPopup(
+              context: context,
+              builder: (BuildContext context) =>
+                  GraphFocusScreen(temperatureGraph),
             );
           },
         ),

@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
+import 'package:instagrow/screens/signin_screen.dart';
+import 'package:instagrow/utils/auth_service.dart';
 import 'package:instagrow/utils/database_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
@@ -34,6 +36,111 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   StreamSubscription _streamSubscription;
 
+  @override
+  void initState() {
+    _userId = widget.user.uid;
+    _myProfile = UserProfile(widget.user.uid, "", "", "");
+    _streamSubscription = DatabaseService.userProfileStream(widget.user).listen(
+      (Event event) {
+        if (event != null &&
+            event.snapshot != null &&
+            event.snapshot.value != null) {
+          LinkedHashMap userData = event.snapshot.value;
+          setState(
+            () {
+              if (userData != null) {
+                _myProfile =
+                    UserProfile.fromQueryData(_userId, event.snapshot.value);
+              }
+            },
+          );
+        }
+      },
+    );
+
+    super.initState();
+  }
+
+  Future<void> _showOptionsDialog() async {
+    int selectedOption = 0;
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoActionSheet(
+          actions: <Widget>[
+            CupertinoActionSheetAction(
+              child: Text("Edit Profile", style: Styles.actionSheetAction(context),),
+              onPressed: () {
+                selectedOption = 1;
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: Text("Logout", style: Styles.logOutButton(context),),
+              onPressed: () {
+                selectedOption = 2;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            child: Text("Cancel", style: Styles.actionSheetAction(context)),
+            onPressed: Navigator.of(context).pop,
+          ),
+        );
+      },
+    );
+
+    if (selectedOption == 0) {
+      return;
+    }
+
+    switch (selectedOption) {
+      case 1:
+        _openEditScreen();
+        break;
+      case 2:
+        _logOut();
+        break;
+    }
+  }
+
+  Future<void> _logOut() async {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Logout"),
+          content: Text("Are you sure you want to logout?"),
+          actions: <Widget>[
+            CupertinoButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoButton(
+              child: Text(
+                "Logout",
+                style: Styles.logOutButton(context),
+              ),
+              onPressed: () async {
+                await AuthService.logOut().then(
+                  (_) {
+                    Navigator.of(context).pop();
+                    Route route = CupertinoPageRoute(
+                        builder: (context) => SignInScreen());
+                    Navigator.pushReplacement(context, route);
+                  },
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _openEditScreen() async {
     Navigator.of(context).push(PageTransition(
         type: PageTransitionType.fade,
@@ -42,71 +149,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
-  void initState() {
-    _userId = widget.user.uid;
-    _myProfile = UserProfile(widget.user.uid, "", "", "");
-    _streamSubscription = DatabaseService.userProfileStream(widget.user).listen((Event event) {
-      if (event != null &&
-          event.snapshot != null &&
-          event.snapshot.value != null) {
-        LinkedHashMap userData = event.snapshot.value;
-        setState(() {
-          if (userData != null) {
-            _myProfile =
-                UserProfile.fromQueryData(_userId, event.snapshot.value);
-          }
-        });
-      }
-    });
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    _imageDisplay = CircularCachedImage(_myProfile.imageUrl, PROFILE_TAB_IMAGE_SIZE,
-        progressIndicator(context), defaultUserImage(context));
+    _imageDisplay = CircularCachedImage(
+        _myProfile.imageUrl,
+        PROFILE_TAB_IMAGE_SIZE,
+        progressIndicator(context),
+        defaultUserImage(context));
 
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
       navigationBar: CupertinoNavigationBar(
         actionsForegroundColor: Styles.activeColor(context),
         border: null,
-        trailing: navigationBarTextButton(
-          context, 
-          "Edit",
-          _openEditScreen,
+        trailing: GestureDetector(
+          child: Icon(CupertinoIcons.ellipsis),
+          onTap: _showOptionsDialog,
         ),
       ),
       child: SafeArea(
         top: true,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              UnconstrainedBox(
-                child: Padding(
-                  padding: EdgeInsets.all(30),
-                  child: _imageDisplay,
-                ),
+        // child: Center(
+        child: ListView(
+          // shrinkWrap: true,
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            UnconstrainedBox(
+              child: Padding(
+                padding: EdgeInsets.all(30),
+                child: _imageDisplay,
               ),
-              Container(
-                child: Text(
-                  _myProfile.name,
-                  textAlign: TextAlign.center,
-                  style: Styles.plantProfileName(context),
-                ),
+            ),
+            Container(
+              child: Text(
+                _myProfile.name,
+                textAlign: TextAlign.center,
+                style: Styles.plantProfileName(context),
               ),
-              Container(
-                height: 16,
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: 12,
+                top: 32,
+                bottom: 8,
               ),
-              DescriptionExpandable(_myProfile.description),
-              Container(height: 32,)
-            ],
-          ),
+              child: Text(
+                (_myProfile.description != null && _myProfile.description != "")
+                    ? "Description"
+                    : "",
+                style: Styles.aboutUser(context),
+              ),
+            ),
+            DescriptionExpandable(_myProfile.description),
+            Container(height: 32),
+          ],
         ),
       ),
+      // ),
     );
   }
 

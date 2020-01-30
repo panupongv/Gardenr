@@ -16,8 +16,8 @@ class HomeScreen extends StatelessWidget {
 
   GlobalKey<NavigatorState> navigatorKey0 = GlobalKey<NavigatorState>(),
       navigatorKey1 = GlobalKey<NavigatorState>(),
-      navigatorKey2 = GlobalKey<NavigatorState>(),
-      navigatorKey3 = GlobalKey<NavigatorState>();
+      navigatorKey2 = GlobalKey<NavigatorState>();
+  // navigatorKey3 = GlobalKey<NavigatorState>();
 
   HomeScreen(this.user);
 
@@ -27,25 +27,36 @@ class HomeScreen extends StatelessWidget {
       tabBar: CupertinoTabBar(
         items: [
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.home,),
-            activeIcon: Icon(CupertinoIcons.home, color: Styles.activeColor(context),),
+            icon: Icon(
+              CupertinoIcons.home,
+            ),
+            activeIcon: Icon(
+              CupertinoIcons.home,
+              color: Styles.activeColor(context),
+            ),
             // title: Text("My Garden"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CustomIcons.star),
-            activeIcon: Icon(CustomIcons.star, color: Styles.activeColor(context),),
+            activeIcon: Icon(
+              CustomIcons.star,
+              color: Styles.activeColor(context),
+            ),
             // title: Text("Following"),
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.person),
-            activeIcon: Icon(CupertinoIcons.person, color: Styles.activeColor(context),),
+            activeIcon: Icon(
+              CupertinoIcons.person,
+              color: Styles.activeColor(context),
+            ),
             // title: Text("My Profile"),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.gear),
-            activeIcon: Icon(CupertinoIcons.gear, color: Styles.activeColor(context),),
-            // title: Text("Setting"),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(CupertinoIcons.gear),
+          //   activeIcon: Icon(CupertinoIcons.gear, color: Styles.activeColor(context),),
+          //   // title: Text("Setting"),
+          // ),
         ],
         onTap: (int index) {
           if (_currentIndex == index) {
@@ -59,9 +70,9 @@ class HomeScreen extends StatelessWidget {
               case 2:
                 navigatorKey2.currentState.popUntil((Route r) => r.isFirst);
                 break;
-              case 3:
-                navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
-                break;
+              // case 3:
+              //   navigatorKey3.currentState.popUntil((Route r) => r.isFirst);
+              //   break;
             }
           }
           _currentIndex = index;
@@ -86,11 +97,11 @@ class HomeScreen extends StatelessWidget {
               navigatorKey: navigatorKey2,
               builder: (BuildContext context) => ProfileScreen(user),
             );
-          case 3:
-            return CupertinoTabView(
-              navigatorKey: navigatorKey3,
-              builder: (BuildContext context) => SettingScreen(),
-            );
+          // case 3:
+          //   return CupertinoTabView(
+          //     navigatorKey: navigatorKey3,
+          //     builder: (BuildContext context) => SettingScreen(),
+          //   );
         }
         return null;
       },
