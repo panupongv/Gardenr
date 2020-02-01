@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -173,6 +174,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       _saving = true;
     });
 
+    Trace trace = FirebasePerformance.instance.newTrace('Saving Changes on Profile');
+    trace.start();
+
     if (_displayNameChanged &&
         (previousScreen == PreviousScreen.EditMyPlant ||
             previousScreen == PreviousScreen.AddMyPlant)) {
@@ -218,6 +222,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
     }
 
+    trace.stop();
     Navigator.of(context).pop();
   }
 

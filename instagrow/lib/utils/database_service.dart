@@ -221,7 +221,7 @@ class DatabaseService {
 
   static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
     Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
-    trace.start();
+    await trace.start();
     FirebaseUser user = await AuthService.getUser();
     int waitDurationInSeconds = 8;
 
@@ -236,14 +236,14 @@ class DatabaseService {
 
     LocalStorageService.saveMyPlants(plants);
 
-    trace.setMetric("Collection Size", plants.length);
+    await trace.putAttribute("Collection Size", plants.length.toString());
     trace.stop();
     return plants;
   }
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
     Trace trace = FirebasePerformance.instance.newTrace('FollowingPlantsQuery');
-    trace.start();
+    await trace.start();
     FirebaseUser user = await AuthService.getUser();
     final int waitDurationInSec = 8;
     List<Plant> plants = await _getPlantsHelper(
@@ -256,7 +256,7 @@ class DatabaseService {
 
     LocalStorageService.saveFollowingPlants(plants);
 
-    trace.setMetric("Collection Size", plants.length);
+    await trace.putAttribute("Collection Size", plants.length.toString());
     trace.stop();
     return plants;
   }
@@ -265,7 +265,7 @@ class DatabaseService {
       String userId, DateTime refreshedTime) async {
     Trace trace =
         FirebasePerformance.instance.newTrace('OtherUserGardenPlantsQuery');
-    trace.start();
+    await trace.start();
     List<String> myFollowingPlantIds = await _getMyFollowingIds(),
         otherUserPlantIds = await _getOtherUserPlantIds(userId);
 
@@ -275,7 +275,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    trace.setMetric("Collection Size", results.length);
+    await trace.putAttribute("Collection Size", results.length.toString());
     trace.stop();
     return results;
   }
@@ -297,7 +297,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    trace.setMetric("Collection Size", results.length);
+    await trace.putAttribute("Collection Size", results.length.toString());
     trace.stop();
     return results;
   }
@@ -392,7 +392,9 @@ class DatabaseService {
 
     SensorData data;
     if (dataSnapshot != null && dataSnapshot.value != null) {
-      data = SensorData.fromMap(dataSnapshot.value);
+      LinkedHashMap hashMap = dataSnapshot.value;
+      data = SensorData.fromMap(hashMap);
+      trace.putAttribute("Collection Size", hashMap.length.toString());
     }
 
     trace.stop();
