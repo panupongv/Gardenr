@@ -319,7 +319,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
   Widget _plantLocalTimeText() {
     DateTime now =
         DateTime.now().toUtc().add(Duration(hours: _plant.utcTimeZone));
-    String plantLocalTime = Jiffy(now).format("hh:mm");
+    String plantLocalTime = Jiffy(now).format("HH:mm");
     String gmt = sprintf(" (GMT%+d)", [_plant.utcTimeZone]);
     return Text(
       plantLocalTime + gmt,

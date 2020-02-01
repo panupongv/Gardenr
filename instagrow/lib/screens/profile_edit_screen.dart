@@ -28,7 +28,11 @@ class ProfileEditScreen extends StatefulWidget {
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  bool _imageChanged, _displayNameChanged, _descriptionChanged, _privacyChanged;
+  bool _imageChanged,
+      _displayNameChanged,
+      _descriptionChanged,
+      _privacyChanged,
+      _saving;
   bool _isPublic;
   File _selectedImage;
   ImageProvider _profileImage;
@@ -45,7 +49,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         AssetImage(widget.previousScreen == PreviousScreen.UserProfile
             ? 'assets/defaultprofile.png'
             : 'assets/defaultplant.png');
-
+    _saving = false;
     _isPublic = widget.previousScreen != PreviousScreen.UserProfile
         ? widget.plant.isPublic
         : false;
@@ -160,55 +164,61 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Future<void> _applyChanges() async {
-    PreviousScreen previousScreen = widget.previousScreen;
-    if (_allowSave()) {
-      if (_displayNameChanged &&
-          (previousScreen == PreviousScreen.EditMyPlant ||
-              previousScreen == PreviousScreen.AddMyPlant)) {
-        String name = _displayNameController.text;
-        if (Plant.hasDuplicateName(widget.plant.id, name, widget.plantList)) {
-          bool confirmed = await _confirmDuplicatePlantName(name);
-          if (!confirmed) {
-            return;
-          }
-        }
-      }
-
-      if (_imageChanged) {
-        if (previousScreen == PreviousScreen.UserProfile) {
-          await DatabaseService.updateProfileImage(_selectedImage);
-        } else if (previousScreen == PreviousScreen.EditMyPlant ||
-            previousScreen == PreviousScreen.AddMyPlant) {
-          await DatabaseService.updatePlantProfileImage(
-              widget.plant, _selectedImage);
-        }
-      }
-      if (_displayNameChanged) {
-        String newName = _displayNameController.text;
-        if (previousScreen == PreviousScreen.UserProfile) {
-          await DatabaseService.updateDisplayName(newName);
-        } else if (previousScreen == PreviousScreen.EditMyPlant ||
-            previousScreen == PreviousScreen.AddMyPlant) {
-          await DatabaseService.updatePlantName(widget.plant, newName);
-        }
-      }
-      if (_descriptionChanged) {
-        String newDescription = _descriptionController.text;
-        if (previousScreen == PreviousScreen.UserProfile) {
-          await DatabaseService.updateDescription(newDescription);
-        } else if (previousScreen == PreviousScreen.EditMyPlant ||
-            previousScreen == PreviousScreen.AddMyPlant) {
-          await DatabaseService.updatePlantDescription(
-              widget.plant, newDescription);
-        }
-      }
-
-      if (_privacyChanged || previousScreen == PreviousScreen.AddMyPlant) {
-        await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
-      }
-
-      Navigator.of(context).pop();
+    if (!_allowSave() || _saving) {
+      return;
     }
+    PreviousScreen previousScreen = widget.previousScreen;
+
+    setState(() {
+      _saving = true;
+    });
+
+    if (_displayNameChanged &&
+        (previousScreen == PreviousScreen.EditMyPlant ||
+            previousScreen == PreviousScreen.AddMyPlant)) {
+      String name = _displayNameController.text;
+      if (Plant.hasDuplicateName(widget.plant.id, name, widget.plantList)) {
+        bool confirmed = await _confirmDuplicatePlantName(name);
+        if (!confirmed) {
+          return;
+        }
+      }
+    }
+
+    if (_imageChanged) {
+      if (previousScreen == PreviousScreen.UserProfile) {
+        await DatabaseService.updateProfileImage(_selectedImage);
+      } else if (previousScreen == PreviousScreen.EditMyPlant ||
+          previousScreen == PreviousScreen.AddMyPlant) {
+        await DatabaseService.updatePlantProfileImage(
+            widget.plant, _selectedImage);
+      }
+    }
+    if (_displayNameChanged) {
+      String newName = _displayNameController.text;
+      if (previousScreen == PreviousScreen.UserProfile) {
+        await DatabaseService.updateDisplayName(newName);
+      } else if (previousScreen == PreviousScreen.EditMyPlant ||
+          previousScreen == PreviousScreen.AddMyPlant) {
+        await DatabaseService.updatePlantName(widget.plant, newName);
+      }
+    }
+    if (_descriptionChanged) {
+      String newDescription = _descriptionController.text;
+      if (previousScreen == PreviousScreen.UserProfile) {
+        await DatabaseService.updateDescription(newDescription);
+      } else if (previousScreen == PreviousScreen.EditMyPlant ||
+          previousScreen == PreviousScreen.AddMyPlant) {
+        await DatabaseService.updatePlantDescription(
+            widget.plant, newDescription);
+      }
+    }
+
+    if (_privacyChanged || previousScreen == PreviousScreen.AddMyPlant) {
+      await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
+    }
+
+    Navigator.of(context).pop();
   }
 
   Widget _borderLine() {
@@ -230,7 +240,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                         left: 12,
                       ),
                       child: Text(
-                        "Visible",
+                        "Visible to Non-Followers",
                         style: Styles.toggleVisible(context),
                       ),
                     ),
@@ -314,7 +324,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         trailing: GestureDetector(
           child: Text(
             "Save",
-            style: _allowSave()
+            style: (_allowSave() && !_saving)
                 ? Styles.navigationBarTextActive(context)
                 : Styles.navigationBarTextInActive(context),
           ),
@@ -348,7 +358,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               ),
               TextFieldSeparator(
                 0.95,
-                Colors.transparent,
+                Styles.textFieldBackground(context),
                 Styles.separatorLine(context),
               ),
               CupertinoTextField(

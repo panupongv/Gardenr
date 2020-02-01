@@ -200,7 +200,7 @@ abstract class Styles {
   static Color separatorLine(context) {
     return _dynamicColor(
       context,
-      Color.fromARGB(255, 224, 224, 224),
+      Color.fromARGB(255, 202, 202, 202),
       Color.fromARGB(255, 48, 48, 48),
     );
   }

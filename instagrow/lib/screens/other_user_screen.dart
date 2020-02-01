@@ -83,10 +83,8 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
   }
 
   Future<void> _updateGardenPlants(refreshedTime) async {
-    List<String> otherUserGardenPlantIds =
-        await DatabaseService.getOtherUserPlantIds(_userProfile.id);
-    List<Plant> results =
-        await _updatePlantsHelper(otherUserGardenPlantIds, refreshedTime);
+    List<Plant> results = await DatabaseService.getOtherUserPlants(
+        _userProfile.id, refreshedTime);
 
     if (results != null) {
       setState(() {
@@ -96,11 +94,9 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
   }
 
   Future<void> _updateOtherUserFollowingPlants(DateTime refreshedTime) async {
-    List<String> usersFollowingPlantIds =
-        await DatabaseService.getOtherUserFollowingPlantIds(_userProfile.id);
     FirebaseUser myUser = await AuthService.getUser();
-    List<Plant> results =
-        await _updatePlantsHelper(usersFollowingPlantIds, refreshedTime);
+    List<Plant> results = await DatabaseService.getOtherUserFollowingPlants(
+        _userProfile.id, refreshedTime);
     if (results != null) {
       String myUid = myUser.uid;
       setState(() {
@@ -115,45 +111,13 @@ class _OtherUserScreenState extends State<OtherUserScreen> {
         plants.map((Plant plant) => plant.ownerId == userId).toList();
   }
 
-  Future<List<Plant>> _updatePlantsHelper(
-      List<String> plantIds, DateTime refreshedTime) async {
-    List<String> myPlantIds = await DatabaseService.getMyPlantIds(),
-        myFollowingPlantIds = await DatabaseService.getMyFollowingIds();
-    List<Plant> tempPlants = List();
-    List<Future> futures = List();
-    plantIds.forEach((String plantId) async {
-      if (myPlantIds.contains(plantId) ||
-          myFollowingPlantIds.contains(plantId)) {
-        futures.add(() async {
-          Plant directFromDb =
-              await DatabaseService.getPlantById(plantId, refreshedTime);
-          if (directFromDb != null) {
-            tempPlants.add(directFromDb);
-          }
-        }());
-      } else {
-        futures.add(() async {
-          Plant nonPrivatePlant =
-              await DatabaseService.getPublicPlantById(plantId, refreshedTime);
-          if (nonPrivatePlant != null) {
-            tempPlants.add(nonPrivatePlant);
-          }
-        }());
-      }
-    });
-
-    await Future.wait(futures);
-    return tempPlants;
-  }
-
   Future<void> _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
         bool isMyPlant = _contentType == DashBoardContentType.Garden
             ? false
             : _areMyPlants[index];
-        return PlantProfileScreen(
-            _plants[index], isMyPlant, null);
+        return PlantProfileScreen(_plants[index], isMyPlant, null);
       },
     );
     Navigator.of(context).push(plantProfileScreen);

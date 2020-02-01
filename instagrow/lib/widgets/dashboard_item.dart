@@ -37,22 +37,33 @@ class DashBoardItem extends StatelessWidget {
                         _plant.name,
                         style: Styles.dashboardItemTitle(context),
                       ),
-                      Text(_plant.timeOffset, style: Styles.plantTimeText(context),)
+                      Text(
+                        _plant.timeOffset,
+                        style: Styles.plantTimeText(context),
+                      )
                     ],
                   ),
-                  Container(height: 8,),
+                  Container(
+                    height: 8,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       _moistureIcon,
-                      Text(sprintf("%05.2f\%", [_plant.moisture]),
-                        style: Styles.dashboardItemDetail(context),
+                      Container(
+                        width: MediaQuery.of(context).size.width / 10,
+                        child: Text(
+                          sprintf("%3d\%", [_plant.moisture.toInt()]),
+                          style: Styles.dashboardItemDetail(context),
+                        ),
                       ),
-                      Container(width: 8,),
+                      Container(
+                        width: 8,
+                      ),
                       _tempratureIcon,
                       Text(
-                        sprintf("%.2f°C", [_plant.temperature]),
+                        sprintf("%.1f°C", [_plant.temperature]),
                         style: Styles.dashboardItemDetail(context),
                       ),
                     ],
