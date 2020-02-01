@@ -32,9 +32,11 @@ def main():
 
     db.child('plants').child(new_plant_id).child('utcTimeZone').set(utc_time_zone)
     db.child('plants').child(new_plant_id).child('timeUpdated').set(local_time.strftime("%Y%m%d %H%M"))
-    
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/plant_id.txt', 'w') as f:
+                
+    home_dir = os.path.expanduser('~') + '/gardenr'
+    if not os.path.exists(home_dir):
+        os.mkdir(home_dir)
+    with open(home_dir + '/plant_id.txt', 'w') as f:
         f.write(new_plant_id)
         
 if __name__ == "__main__":

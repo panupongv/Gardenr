@@ -7,7 +7,7 @@ pip install pytz
 
 # Overwrite validation (for repeated execution)
 
-FILE="$(pwd)/python scripts/plant_id.txt"
+FILE="$HOME/gardenr/plant_id.txt"
 if test -f "$FILE"; 
 then
   while true; do
@@ -51,8 +51,7 @@ python "$currentPath/python scripts/gardenr_register.py"
 
 touch tempfile
 crontab -l > tempfile
-echo "0 * * * * python $escapedPath/python\ scripts/gardenr_send_data.py" >> tempfile
-echo "30 * * * * python $escapedPath/python\ scripts/gardenr_send_data.py" >> tempfile
+echo "*/30 * * * * python $escapedPath/python\ scripts/gardenr_send_data.py" >> tempfile
 crontab tempfile
 rm tempfile
 

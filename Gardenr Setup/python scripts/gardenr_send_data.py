@@ -9,22 +9,31 @@ from time import sleep
 from datetime import datetime
 from random import randint
 
-def main(delayed=True):
-    firebase = pyrebase.initialize_app(api_keys)
-    
-    plant_id_path = str(os.path.dirname(os.path.realpath(__file__))) + '/plant_id.txt' 
+days_before_expiring = 8
+
+def main(delayed=True): 
+    plant_id_path = os.path.expanduser('~') + '/gardenr/plant_id.txt' 
     
     if not os.path.exists(plant_id_path):
         return
     
     plant_id = None
-    with open(str(os.path.dirname(os.path.realpath(__file__)))+ '/plant_id.txt') as f:
+    with open(plant_id_path) as f:
         plant_id = f.read()
         
     if plant_id != None:
+        firebase = pyrebase.initialize_app(api_keys)
         db = firebase.database()
         
-        timestamp = datetime.now().strftime("%Y%m%d %H%M")
+        time = datetime.now()
+        time_to_remove = time - timedelta(days=days_before_expiring)
+        
+        timestamp = time.strftime("%Y%m%d %H%M")
+        datestamp_to_remove = time_to_remove.strftime("%Y%m%d")
+        
+        check_exist = db.child('plants').child(plant_id).child('name').get()
+        if check_exist == None:
+            return
         
         reader = SensorReader()
         moisture, temperature = reader.read_sensors()
@@ -38,6 +47,7 @@ def main(delayed=True):
         db.child('plants').child(plant_id).child('temperature').set(temperature)
         db.child('plants').child(plant_id).child('timeUpdated').set(timestamp)
         db.child('sensorValues').child(plant_id).child(date).child(time).set({'moisture':moisture, 'temperature':temperature})
-
+        db.child('sensorValues').child(plant_id).child(datestamp_to_remove).child(time).remove()
+            
 if __name__ == "__main__":
     main()
