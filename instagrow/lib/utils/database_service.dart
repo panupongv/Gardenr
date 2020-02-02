@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -212,25 +213,53 @@ class DatabaseService {
   }
 
   static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
+    int queryAlgorithm = Random().nextInt(2);
     Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
     await trace.start();
     FirebaseUser user = await AuthService.getUser();
     int waitDurationInSeconds = 8;
 
-    List<Plant> plants =
-        await _getPlantsHelper('ownedPlants', user.uid, refreshedTime).timeout(
+    if (queryAlgorithm == 0) {
+      List<Plant> plants =
+          await _getPlantsHelper('ownedPlants', user.uid, refreshedTime)
+              .timeout(Duration(seconds: waitDurationInSeconds),
+                  onTimeout: () => null);
+
+      if (plants != null) {
+        LocalStorageService.saveMyPlants(plants);
+        trace.putAttribute("Query Algorithm", "Without Index");
+        trace.putAttribute("Collection Size", plants.length.toString());
+        trace.stop();
+        return plants;
+      }
+
+      trace.stop();
+      return await LocalStorageService.loadMyPlants();
+    } else {
+      DataSnapshot snapshot = await _database
+          .child('plants')
+          .orderByChild('ownerId')
+          .equalTo(user.uid)
+          .once()
+          .timeout(
             Duration(seconds: waitDurationInSeconds),
-            onTimeout: () => null);
+            onTimeout: () => null,
+          );
+      if (snapshot == null) {
+        trace.stop();
+        return await LocalStorageService.loadMyPlants();
+      }
 
-    if (plants == null) {
-      return LocalStorageService.loadMyPlants();
+      List<Plant> plants = List();
+      if (snapshot.value != null) {
+        plants = Plant.fromMap(snapshot.value, refreshedTime);
+        LocalStorageService.saveMyPlants(plants);
+      }
+      trace.putAttribute("Query Algorithm", "With Custom Index");
+      trace.putAttribute("Collection Size", plants.length.toString());
+      trace.stop();
+      return plants;
     }
-
-    LocalStorageService.saveMyPlants(plants);
-
-    await trace.putAttribute("Collection Size", plants.length.toString());
-    trace.stop();
-    return plants;
   }
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
