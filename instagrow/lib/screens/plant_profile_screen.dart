@@ -336,16 +336,40 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         ),
       );
     }
-    if (_sensorData == null) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
-        child: Text(
-          "NO SENSOR DATA AVAILABLE",
-          textAlign: TextAlign.center,
-          style: Styles.noDataAvailable(context),
+    if (_sensorData == null || _sensorData.entryCount == 0) {
+      bool darkThemed = CupertinoTheme.brightnessOf(context) == Brightness.dark;
+      return UnconstrainedBox(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            children: <Widget>[
+              Container(
+                width: CAUTION_ICON_SIZE,
+                height: CAUTION_ICON_SIZE,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(darkThemed
+                        ? 'assets/caution_dark.png'
+                        : 'assets/caution_light.png'),
+                  ),
+                ),
+              ),
+              Container(
+                height: 8,
+              ),
+              Text(
+                "NO SENSOR DATA AVAILABLE",
+                textAlign: TextAlign.center,
+                style: Styles.noDataAvailable(context),
+              ),
+            ],
+          ),
         ),
       );
     }
+
+    print(_sensorData.entryCount);
+
     TimeSeriesGraphs graphs = TimeSeriesGraphs(_sensorData);
     Widget moistureGraph = graphs.moistureGraph(context),
         temperatureGraph = graphs.temperatureGraph(context);

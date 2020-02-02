@@ -93,7 +93,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
                     },
                   ),
                   CupertinoDialogAction(
-                    child: Text("Dismiss"),
+                    child: Text("Follow"),
                     onPressed: () {
                       Navigator.of(context).pop();
                       _followScannedCode(scanned);
@@ -105,7 +105,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
       showCupertinoDialog(
           context: context,
           builder: (BuildContext context) => getQuickAlertDialog(
-              context, "Error", claimResult.item2, "Dismiss"));
+              context, "Oops", claimResult.item2, "Dismiss"));
     }
   }
 
@@ -122,7 +122,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) => getQuickAlertDialog(
-            context, "Error", followResult.item2, "Dismiss"),
+            context, "Oops", followResult.item2, "Dismiss"),
       );
     }
   }

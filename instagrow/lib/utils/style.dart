@@ -83,8 +83,8 @@ abstract class Styles {
 
   static TextStyle noDataAvailable(context) {
     return TextStyle(
-      fontSize: 20,
-      color: _defaultText(context),
+      fontSize: 16,
+      color: dynamicGray(context),
     );
   }
 
