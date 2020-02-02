@@ -6,7 +6,7 @@ import os
 from gardenr_read_sensors import SensorReader
 
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 
 days_before_expiring = 8
