@@ -172,19 +172,11 @@ class DatabaseService {
   }
 
   static Future<void> updatePlantPrivacy(Plant plant, bool isPublic) async {
-    FirebaseUser user = await AuthService.getUser();
-
     await _database
         .child('plants')
         .child(plant.id)
         .child('isPublic')
         .set(isPublic);
-
-    await _database
-        .child('plants')
-        .child(plant.id)
-        .child('ownerId_isPublic')
-        .set("${user.uid}_$isPublic");
   }
 
   //
