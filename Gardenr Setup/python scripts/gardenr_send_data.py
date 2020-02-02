@@ -9,7 +9,7 @@ from time import sleep
 from datetime import datetime, timedelta
 from random import randint
 
-days_before_expiring = 8
+days_before_expiring = 7
 
 def main(delayed=True): 
     plant_id_path = os.path.expanduser('~') + '/gardenr/plant_id.txt' 
