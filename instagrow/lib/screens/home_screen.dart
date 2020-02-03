@@ -10,12 +10,11 @@ import 'package:instagrow/widgets/custom_icons.dart';
 class HomeScreen extends StatelessWidget {
   int _currentIndex = 0;
   final FirebaseUser user;
-  static const int TABS = 4;
+  static const int TABS = 3;
 
   GlobalKey<NavigatorState> navigatorKey0 = GlobalKey<NavigatorState>(),
       navigatorKey1 = GlobalKey<NavigatorState>(),
       navigatorKey2 = GlobalKey<NavigatorState>();
-  // navigatorKey3 = GlobalKey<NavigatorState>();
 
   HomeScreen(this.user);
 
@@ -23,30 +22,23 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
+        activeColor: Styles.activeColor(context),
         items: [
           BottomNavigationBarItem(
             icon: Icon(
               CupertinoIcons.home,
             ),
-            activeIcon: Icon(
-              CupertinoIcons.home,
-              color: Styles.activeColor(context),
-            ),
             title: Text("My Garden"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(CustomIcons.star),
-            activeIcon: Icon(
+            icon: Icon(
               CustomIcons.star,
-              color: Styles.activeColor(context),
             ),
             title: Text("Following"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.person),
-            activeIcon: Icon(
+            icon: Icon(
               CupertinoIcons.person,
-              color: Styles.activeColor(context),
             ),
             title: Text("My Profile"),
           ),
