@@ -1,18 +1,37 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'dart:collection';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/qr_translator.dart';
-import 'package:instagrow/utils/database_service.dart';
 
 void main() {
-  test('queryStringToQr', () async {
-    var db = FirebaseDatabase.instance.reference();
-    var res = await db.child('qrInstances').child('123').child('-LzI8rnUh84nhhUWO983').child('20200123160617617').once();
-    print(res.value);
+
+  String plantId = "PLANTID", qrKey = "-Lxyz725", qrTimestamp = "202002022020";
+  String displayedCode =  "$plantId${QrTranslator.separator}$qrKey${QrTranslator.separator}$qrTimestamp";
+  test('encodeQr', () {
+    
+    Plant testPlant = Plant("PLANTID", '', '', '', 0, 0, 0, '', '', false);
+    LinkedHashMap qrInstance = LinkedHashMap.fromIterables([qrKey], [qrTimestamp]);
+    String encoded = QrTranslator.encodeQr(testPlant, qrInstance);
+
+    expect(encoded, displayedCode);
+
   });
 
-  test('qrToQueryString', () {
-    String scanned = "[45, 76, 122, 73, 56, 114, 110, 85, 104, 56, 52, 110, 104, 104, 85, 87, 79, 57, 56, 51, 37, 37, 50, 48, 50, 48, 48, 49, 50, 51, 49, 54, 48, 54, 49, 55, 54, 49, 55]";
-    String result = QrTranslator.decodeQr(scanned);
-    print(result);
+  test('decodeQr', () {
+    String scanned = displayedCode;
+        
+    List<String> result = QrTranslator.decodeQr(scanned);
+    expect(result.length, 3);
+    expect(result[0], plantId);
+    expect(result[1], qrKey);
+    expect(result[2], qrTimestamp);
+  });
+
+  test('decodeQrFailed', () {
+    String invalidScannedCode = "Hello World";
+
+    List<String> result = QrTranslator.decodeQr(invalidScannedCode);
+    expect(result, null);
   });
 }

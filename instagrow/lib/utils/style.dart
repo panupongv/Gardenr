@@ -36,16 +36,20 @@ abstract class Styles {
 
   static TextStyle navigationBarTitle(context) {
     return TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: _defaultText(context));
+      fontFamily: 'SFPro',
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: _defaultText(context),
+    );
   }
 
   static TextStyle dashboardItemTitle(context) {
     return TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: _defaultText(context));
+      fontFamily: 'SFPro',
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: _defaultText(context),
+    );
   }
 
   static TextStyle dashboardItemDetail(context) {
@@ -54,9 +58,10 @@ abstract class Styles {
 
   static TextStyle plantProfileName(context) {
     return TextStyle(
-        color: _defaultText(context),
-        fontSize: 20,
-        fontWeight: FontWeight.bold);
+      color: _defaultText(context),
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
   }
 
   static TextStyle ownerNameActive(context) {

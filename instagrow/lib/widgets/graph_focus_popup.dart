@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 
-class GraphFocusScreen extends StatelessWidget {
+class GraphFocusPopup extends StatelessWidget {
   final String _title;
   final Widget _focusedGraph;
 
-  GraphFocusScreen(this._title, this._focusedGraph);
+  GraphFocusPopup(this._title, this._focusedGraph);
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +16,9 @@ class GraphFocusScreen extends StatelessWidget {
         quarterTurns: 1,
         child: CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
-            leading: navigationBarTextButton(
-              context,
-              "Close",
-              () {
-                Navigator.of(context).pop();
-              },
+            leading: GestureDetector(
+              child: Icon(CupertinoIcons.clear_thick),
+              onTap: Navigator.of(context).pop,
             ),
             middle: Text(
               _title,

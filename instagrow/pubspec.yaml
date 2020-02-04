@@ -66,7 +66,16 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/
+    - assets/images/caution_dark.png
+    - assets/images/caution_light.png
+    - assets/images/defaultplant.png
+    - assets/images/defaultprofile.png
+    - assets/images/logo_dark.png
+    - assets/images/logo_light.png
+    - assets/images/moisture_dark.png
+    - assets/images/moisture_light.png
+    - assets/images/temperature_dark.png
+    - assets/images/temperature_light.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -84,17 +93,20 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: SFPro
+      fonts:
+        - asset: assets/fonts/SFPro-Regular.ttf
+    # - family: Schyler
+    #   fonts:
+    #     - asset: fonts/Schyler-Regular.ttf
+    #     - asset: fonts/Schyler-Italic.ttf
+    #       style: italic
+    # - family: Trajan Pro
+    #   fonts:
+    #     - asset: fonts/TrajanPro.ttf
+    #     - asset: fonts/TrajanPro_Bold.ttf
+    #       weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

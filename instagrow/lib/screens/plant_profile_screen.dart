@@ -7,7 +7,6 @@ import 'package:instagrow/models/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/sensor_data.dart';
 import 'package:instagrow/models/user_profile.dart';
-import 'package:instagrow/screens/graph_focus_screen.dart';
 import 'package:instagrow/screens/other_user_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/screens/qr_screen.dart';
@@ -17,6 +16,7 @@ import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/circular_cached_image.dart';
 import 'package:instagrow/widgets/default_images.dart';
 import 'package:instagrow/widgets/description_expandable.dart';
+import 'package:instagrow/widgets/graph_focus_popup.dart';
 import 'package:instagrow/widgets/graph_title.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:instagrow/widgets/time_series_graphs.dart';
@@ -349,8 +349,8 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(darkThemed
-                        ? 'assets/caution_dark.png'
-                        : 'assets/caution_light.png'),
+                        ? 'assets/images/caution_dark.png'
+                        : 'assets/images/caution_light.png'),
                   ),
                 ),
               ),
@@ -381,7 +381,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             await showCupertinoModalPopup(
               context: context,
               builder: (BuildContext context) =>
-                  GraphFocusScreen("Soil Moisture Percentage", moistureGraph),
+                  GraphFocusPopup("Soil Moisture Percentage", moistureGraph),
             );
           },
         ),
@@ -392,7 +392,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             await showCupertinoModalPopup(
               context: context,
               builder: (BuildContext context) =>
-                  GraphFocusScreen("Temperature", temperatureGraph),
+                  GraphFocusPopup("Temperature", temperatureGraph),
             );
           },
         ),

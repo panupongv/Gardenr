@@ -12,9 +12,10 @@ class HomeScreen extends StatelessWidget {
   final FirebaseUser user;
   static const int TABS = 3;
 
-  GlobalKey<NavigatorState> navigatorKey0 = GlobalKey<NavigatorState>(),
-      navigatorKey1 = GlobalKey<NavigatorState>(),
-      navigatorKey2 = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> navigatorKey0 =
+          GlobalKey<NavigatorState>(debugLabel: 'key0'),
+      navigatorKey1 = GlobalKey<NavigatorState>(debugLabel: 'key1'),
+      navigatorKey2 = GlobalKey<NavigatorState>(debugLabel: 'key2');
 
   HomeScreen(this.user);
 
@@ -68,17 +69,20 @@ class HomeScreen extends StatelessWidget {
               builder: (BuildContext context) =>
                   DashBoardScreen(DashBoardContentType.Garden),
             );
+            break;
           case 1:
             return CupertinoTabView(
               navigatorKey: navigatorKey1,
               builder: (BuildContext context) =>
                   DashBoardScreen(DashBoardContentType.Following),
             );
+            break;
           case 2:
             return CupertinoTabView(
               navigatorKey: navigatorKey2,
               builder: (BuildContext context) => ProfileScreen(user),
             );
+            break;
         }
         return null;
       },

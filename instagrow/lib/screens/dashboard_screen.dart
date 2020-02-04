@@ -141,6 +141,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   void _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
+        // return CupertinoPageScaffold(navigationBar: CupertinoNavigationBar(middle: Text("FUCK"),), child: Text("xxxx"),);
         return PlantProfileScreen(
           _plants[index],
           _isMyPlant,
@@ -148,6 +149,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         );
       },
     );
+    // Navigator.of(context).push(plantProfileScreen);
     Navigator.of(context).push(plantProfileScreen).then((_) {
       if (_showSearch) {
         _searchFocusNode.requestFocus();
@@ -189,7 +191,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               onUpdate: _updateFilteredPlants,
             ),
           )
-        : navigationBarTitle(_title);
+        : navigationBarTitle(context, _title);
   }
 
   Widget _navigationBarTrailingWidget() {
@@ -221,7 +223,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         middle: _navigationBarMiddleWidget(),
         trailing: _navigationBarTrailingWidget(),
       ),
-      child:
+       child:
           DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed, []),
     );
   }

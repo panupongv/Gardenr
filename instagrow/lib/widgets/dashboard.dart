@@ -21,15 +21,15 @@ class DashBoard extends StatelessWidget {
       width: DASHBOARD_ICON_SIZE,
       height: DASHBOARD_ICON_SIZE,
       image: AssetImage(darkThemed
-          ? 'assets/moisture_dark.png'
-          : 'assets/moisture_light.png'),
+          ? 'assets/images/moisture_dark.png'
+          : 'assets/images/moisture_light.png'),
     );
     Widget temperatureIcon = Image(
       width: DASHBOARD_ICON_SIZE,
       height: DASHBOARD_ICON_SIZE,
       image: AssetImage(darkThemed
-          ? 'assets/temperature_dark.png'
-          : 'assets/temperature_light.png'),
+          ? 'assets/images/temperature_dark.png'
+          : 'assets/images/temperature_light.png'),
     );
 
     return CustomScrollView(

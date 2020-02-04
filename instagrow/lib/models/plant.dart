@@ -2,22 +2,22 @@ import 'dart:collection';
 import 'package:timeago/timeago.dart' as TimeAgo;
 
 class Plant {
-  String id, name, timeOffset, imageUrl, description, ownerId;
-  int utcTimeZone;
-  double moisture, temperature;
-  bool isPublic;
+  final String _id, _name, _timeOffset, _imageUrl, _description, _ownerId;
+  final int _utcTimeZone;
+  final double _moisture, _temperature;
+  final bool _isPublic;
 
   Plant(
-      this.id,
-      this.name,
-      this.ownerId,
-      this.timeOffset,
-      this.utcTimeZone,
-      this.moisture,
-      this.temperature,
-      this.imageUrl,
-      this.description,
-      this.isPublic);
+      this._id,
+      this._name,
+      this._ownerId,
+      this._timeOffset,
+      this._utcTimeZone,
+      this._moisture,
+      this._temperature,
+      this._imageUrl,
+      this._description,
+      this._isPublic);
 
   factory Plant.fromQueryData(
       String id, LinkedHashMap dataMap, DateTime refreshedTime) {
@@ -52,8 +52,9 @@ class Plant {
   static List<Plant> fromMap(LinkedHashMap nestedMap, DateTime refreshedTime) {
     List<Plant> plants = List();
     nestedMap.forEach((plantId, dataMap) {
-      if (plantId != null && dataMap != null) print(plantId);
-      plants.add(Plant.fromQueryData(plantId, dataMap, refreshedTime));
+      if (plantId != null && dataMap != null) {
+        plants.add(Plant.fromQueryData(plantId, dataMap, refreshedTime));
+      }
     });
     return plants;
   }
@@ -74,19 +75,19 @@ class Plant {
 
   String toJson() {
     String descriptionEscaped =
-        this.description.replaceAll("\n", "\\n").replaceAll('\"', '\\"');
+        this._description.replaceAll("\n", "\\n").replaceAll('\"', '\\"');
 
     String json = "{";
-    json += '"id": "$id", ';
-    json += '"name": "$name", ';
-    json += '"ownerId": "$ownerId", ';
-    json += '"timeOffset": "$timeOffset", ';
-    json += '"utcTimeZone": $utcTimeZone, ';
-    json += '"moisture": $moisture, ';
-    json += '"temperature": $temperature, ';
-    json += '"imageUrl": "$imageUrl", ';
+    json += '"id": "$_id", ';
+    json += '"name": "$_name", ';
+    json += '"ownerId": "$_ownerId", ';
+    json += '"timeOffset": "$_timeOffset", ';
+    json += '"utcTimeZone": $_utcTimeZone, ';
+    json += '"moisture": $_moisture, ';
+    json += '"temperature": $_temperature, ';
+    json += '"imageUrl": "$_imageUrl", ';
     json += '"description": "$descriptionEscaped", ';
-    json += '"isPublic": $isPublic';
+    json += '"isPublic": $_isPublic';
     json += "}";
     return json;
   }
@@ -97,5 +98,45 @@ class Plant {
         .where((Plant current) => current.id != plantId)
         .where((Plant current) => current.name == name)
         .isNotEmpty;
+  }
+
+  String get id {
+    return _id;
+  }
+
+  String get name {
+    return _name;
+  }
+
+  String get ownerId {
+    return _ownerId;
+  }
+
+  String get timeOffset {
+    return _timeOffset;
+  }
+
+  String get description {
+    return _description;
+  }
+
+  String get imageUrl {
+    return _imageUrl;
+  }
+
+  double get moisture {
+    return _moisture;
+  }
+
+  double get temperature {
+    return _temperature;
+  }
+
+  int get utcTimeZone {
+    return _utcTimeZone;
+  }
+
+  bool get isPublic {
+    return _isPublic;
   }
 }

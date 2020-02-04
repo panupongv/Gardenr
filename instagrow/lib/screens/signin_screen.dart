@@ -77,8 +77,9 @@ class _SignInScreenState extends State<SignInScreen> {
         width: PROFILE_TAB_IMAGE_SIZE,
         height: PROFILE_TAB_IMAGE_SIZE,
         child: Image(
-          image: AssetImage(
-              darkThemed ? 'assets/logo_dark.png' : 'assets/logo_light.png'),
+          image: AssetImage(darkThemed
+              ? 'assets/images/logo_dark.png'
+              : 'assets/images/logo_light.png'),
         ),
       ),
     );
@@ -92,9 +93,7 @@ class _SignInScreenState extends State<SignInScreen> {
           shrinkWrap: true,
           children: <Widget>[
             _appLogo(),
-            Container(
-              height: 16
-            ),
+            Container(height: 16),
             Container(
               height: 1,
               color: Styles.separatorLine(context),

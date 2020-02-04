@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:instagrow/models/plant.dart';
@@ -13,11 +12,12 @@ void main() {
       imageUrl = "IMAGEURL",
       description = "DESCRIPTION",
       timeUpdated = "20200101 0000",
-      timeOffset = "1 d";
+      timeOffset = "1 d",
+      ownerId = "OWNERID";
   DateTime refreshedTime = DateTime.parse("20200101 0030");
-
+  bool isPublic = true;
   String defaultJsonString =
-      '{"id": "PLANTID", "name": "NAME", "timeOffset": "1 d", "utcTimeZone": 0, "moisture": 1.0, "temperature": 2.0, "imageUrl": "IMAGEURL", "description": "DESCRIPTION"}';
+      '{"id": "PLANTID", "name": "NAME", "ownerId": "OWNERID", "timeOffset": "1 d", "utcTimeZone": 0, "moisture": 1.0, "temperature": 2.0, "imageUrl": "IMAGEURL", "description": "DESCRIPTION", "isPublic": true}';
 
   test('fromQueryData', () {
     Map tempMap = Map.fromIterables(<String>[
@@ -28,6 +28,8 @@ void main() {
       'imageUrl',
       'description',
       'timeUpdated',
+      'ownerId',
+      'isPublic',
     ], <dynamic>[
       name,
       utcTimeZone,
@@ -36,6 +38,8 @@ void main() {
       imageUrl,
       description,
       timeUpdated,
+      ownerId,
+      isPublic,
     ]);
 
     LinkedHashMap linkedHashMap = LinkedHashMap.from(tempMap);
@@ -50,14 +54,16 @@ void main() {
     expect(testPlant.imageUrl, imageUrl);
     expect(testPlant.description, description);
     expect(testPlant.timeOffset, "30 min");
+    expect(testPlant.ownerId, ownerId);
+    expect(testPlant.isPublic, isPublic);
   });
 
-  Plant testPlant = Plant(plantId, name, timeOffset, utcTimeZone, moisture,
-      temperature, imageUrl, description);
+  Plant testPlant = Plant(plantId, name, ownerId, timeOffset, utcTimeZone, moisture,
+      temperature, imageUrl, description, isPublic);
 
   test('fromMap', () {
     LinkedHashMap entriesWithNull =
-        LinkedHashMap.from(Map.fromIterables([null, "valid id"], [null, null]));
+        LinkedHashMap.fromIterables([null, "valid id"], [null, null]);
     List<Plant> plants = Plant.fromMap(entriesWithNull, null);
     expect(plants.isEmpty, true);
   });
@@ -83,31 +89,17 @@ void main() {
   test('hasDuplicateName', () {
     List<Plant> containsDuplicateName = [
       testPlant,
-      Plant('', 'some name', '', 0, 0, 0, '', ''),
-      Plant('', name, '', 0, 0, 0, '', '')
+      Plant('', 'some name', '', '', 0, 0, 0, '', '', false),
+      Plant('', name, '', '', 0, 0, 0, '', '', false)
     ],
         doesNotContainDuplicateName = [
       testPlant,
-      Plant('', 'some name', '', 0, 0, 0, '', ''),
-      Plant('', 'some name 2', '', 0, 0, 0, '', ''),
+      Plant('', 'some name', '', '', 0, 0, 0, '', '', false),
+      Plant('', 'some name 2', '', '', 0, 0, 0, '', '', false),
     ];
 
     expect(Plant.hasDuplicateName(plantId, name, containsDuplicateName), true);
     expect(Plant.hasDuplicateName(plantId, name, doesNotContainDuplicateName),
         false);
-  });
-
-  test('jsonDecode', () {
-
-    String description = "\"\"\"\"\"\""
-        .replaceAll("\n", "\\n")
-        .replaceAll('\"', '\\"');
-        // .replaceAll("'", "\'");
-
-    String json = '{"name": "$description"}';
-    // print(description);
-    print(json);
-    print(jsonDecode(json));
-    // print(jsonDecode('{"id":"abcd\\nabcd"}')['id']);
   });
 }

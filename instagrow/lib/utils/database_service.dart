@@ -264,7 +264,7 @@ class DatabaseService {
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
     Trace trace = FirebasePerformance.instance.newTrace('FollowingPlantsQuery');
-    await trace.start();
+    trace.start();
     FirebaseUser user = await AuthService.getUser();
     final int waitDurationInSec = 8;
     List<Plant> plants = await _getPlantsHelper(
@@ -277,7 +277,7 @@ class DatabaseService {
 
     LocalStorageService.saveFollowingPlants(plants);
 
-    await trace.putAttribute("Collection Size", plants.length.toString());
+    trace.putAttribute("Collection Size", plants.length.toString());
     trace.stop();
     return plants;
   }
@@ -296,7 +296,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    await trace.putAttribute("Collection Size", results.length.toString());
+    trace.putAttribute("Collection Size", results.length.toString());
     trace.stop();
     return results;
   }
@@ -305,8 +305,8 @@ class DatabaseService {
       String userId, DateTime refreshedTime) async {
     Trace trace =
         FirebasePerformance.instance.newTrace('OtherUserFollowingPlantsQuery');
-
     trace.start();
+
     List<String> myPlantIds = await _getMyPlantIds(),
         myFollowingPlantIds = await _getMyFollowingIds(),
         otherUserFollowingPlantIds =
@@ -318,7 +318,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    await trace.putAttribute("Collection Size", results.length.toString());
+    trace.putAttribute("Collection Size", results.length.toString());
     trace.stop();
     return results;
   }
@@ -402,7 +402,7 @@ class DatabaseService {
   }
 
   static Future<SensorData> getSensorData(String plantId, DateTime date) async {
-    Trace trace = FirebasePerformance.instance.newTrace('Get Sensor Data');
+    Trace trace = FirebasePerformance.instance.newTrace('GetSensorData');
     trace.start();
     String dateString = Jiffy(date).format("yyyyMMdd");
     DataSnapshot dataSnapshot = await _database
@@ -415,9 +415,10 @@ class DatabaseService {
     if (dataSnapshot != null && dataSnapshot.value != null) {
       LinkedHashMap hashMap = dataSnapshot.value;
       data = SensorData.fromMap(hashMap);
+      trace.setMetric("Has Actual Sensor Data", 1);
       trace.putAttribute("Collection Size", hashMap.length.toString());
     }
-
+    trace.setMetric("Has Actual Sensor Data", 0);
     trace.stop();
     return data;
   }
@@ -468,6 +469,9 @@ class DatabaseService {
   }
 
   static Future<bool> toggleFollowPlant(Plant targetPlant) async {
+    Trace trace = FirebasePerformance.instance.newTrace('ToggleFollowStatus');
+    trace.start();
+
     FirebaseUser user = await AuthService.getUser();
     Tuple2<bool, String> existAndReference =
         await _checkPlantExistsInCollection(targetPlant.id);
@@ -478,6 +482,9 @@ class DatabaseService {
           .child(user.uid)
           .child(existAndReference.item2)
           .remove();
+
+      trace.putAttribute("Action", "Unfollow");
+      trace.stop();
       return false;
     } else {
       await _database
@@ -485,6 +492,9 @@ class DatabaseService {
           .child(user.uid)
           .push()
           .set(targetPlant.id);
+
+      trace.putAttribute("Action", "Follow");
+      trace.stop();
       return true;
     }
   }
@@ -500,7 +510,7 @@ class DatabaseService {
   static Future<Tuple2<QrScanResult, String>> claimWithQr(
       String scanned) async {
     List<String> decoded = QrTranslator.decodeQr(scanned);
-    if (decoded != null && decoded.length == 3) {
+    if (decoded != null) {
       String plantId = decoded[0], key = decoded[1], hashValue = decoded[2];
 
       DataSnapshot newPlantSnapshot =
@@ -547,7 +557,7 @@ class DatabaseService {
   static Future<Tuple2<QrScanResult, String>> followWithQr(
       String scanned) async {
     List<String> decoded = QrTranslator.decodeQr(scanned);
-    if (decoded != null && decoded.length == 3) {
+    if (decoded != null) {
       String plantId = decoded[0], key = decoded[1], hashValue = decoded[2];
 
       DataSnapshot qrSearchResult =

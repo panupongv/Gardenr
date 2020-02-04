@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:instagrow/utils/style.dart';
 
 Widget defaultUserImage(BuildContext context) {
-  return grayBackground(context, AssetImage('assets/defaultprofile.png'));
+  return grayBackground(
+      context, AssetImage('assets/images/defaultprofile.png'));
 }
 
 Widget defaultPlantImage(BuildContext context) {
-  return grayBackground(context, AssetImage('assets/defaultplant.png'));
+  return grayBackground(context, AssetImage('assets/images/defaultplant.png'));
 }
 
 Widget progressIndicator(BuildContext context) {

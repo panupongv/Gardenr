@@ -48,8 +48,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         _displayNameChanged = _descriptionChanged = _privacyChanged = false;
     _profileImage = widget.profileImage ??
         AssetImage(widget.previousScreen == PreviousScreen.UserProfile
-            ? 'assets/defaultprofile.png'
-            : 'assets/defaultplant.png');
+            ? 'assets/images/defaultprofile.png'
+            : 'assets/images/defaultplant.png');
     _saving = false;
     _isPublic = widget.previousScreen != PreviousScreen.UserProfile
         ? widget.plant.isPublic
@@ -174,7 +174,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       _saving = true;
     });
 
-    Trace trace = FirebasePerformance.instance.newTrace('Saving Changes on Profile');
+    Trace trace =
+        FirebasePerformance.instance.newTrace('ApplyingChangesOnProfile');
     trace.start();
 
     if (_displayNameChanged &&
@@ -221,7 +222,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (_privacyChanged || previousScreen == PreviousScreen.AddMyPlant) {
       await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
     }
-
+    await trace.putAttribute("Profile Type", previousScreen.toString());
     trace.stop();
     Navigator.of(context).pop();
   }

@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/utils/style.dart';
 
-Text navigationBarTitle(String title) {
+Text navigationBarTitle(BuildContext context, String title) {
   return Text(
     title,
-    style: TextStyle(fontSize: 20),
+    style: Styles.navigationBarTitle(context),
   );
 }
 

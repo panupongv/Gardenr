@@ -8,16 +8,19 @@ import 'package:instagrow/utils/auth_service.dart';
 void main() => runApp(MainApp());
 
 class MainApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      theme: CupertinoTheme.of(context),
+      theme: CupertinoTheme.of(
+        context,
+      ),
       home: FutureBuilder<FirebaseUser>(
         future: AuthService.getUser(),
         builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.error == null && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.error == null &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               FirebaseUser user = snapshot.data;
               return HomeScreen(user);
             } else {

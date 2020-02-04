@@ -3,11 +3,7 @@ import 'dart:collection';
 import 'package:instagrow/models/plant.dart';
 
 class QrTranslator {
-  static const String separator = '%%';
-
-  static bool addMyPlants(String scannedCode) {
-    return true;
-  }
+  static const String separator = '%%%';
 
   static String encodeQr(Plant plant, LinkedHashMap<dynamic, dynamic> data) {
     String content = plant.id +
@@ -19,6 +15,10 @@ class QrTranslator {
   }
 
   static List<String> decodeQr(String scannedCode) {
-    return scannedCode.split(separator);
+    List<String> split = scannedCode.split(separator);
+    if (split.length != 3) {
+      return null;
+    }
+    return split;
   }
 }
