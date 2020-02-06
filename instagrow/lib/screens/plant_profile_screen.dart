@@ -197,7 +197,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
               CupertinoActionSheetAction(
                 child: Text(
                   "Edit Plant",
-                  style: Styles.actionSheetAction(context),
+                  // style: Styles.actionSheetAction(context),
                 ),
                 onPressed: () {
                   optionPicked = 1;

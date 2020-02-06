@@ -74,17 +74,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Future<void> _getImage() async {
     int sourcePicked = 0;
     CupertinoActionSheet actionSheet = CupertinoActionSheet(
-      title: Text("Image Source"),
       actions: <Widget>[
         CupertinoActionSheetAction(
-          child: Text("Camera"),
+          child: Text(
+            "Camera",
+            style: Styles.actionSheetAction(context),
+          ),
           onPressed: () {
             sourcePicked = 1;
             Navigator.of(context).pop();
           },
         ),
         CupertinoActionSheetAction(
-          child: Text("Photo Library"),
+          child: Text(
+            "Photo Library",
+            style: Styles.actionSheetAction(context),
+          ),
           onPressed: () {
             sourcePicked = 2;
             Navigator.of(context).pop();
@@ -92,7 +97,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         ),
       ],
       cancelButton: CupertinoActionSheetAction(
-        child: Text("Cancel"),
+        child: Text(
+          "Cancel",
+          style: Styles.actionSheetAction(context),
+        ),
         onPressed: () {
           Navigator.of(context).pop();
         },
@@ -137,12 +145,20 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Caution"),
+          title: Text(
+            "Duplicated Plant Names",
+            style: Styles.dialogTitle(context),
+          ),
           content: Text(
-              "A Plant named $name exists in your collection, would you like to proceed"),
+            "A Plant named $name exists in your collection, would you like to proceed",
+            style: Styles.dialogContent(context),
+          ),
           actions: <Widget>[
             CupertinoButton(
-              child: Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: Styles.dialogActionNormal(context),
+              ),
               onPressed: () {
                 confirmed = false;
                 Navigator.of(context).pop();
@@ -151,6 +167,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             CupertinoButton(
               child: Text(
                 "Confirm",
+                style: Styles.dialogActionNormal(context),
               ),
               onPressed: () {
                 confirmed = true;
@@ -185,6 +202,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (Plant.hasDuplicateName(widget.plant.id, name, widget.plantList)) {
         bool confirmed = await _confirmDuplicatePlantName(name);
         if (!confirmed) {
+          setState(() {
+            _saving = false;
+          });
           return;
         }
       }

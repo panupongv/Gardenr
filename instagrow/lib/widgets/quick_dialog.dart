@@ -1,12 +1,22 @@
 import 'package:flutter/cupertino.dart';
+import 'package:instagrow/utils/style.dart';
 
-Widget getQuickAlertDialog(context, title, content, buttonContent) {
+Widget quickAlertDialog(context, title, content, buttonContent) {
   return CupertinoAlertDialog(
-    title: Text(title),
-    content: Text(content),
+    title: Text(
+      title,
+      style: Styles.dialogTitle(context),
+    ),
+    content: Text(
+      content,
+      style: Styles.dialogContent(context),
+    ),
     actions: <Widget>[
       CupertinoDialogAction(
-        child: Text(buttonContent),
+        child: Text(
+          buttonContent,
+          style: Styles.dialogActionNormal(context),
+        ),
         onPressed: () {
           Navigator.of(context).pop();
         },

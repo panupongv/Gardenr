@@ -29,19 +29,19 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(
               CupertinoIcons.home,
             ),
-            title: Text("My Garden"),
+            title: Text("My Garden", style: Styles.tabTitle(context),),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               CustomIcons.star,
             ),
-            title: Text("Following"),
+            title: Text("Following", style: Styles.tabTitle(context),),
           ),
           BottomNavigationBarItem(
             icon: Icon(
               CupertinoIcons.person,
             ),
-            title: Text("My Profile"),
+            title: Text("My Profile", style: Styles.tabTitle(context),),
           ),
         ],
         onTap: (int index) {

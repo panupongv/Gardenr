@@ -1,4 +1,3 @@
-// import 'package:barcode_scan/barcode_scan.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -84,17 +83,17 @@ class _DashBoardScreenState extends State<DashBoardScreen>
       showCupertinoDialog(
           context: context,
           builder: (BuildContext context) => CupertinoAlertDialog(
-                title: Text("Oops"),
-                content: Text(claimResult.item2),
+                title: Text("Oops", style: Styles.dialogTitle(context),),
+                content: Text(claimResult.item2, style: Styles.dialogTitle(context),),
                 actions: <Widget>[
                   CupertinoDialogAction(
-                    child: Text("Dismiss"),
+                    child: Text("Dismiss", style: Styles.dialogActionNormal(context),),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
                   CupertinoDialogAction(
-                    child: Text("Follow"),
+                    child: Text("Follow", style: Styles.dialogActionNormal(context),),
                     onPressed: () {
                       Navigator.of(context).pop();
                       _followScannedCode(scanned);
@@ -105,7 +104,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     } else {
       showCupertinoDialog(
           context: context,
-          builder: (BuildContext context) => getQuickAlertDialog(
+          builder: (BuildContext context) => quickAlertDialog(
               context, "Oops", claimResult.item2, "Dismiss"));
     }
   }
@@ -116,13 +115,13 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     if (followResult.item1 == QrScanResult.Success) {
       showCupertinoDialog(
         context: context,
-        builder: (BuildContext context) => getQuickAlertDialog(
+        builder: (BuildContext context) => quickAlertDialog(
             context, "Success", followResult.item2, "Dismiss"),
       );
     } else {
       showCupertinoDialog(
         context: context,
-        builder: (BuildContext context) => getQuickAlertDialog(
+        builder: (BuildContext context) => quickAlertDialog(
             context, "Oops", followResult.item2, "Dismiss"),
       );
     }
@@ -142,7 +141,6 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   void _onItemPressed(int index) async {
     Route plantProfileScreen = CupertinoPageRoute(
       builder: (context) {
-        // return CupertinoPageScaffold(navigationBar: CupertinoNavigationBar(middle: Text("FUCK"),), child: Text("xxxx"),);
         return PlantProfileScreen(
           _plants[index],
           _isMyPlant,

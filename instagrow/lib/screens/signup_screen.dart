@@ -42,19 +42,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return getQuickAlertDialog(
-              context,
-              "Missing Field",
-              "Please enter your " + (email == "" ? "email" : "password"),
-              "Dismiss");
+          return quickAlertDialog(
+            context,
+            "Missing Field",
+            "Please enter your " + (email == "" ? "email" : "password"),
+            "Dismiss",
+          );
         },
       );
     } else if (passwordMismatch) {
       showCupertinoDialog(
         context: context,
         builder: (BuildContext context) {
-          return getQuickAlertDialog(context, "Passwords Mismatch",
-              "Please make sure entered passwords are identical", "Dismiss");
+          return quickAlertDialog(
+            context,
+            "Passwords Mismatch",
+            "Please make sure entered passwords are identical",
+            "Dismiss",
+          );
         },
       );
     } else {
@@ -70,11 +75,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 "An email has been sent to %s. Please verify your email before attempting to login.",
                 [email]);
             return CupertinoAlertDialog(
-              title: Text("Account Created"),
-              content: Text(_content),
+              title: Text(
+                "Account Created",
+                style: Styles.dialogTitle(context),
+              ),
+              content: Text(
+                _content,
+                style: Styles.dialogContent(context),
+              ),
               actions: <Widget>[
                 CupertinoDialogAction(
-                  child: Text("OK"),
+                  child: Text(
+                    "OK",
+                    style: Styles.dialogActionNormal(context),
+                  ),
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(email);
@@ -89,8 +103,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         showCupertinoDialog(
           context: context,
           builder: (BuildContext context) {
-            return getQuickAlertDialog(
-                context, "Authentication Error", message, "Dismiss");
+            return quickAlertDialog(
+              context,
+              "Authentication Error",
+              message,
+              "Dismiss",
+            );
           },
         );
       }
@@ -100,8 +118,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-      ),
+      navigationBar: CupertinoNavigationBar(),
       child: Center(
         child: ListView(
           shrinkWrap: true,
