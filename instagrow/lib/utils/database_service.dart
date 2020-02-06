@@ -188,16 +188,15 @@ class DatabaseService {
   //
   //
 
-
   static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
     int queryAlgorithm = Random().nextInt(2);
-    
+
     FirebaseUser user = await AuthService.getUser();
     int waitDurationInSeconds = 8;
 
     if (queryAlgorithm == 0) {
       Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
-      trace.putAttribute("Query Algorithm", "Without Index");
+      trace.putAttribute("QueryAlgorithm", "Without Index");
       trace.start();
       List<Plant> plants =
           await _getPlantsHelper('ownedPlants', user.uid, refreshedTime)
@@ -206,8 +205,8 @@ class DatabaseService {
 
       if (plants != null) {
         LocalStorageService.saveMyPlants(plants);
-        
-        trace.putAttribute("Collection Size", plants.length.toString());
+
+        trace.putAttribute("CollectionSize", plants.length.toString());
         trace.stop();
         return plants;
       }
@@ -216,7 +215,7 @@ class DatabaseService {
       return await LocalStorageService.loadMyPlants();
     } else {
       Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
-      trace.putAttribute("Query Algorithm", "With Custom Index");
+      trace.putAttribute("QueryAlgorithm", "With Custom Index");
       trace.start();
       DataSnapshot snapshot = await _database
           .child('plants')
@@ -237,7 +236,7 @@ class DatabaseService {
         plants = Plant.fromMap(snapshot.value, refreshedTime);
         LocalStorageService.saveMyPlants(plants);
       }
-      trace.putAttribute("Collection Size", plants.length.toString());
+      trace.putAttribute("CollectionSize", plants.length.toString());
       trace.stop();
       return plants;
     }
@@ -245,7 +244,7 @@ class DatabaseService {
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
     Trace trace = FirebasePerformance.instance.newTrace('FollowingPlantsQuery');
-    await trace.start();
+    trace.start();
     FirebaseUser user = await AuthService.getUser();
     final int waitDurationInSec = 8;
     List<Plant> plants = await _getPlantsHelper(
@@ -258,8 +257,8 @@ class DatabaseService {
 
     LocalStorageService.saveFollowingPlants(plants);
 
-    await trace.putAttribute("Collection Size", plants.length.toString());
-    await trace.stop();
+    trace.putAttribute("CollectionSize", plants.length.toString());
+    trace.stop();
     return plants;
   }
 
@@ -277,7 +276,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    trace.putAttribute("Collection Size", results.length.toString());
+    trace.putAttribute("CollectionSize", results.length.toString());
     trace.stop();
     return results;
   }
@@ -299,7 +298,7 @@ class DatabaseService {
       refreshedTime,
     );
 
-    trace.putAttribute("Collection Size", results.length.toString());
+    trace.putAttribute("CollectionSize", results.length.toString());
     trace.stop();
     return results;
   }
@@ -419,10 +418,11 @@ class DatabaseService {
     if (dataSnapshot != null && dataSnapshot.value != null) {
       LinkedHashMap hashMap = dataSnapshot.value;
       data = SensorData.fromMap(hashMap);
-      trace.setMetric("Has Actual Sensor Data", 1);
-      trace.putAttribute("Collection Size", hashMap.length.toString());
+      trace.setMetric("HasActualSensorData", 1);
+      trace.putAttribute("CollectionSize", hashMap.length.toString());
+    } else {
+      trace.setMetric("HasActualSensorData", 0);
     }
-    trace.setMetric("Has Actual Sensor Data", 0);
     trace.stop();
     return data;
   }

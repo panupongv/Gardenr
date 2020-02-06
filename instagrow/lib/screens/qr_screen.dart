@@ -73,18 +73,29 @@ class _QRScreenState extends State<QRScreen> {
                     context: context,
                     builder: (BuildContext context) {
                       return CupertinoAlertDialog(
-                        title: Text("Renew QR Code"),
-                        content:
-                            Text("The current QR code will be deactivated."),
+                        title: Text(
+                          "Renew QR Code",
+                          style: Styles.dialogTitle(context),
+                        ),
+                        content: Text(
+                          "The current QR code will be deactivated.",
+                          style: Styles.dialogContent(context),
+                        ),
                         actions: <Widget>[
                           CupertinoDialogAction(
-                            child: Text("Cancel"),
+                            child: Text(
+                              "Cancel",
+                              style: Styles.dialogActionNormal(context),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                           CupertinoDialogAction(
-                            child: Text("Confirm"),
+                            child: Text(
+                              "Confirm",
+                              style: Styles.dialogActionNormal(context),
+                            ),
                             onPressed: () {
                               DatabaseService.createQrInstance(widget._plant)
                                   .then((String newCode) {

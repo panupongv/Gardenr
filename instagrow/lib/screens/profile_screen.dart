@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CupertinoActionSheetAction(
               child: Text(
                 "Logout",
-                style: Styles.logOutButton(context),
+                style: Styles.actionSheetActionRed(context),
               ),
               onPressed: () {
                 selectedOption = 2;
@@ -113,11 +113,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Logout"),
-          content: Text("Are you sure you want to logout?"),
+          title: Text(
+            "Logout",
+            style: Styles.dialogTitle(context),
+          ),
+          content: Text(
+            "Are you sure you want to logout?",
+            style: Styles.dialogContent(context),
+          ),
           actions: <Widget>[
             CupertinoButton(
-              child: Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: Styles.dialogActionNormal(context),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -125,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CupertinoButton(
               child: Text(
                 "Logout",
-                style: Styles.logOutButton(context),
+                style: Styles.dialogActionCrucial(context),
               ),
               onPressed: () async {
                 await AuthService.logOut().then(
