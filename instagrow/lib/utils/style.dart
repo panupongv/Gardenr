@@ -45,7 +45,6 @@ abstract class Styles {
     return TextStyle(
       fontFamily: 'SFPro',
       fontSize: 17,
-      fontWeight: FontWeight.w600,
       color: _defaultText(context),
     );
   }

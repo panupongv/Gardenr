@@ -128,6 +128,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               color: Styles.separatorLine(context),
             ),
             CupertinoTextField(
+              
               placeholder: "Email",
               keyboardType: TextInputType.emailAddress,
               decoration: Styles.textFieldDecoration(context),
