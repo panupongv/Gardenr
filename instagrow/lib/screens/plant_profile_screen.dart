@@ -368,8 +368,6 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
       );
     }
 
-    print(_sensorData.entryCount);
-
     TimeSeriesGraphs graphs = TimeSeriesGraphs(_sensorData);
     Widget moistureGraph = graphs.moistureGraph(context),
         temperatureGraph = graphs.temperatureGraph(context);
@@ -381,7 +379,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
             await showCupertinoModalPopup(
               context: context,
               builder: (BuildContext context) =>
-                  GraphFocusPopup("Soil Moisture Percentage", moistureGraph),
+                  GraphFocusPopup("Soil Moisture", moistureGraph),
             );
           },
         ),

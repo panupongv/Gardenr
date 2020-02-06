@@ -22,7 +22,7 @@ class _DescriptionExpandableState extends State<DescriptionExpandable> {
     super.initState();
   }
 
-  GestureDetector _showLessOrMoreButton() {
+  Widget _showLessOrMoreButton() {
     return GestureDetector(
       child: Text(
         showingMore ? "\nshow less" : "\n... more",

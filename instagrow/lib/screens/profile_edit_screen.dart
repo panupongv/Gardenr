@@ -246,7 +246,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                         left: 12,
                       ),
                       child: Text(
-                        "Visible to Non-Followers",
+                        "Visible to Non-followers",
                         style: Styles.toggleVisible(context),
                       ),
                     ),

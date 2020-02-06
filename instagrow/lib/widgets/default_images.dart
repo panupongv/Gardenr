@@ -18,10 +18,11 @@ Widget progressIndicator(BuildContext context) {
   );
 }
 
-Container grayBackground(BuildContext context, ImageProvider image) {
+Widget grayBackground(BuildContext context, ImageProvider image) {
   return Container(
     decoration: BoxDecoration(
-        color: Styles.dynamicGray(context),
-        image: DecorationImage(image: image)),
+      color: Styles.dynamicGray(context),
+      image: DecorationImage(image: image),
+    ),
   );
 }

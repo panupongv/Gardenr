@@ -25,8 +25,6 @@ void main() {
     );
 
     SensorData sensorData = SensorData.fromMap(data);
-    print(sensorData.moistures);
-    print(sensorData.temperatures);
     
     expect(sensorData.entryCount, 5);
     expect(sensorData.moistures[12], 6.0);

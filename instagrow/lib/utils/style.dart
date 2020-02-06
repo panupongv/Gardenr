@@ -38,7 +38,6 @@ abstract class Styles {
     return TextStyle(
       fontFamily: 'SFPro',
       fontSize: 20,
-      fontWeight: FontWeight.bold,
       color: _defaultText(context),
     );
   }
@@ -47,25 +46,28 @@ abstract class Styles {
     return TextStyle(
       fontFamily: 'SFPro',
       fontSize: 18,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
       color: _defaultText(context),
     );
   }
 
   static TextStyle dashboardItemDetail(context) {
-    return TextStyle(fontSize: 14, color: dynamicGray(context));
+    return TextStyle(
+        fontFamily: 'SFPro', fontSize: 14, color: dynamicGray(context));
   }
 
   static TextStyle plantProfileName(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       color: _defaultText(context),
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
     );
   }
 
   static TextStyle ownerNameActive(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: activeColor(context),
       decoration: TextDecoration.underline,
@@ -74,6 +76,7 @@ abstract class Styles {
 
   static TextStyle ownerNameInactive(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: dynamicGray(context),
     );
@@ -81,6 +84,7 @@ abstract class Styles {
 
   static TextStyle plantTimeText(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: dynamicGray(context),
     );
@@ -88,6 +92,7 @@ abstract class Styles {
 
   static TextStyle noDataAvailable(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       color: dynamicGray(context),
     );
@@ -95,6 +100,7 @@ abstract class Styles {
 
   static TextStyle editFieldText(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: _defaultText(context),
     );
@@ -102,6 +108,7 @@ abstract class Styles {
 
   static TextStyle descriptionExpandableText(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       color: _defaultText(context),
     );
@@ -109,6 +116,7 @@ abstract class Styles {
 
   static TextStyle moreLessButton(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       color: Styles.dynamicGray(context),
     );
@@ -116,6 +124,7 @@ abstract class Styles {
 
   static TextStyle dataFromDate(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       color: _defaultText(context),
     );
@@ -123,6 +132,7 @@ abstract class Styles {
 
   static TextStyle datePickerButton(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       color: activeColor(context),
     );
@@ -130,6 +140,7 @@ abstract class Styles {
 
   static TextStyle datePickerText(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 20,
       color: _defaultText(context),
     );
@@ -137,27 +148,36 @@ abstract class Styles {
 
   static TextStyle actionSheetAction(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 20,
       color: activeColor(context),
     );
   }
 
   static TextStyle navigationBarTextActive(context) {
-    return TextStyle(color: activeColor(context));
+    return TextStyle(
+      fontFamily: 'SFPro',
+      color: activeColor(context),
+    );
   }
 
   static TextStyle navigationBarTextInActive(context) {
-    return TextStyle(color: dynamicGray(context));
+    return TextStyle(
+      fontFamily: 'SFPro',
+      color: dynamicGray(context),
+    );
   }
 
   static TextStyle toggleVisible(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       color: _defaultText(context),
     );
   }
 
   static TextStyle aboutUser(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: dynamicGray(context),
     );
@@ -165,6 +185,7 @@ abstract class Styles {
 
   static TextStyle logOutButton(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 20,
       color: _dynamicColor(
         context,
@@ -180,6 +201,7 @@ abstract class Styles {
 
   static TextStyle graphTitle(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 16,
       fontWeight: FontWeight.bold,
       color: _defaultText(context),
@@ -188,6 +210,7 @@ abstract class Styles {
 
   static TextStyle searchText(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       color: _defaultText(context),
       fontSize: 14,
       fontStyle: FontStyle.normal,
@@ -197,6 +220,7 @@ abstract class Styles {
 
   static TextStyle changeImage(context) {
     return TextStyle(
+      fontFamily: 'SFPro',
       fontSize: 14,
       color: CupertinoColors.activeBlue,
     );
@@ -239,6 +263,7 @@ abstract class Styles {
   }
 
   static TextStyle segmentControl = TextStyle(
+    fontFamily: 'SFPro',
     fontSize: 14,
   );
 

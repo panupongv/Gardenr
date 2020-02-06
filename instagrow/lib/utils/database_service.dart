@@ -188,38 +188,17 @@ class DatabaseService {
   //
   //
 
-  static Future<Plant> _getPlantById(
-      String plantId, DateTime refreshedTime) async {
-    DataSnapshot snapshot =
-        await _database.child('plants').child(plantId).once();
-    if (snapshot != null && snapshot.value != null) {
-      return Plant.fromQueryData(plantId, snapshot.value, refreshedTime);
-    }
-    return null;
-  }
-
-  static Future<Plant> _getPublicPlantById(
-      String plantId, DateTime refreshedTime) async {
-    DataSnapshot privacySnapshot =
-        await _database.child('plants').child(plantId).child('isPublic').once();
-    if (privacySnapshot != null && privacySnapshot.value == true) {
-      DataSnapshot plantSnapshot =
-          await _database.child('plants').child(plantId).once();
-      if (plantSnapshot != null && plantSnapshot.value != null) {
-        return Plant.fromQueryData(plantId, plantSnapshot.value, refreshedTime);
-      }
-    }
-    return null;
-  }
 
   static Future<List<Plant>> getMyPlants(DateTime refreshedTime) async {
     int queryAlgorithm = Random().nextInt(2);
-    Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
-    await trace.start();
+    
     FirebaseUser user = await AuthService.getUser();
     int waitDurationInSeconds = 8;
 
     if (queryAlgorithm == 0) {
+      Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
+      trace.putAttribute("Query Algorithm", "Without Index");
+      trace.start();
       List<Plant> plants =
           await _getPlantsHelper('ownedPlants', user.uid, refreshedTime)
               .timeout(Duration(seconds: waitDurationInSeconds),
@@ -227,7 +206,7 @@ class DatabaseService {
 
       if (plants != null) {
         LocalStorageService.saveMyPlants(plants);
-        trace.putAttribute("Query Algorithm", "Without Index");
+        
         trace.putAttribute("Collection Size", plants.length.toString());
         trace.stop();
         return plants;
@@ -236,6 +215,9 @@ class DatabaseService {
       trace.stop();
       return await LocalStorageService.loadMyPlants();
     } else {
+      Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
+      trace.putAttribute("Query Algorithm", "With Custom Index");
+      trace.start();
       DataSnapshot snapshot = await _database
           .child('plants')
           .orderByChild('ownerId')
@@ -255,7 +237,6 @@ class DatabaseService {
         plants = Plant.fromMap(snapshot.value, refreshedTime);
         LocalStorageService.saveMyPlants(plants);
       }
-      trace.putAttribute("Query Algorithm", "With Custom Index");
       trace.putAttribute("Collection Size", plants.length.toString());
       trace.stop();
       return plants;
@@ -264,7 +245,7 @@ class DatabaseService {
 
   static Future<List<Plant>> getFollowingPlants(DateTime refreshedTime) async {
     Trace trace = FirebasePerformance.instance.newTrace('FollowingPlantsQuery');
-    trace.start();
+    await trace.start();
     FirebaseUser user = await AuthService.getUser();
     final int waitDurationInSec = 8;
     List<Plant> plants = await _getPlantsHelper(
@@ -277,8 +258,8 @@ class DatabaseService {
 
     LocalStorageService.saveFollowingPlants(plants);
 
-    trace.putAttribute("Collection Size", plants.length.toString());
-    trace.stop();
+    await trace.putAttribute("Collection Size", plants.length.toString());
+    await trace.stop();
     return plants;
   }
 
@@ -343,12 +324,11 @@ class DatabaseService {
 
   static Future<void> _addQueriedPlantToList(
       String plantId, List<Plant> plants, DateTime refreshedTime) async {
-    DataSnapshot queryResult =
-        await _database.child('plants').child(plantId).once();
-    if (queryResult == null || queryResult.value == null) {
+    Plant plant = await _getPlantById(plantId, refreshedTime);
+    if (plant == null) {
       return;
     }
-    plants.add(Plant.fromQueryData(plantId, queryResult.value, refreshedTime));
+    plants.add(plant);
   }
 
   static Future<List<String>> _getMyPlantIds() async {
@@ -399,6 +379,30 @@ class DatabaseService {
       return hashMap.values.map((x) => x.toString()).toList();
     }
     return [];
+  }
+
+  static Future<Plant> _getPlantById(
+      String plantId, DateTime refreshedTime) async {
+    DataSnapshot snapshot =
+        await _database.child('plants').child(plantId).once();
+    if (snapshot != null && snapshot.value != null) {
+      return Plant.fromQueryData(plantId, snapshot.value, refreshedTime);
+    }
+    return null;
+  }
+
+  static Future<Plant> _getPublicPlantById(
+      String plantId, DateTime refreshedTime) async {
+    DataSnapshot privacySnapshot =
+        await _database.child('plants').child(plantId).child('isPublic').once();
+    if (privacySnapshot != null && privacySnapshot.value == true) {
+      DataSnapshot plantSnapshot =
+          await _database.child('plants').child(plantId).once();
+      if (plantSnapshot != null && plantSnapshot.value != null) {
+        return Plant.fromQueryData(plantId, plantSnapshot.value, refreshedTime);
+      }
+    }
+    return null;
   }
 
   static Future<SensorData> getSensorData(String plantId, DateTime date) async {

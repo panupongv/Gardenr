@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-CupertinoAlertDialog getQuickAlertDialog(context, title, content, buttonContent) {
+Widget getQuickAlertDialog(context, title, content, buttonContent) {
   return CupertinoAlertDialog(
     title: Text(title),
     content: Text(content),

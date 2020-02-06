@@ -1,11 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signin_screen.dart';
 import 'package:instagrow/utils/auth_service.dart';
 
-void main() => runApp(MainApp());
+void main() {
+  Crashlytics.instance.enableInDevMode = true;
+  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  runApp(MainApp());
+}
 
 class MainApp extends StatelessWidget {
   @override
