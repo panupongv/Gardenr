@@ -42,11 +42,12 @@ class _SignInScreenState extends State<SignInScreen> {
       showCupertinoDialog(
         context: context,
         builder: (context) {
-          return getQuickAlertDialog(
-              context,
-              "Missing Field",
-              "Please enter your " + (email == "" ? "email" : "password"),
-              "Dismiss");
+          return quickAlertDialog(
+            context,
+            "Missing Field",
+            "Please enter your " + (email == "" ? "email" : "password"),
+            "Dismiss",
+          );
         },
       );
     } else {
@@ -61,11 +62,12 @@ class _SignInScreenState extends State<SignInScreen> {
       } else {
         String message = signInResult.item2;
         showCupertinoDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return getQuickAlertDialog(
-                  context, "Authentication Error", message, "Dismiss");
-            });
+          context: context,
+          builder: (BuildContext context) {
+            return quickAlertDialog(
+                context, "Authentication Error", message, "Dismiss");
+          },
+        );
       }
     }
   }

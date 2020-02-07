@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
               return SignInScreen();
             }
           } else {
-            return Text("WAIT");
+            return Container();
           }
         },
       ),

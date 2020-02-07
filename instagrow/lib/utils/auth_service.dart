@@ -36,7 +36,7 @@ class AuthService {
       String email, String password) async {
     Trace trace = FirebasePerformance.instance.newTrace('Sign Up');
     trace.start();
-    Tuple2 signUpResult;
+    Tuple2<FirebaseUser, String> signUpResult;
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);

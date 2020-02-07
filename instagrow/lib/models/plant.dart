@@ -94,6 +94,9 @@ class Plant {
 
   static bool hasDuplicateName(
       String plantId, String name, List<Plant> plants) {
+    if (plants == null) {
+      return false;
+    }
     return plants
         .where((Plant current) => current.id != plantId)
         .where((Plant current) => current.name == name)

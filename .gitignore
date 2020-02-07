@@ -79,3 +79,5 @@ coverage/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 
+evaluations/private.py
+Gardenr Setup/python scripts/private.py
