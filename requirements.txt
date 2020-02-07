@@ -20,33 +20,34 @@ Gardenr Device (Raspberry PI + sensors + other components)
 		-Evaluating plant health with image processing/color detection
 
 		
-Server (Firebase Realtime Database + Cloud Function)
+Server (Firebase Realtime Database)
 	Must Have:
 		-Stores data in tree-like structure (eg. JSON)
 		-Triggers updates/notification on clients when data is received
-		-Social media platform, stores relationship between users and plants (eg. following)
-		-API for retrieving owns and following plants' latest and time series data
+		-Allow clients to query latest and time series data
 
 	Should Have:
-		-Game-like mechanisms eg. achievements/medals for users to unlock (water a plant for 7 consecutive days, had a plant gone up to 40°, etc.)
+		-Social media platform, users can follow each other or follow other Gardenr devices
+		-Approximate and store the regular time when each plant is being watered
+		-Notifies users if plants are not being watered as usual
+		-Detects and notifies abnormal sensor conditions (eg. moisture sensor getting rusty/worn out)
 
 	Could Have
-		-Notifies users if plants are not being watered as usual
-		-Approximate and store the regular time when each plant is being watered
-		-Detects and notifies abnormal sensor conditions (eg. moisture sensor getting rusty/worn out)
+		-Game-like mechanisms eg. achievements/medals for users to unlock (water a plant for 7 consecutive days, had a plant gone up to 40°, etc.)
 
 
 User Interface (Flutter)
 	Must Have:
 		-User authentication system
 		-Visualises data fetched from the server (panels for real time data, graphs for time range data)
+
+	Should Have:
 		-Activate and claim ownership of Gardenr devices via Bluetooth
 		-List of all belonging plants
-		-Plant profile section: name, species, description, optional photo, latest sensor values + graphs
 		
-	Should Have:
+	Could Have:
 		-Follows another plant by ID
 		-Access to user profiles, their list of plants and unlocked achievement
-		
+		-*Plant profile section*: name, species, description, optional photo, latest sensor values + graphs
 		
 
