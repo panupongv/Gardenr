@@ -14,7 +14,7 @@ def add_plant(db, user_id, plant_name):
             'ownerId':user_id,
             'timeUpdated':'20200206 1500',
             'utcTimeZone':0}
-    plant_id = db.child('plants').push(mock_data)
+    plant_id = db.child('plants').push(mock_data)['name']
     return plant_id
 
 def add_to_garden(db, user_id, plant_id):
@@ -38,7 +38,10 @@ def main():
     for i in range(count):
         plant_name = prefix+str(i)
         plant_id = add_plant(db, user_id, plant_name)
+        print(plant_id)
         add_to_garden(db, user_id, plant_id)
 
 if __name__ == "__main__":
     main()
+
+
