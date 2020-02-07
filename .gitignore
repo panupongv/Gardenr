@@ -1,5 +1,5 @@
 .DS_Store
-/flutter
+.vscode
 
 *.class
 *.lock
@@ -66,6 +66,7 @@ version
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner/GoogleService-Info.plist
 
 # Coverage
 coverage/
@@ -78,3 +79,5 @@ coverage/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 
+evaluations/private.py
+Gardenr Setup/python scripts/private.py
