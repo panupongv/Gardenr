@@ -84,7 +84,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
           context: context,
           builder: (BuildContext context) => CupertinoAlertDialog(
                 title: Text("Oops", style: Styles.dialogTitle(context),),
-                content: Text(claimResult.item2, style: Styles.dialogTitle(context),),
+                content: Text(claimResult.item2, style: Styles.dialogContent(context),),
                 actions: <Widget>[
                   CupertinoDialogAction(
                     child: Text("Dismiss", style: Styles.dialogActionNormal(context),),
