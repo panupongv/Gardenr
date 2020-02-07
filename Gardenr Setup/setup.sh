@@ -1,8 +1,8 @@
 # Python dependencies
 
-pip install pyrebase
-pip install pyqrcode
-pip install pytz
+pip3 install pyrebase
+pip3 install pyqrcode
+pip3 install pytz
 
 
 # Overwrite validation (for repeated execution)
@@ -45,13 +45,13 @@ rm temppathfile
 
 #Run registration script
 
-python "$currentPath/python scripts/gardenr_register.py"
+python3 "$currentPath/python scripts/gardenr_register.py"
 
 # Schedule data uploads
 
 touch tempfile
 crontab -l > tempfile
-echo "*/30 * * * * python $escapedPath/python\ scripts/gardenr_send_data.py" >> tempfile
+echo "*/30 * * * * python3 $escapedPath/python\ scripts/gardenr_send_data.py" >> tempfile
 crontab tempfile
 rm tempfile
 

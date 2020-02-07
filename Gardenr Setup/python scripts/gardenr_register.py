@@ -24,7 +24,7 @@ def main():
 
     key = db.child('qrInstances').child(new_plant_id).push(hashValue).values()[0]
 
-    separator = '%%'
+    separator = '%%%'
 
     qr_actual_content = new_plant_id + separator + key + separator + hashValue
 
