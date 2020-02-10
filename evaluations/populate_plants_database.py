@@ -38,7 +38,6 @@ def main():
     for i in range(count):
         plant_name = prefix+str(i)
         plant_id = add_plant(db, user_id, plant_name)
-        print(plant_id)
         add_to_garden(db, user_id, plant_id)
 
 if __name__ == "__main__":
