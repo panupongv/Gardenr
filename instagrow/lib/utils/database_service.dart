@@ -211,8 +211,10 @@ class DatabaseService {
         return plants;
       }
 
+      plants = await LocalStorageService.loadMyPlants();
       trace.stop();
-      return await LocalStorageService.loadMyPlants();
+      return plants;
+      
     } else {
       Trace trace = FirebasePerformance.instance.newTrace('MyPlantsQuery');
       trace.putAttribute("QueryAlgorithm", "With Custom Index");
@@ -227,8 +229,9 @@ class DatabaseService {
             onTimeout: () => null,
           );
       if (snapshot == null) {
+        List<Plant> plants = await LocalStorageService.loadMyPlants();
         trace.stop();
-        return await LocalStorageService.loadMyPlants();
+        return plants;
       }
 
       List<Plant> plants = List();
@@ -252,7 +255,9 @@ class DatabaseService {
         .timeout(Duration(seconds: waitDurationInSec), onTimeout: () => null);
 
     if (plants == null) {
-      return LocalStorageService.loadFollowingPlants();
+      List<Plant> plants = await LocalStorageService.loadFollowingPlants();
+      trace.stop();
+      return plants;
     }
 
     LocalStorageService.saveFollowingPlants(plants);
