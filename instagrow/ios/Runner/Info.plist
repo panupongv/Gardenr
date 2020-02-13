@@ -22,6 +22,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used for capturing profile images and QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photos from library are used as profile images for you and your plants.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -29,7 +33,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -40,10 +43,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photos from library are used as profile images for you and your plants.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera is used for capturing profile images and QR codes.</string>
 </dict>
 </plist>

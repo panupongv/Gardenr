@@ -61,12 +61,12 @@ target 'Runner' do
     pod p[:name], :path => File.join(symlink, 'ios')
   }
   
-#   pod 'Firebase/Core'
-  #  pod 'Firebase/Database'
-  #  pod 'Firebase/Auth'
-  #  pod 'Firebase/Storage'
-  #  pod 'Firebase/Performance'
-  #  pod 'Firebase/Crashlytics'
+#  pod 'Firebase/Core'
+#  pod 'Firebase/Database'
+#  pod 'Firebase/Auth'
+#  pod 'Firebase/Storage'
+#  pod 'Firebase/Performance'
+#  pod 'Firebase/Crashlytics'
 
 
 end
