@@ -42,6 +42,7 @@ dependencies:
   page_transition: ^1.1.5
   barcode_scan: ^1.0.0
   qr_flutter: ^3.2.0
+  share: ^0.6.3+6
 
   timeago: ^2.0.22
   sprintf: "^4.0.0"

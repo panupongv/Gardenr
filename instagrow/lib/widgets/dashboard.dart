@@ -18,9 +18,11 @@ class DashBoard extends StatelessWidget {
     return Image(
       width: DASHBOARD_ICON_SIZE,
       height: DASHBOARD_ICON_SIZE,
-      image: AssetImage(darkThemed
-          ? 'assets/images/moisture_dark.png'
-          : 'assets/images/moisture_light.png'),
+      image: AssetImage(
+        darkThemed
+            ? 'assets/images/moisture_dark.png'
+            : 'assets/images/moisture_light.png',
+      ),
     );
   }
 
@@ -28,9 +30,11 @@ class DashBoard extends StatelessWidget {
     return Image(
       width: DASHBOARD_ICON_SIZE,
       height: DASHBOARD_ICON_SIZE,
-      image: AssetImage(darkThemed
-          ? 'assets/images/temperature_dark.png'
-          : 'assets/images/temperature_light.png'),
+      image: AssetImage(
+        darkThemed
+            ? 'assets/images/temperature_dark.png'
+            : 'assets/images/temperature_light.png',
+      ),
     );
   }
 
