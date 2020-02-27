@@ -84,7 +84,9 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
 
     _following = null;
     DatabaseService.plantIsFollowed(_plant).then((bool following) {
-      _following = following;
+      setState(() {
+        _following = following;
+      });
     });
 
     _streamSubscription =
