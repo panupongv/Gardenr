@@ -2,11 +2,11 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:instagrow/models/enums.dart';
+import 'package:instagrow/utils/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
-import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/widgets/dashboard.dart';
 import 'package:instagrow/widgets/navigation_bar_text.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';
@@ -264,7 +264,6 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         );
       },
     );
-    // Navigator.of(context).push(plantProfileScreen);
     Navigator.of(context).push(plantProfileScreen).then((_) {
       if (_showSearch) {
         _searchFocusNode.requestFocus();

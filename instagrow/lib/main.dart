@@ -4,7 +4,7 @@ import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signin_screen.dart';
-import 'package:instagrow/utils/auth_service.dart';
+import 'package:instagrow/services/auth_service.dart';
 
 void main() {
   Crashlytics.instance.enableInDevMode = true;

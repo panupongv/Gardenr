@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
