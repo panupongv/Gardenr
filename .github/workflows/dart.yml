@@ -17,9 +17,9 @@ jobs:
       # The branch or tag ref that triggered the workflow will be checked out.
       # https://github.com/actions/checkout
       - uses: actions/checkout@v1
-          
-      - run: ls
-      - run: pwd
+      
+      # Change directory from project root to flutter project
+      - run: cd ./instagrow
         
       # Setup a flutter environment.
       # https://github.com/marketplace/actions/flutter-action
