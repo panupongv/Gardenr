@@ -12,7 +12,7 @@ jobs:
     
     #sequence of tasks called
     steps:
-      - working-directory: ./instagrow
+      - run: cd ./instagrow
 
       # The branch or tag ref that triggered the workflow will be checked out.
       # https://github.com/actions/checkout
