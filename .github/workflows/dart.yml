@@ -41,8 +41,7 @@ jobs:
         
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
-      - run: bash codecov.sh -f coverage/lcov.info -n  -F
-        working-directory: ${{env.working-directory}}
+      - run: bash codecov.sh -f instagrow/coverage/lcov.info -n  -F
 
 #       - name: Upload coverage to Codecov
 #         uses: codecov/codecov-action@v1
