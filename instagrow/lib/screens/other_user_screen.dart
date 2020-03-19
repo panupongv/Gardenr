@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:instagrow/models/enums.dart';
+import 'package:instagrow/utils/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/plant_profile_screen.dart';
-import 'package:instagrow/utils/auth_service.dart';
-import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/services/auth_service.dart';
+import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/content_segment_controller.dart';
 import 'package:instagrow/widgets/dashboard.dart';

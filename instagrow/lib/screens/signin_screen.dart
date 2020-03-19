@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:instagrow/models/auth_field_validator.dart';
 import 'package:instagrow/screens/home_screen.dart';
 import 'package:instagrow/screens/signup_screen.dart';
-import 'package:instagrow/utils/auth_service.dart';
+import 'package:instagrow/services/auth_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/quick_dialog.dart';

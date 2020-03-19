@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/cupertino.dart";
 import 'package:flutter/material.dart';
-import 'package:instagrow/models/enums.dart';
+import 'package:instagrow/utils/enums.dart';
 import 'package:instagrow/screens/dashboard_screen.dart';
 import 'package:instagrow/screens/profile_screen.dart';
 import 'package:instagrow/utils/style.dart';
