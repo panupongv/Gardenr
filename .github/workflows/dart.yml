@@ -39,19 +39,13 @@ jobs:
       - run: flutter test --coverage
         working-directory: ${{env.working-directory}}
         
-      - uses: romeovs/lcov-reporter-action@v0.2.16
+      - run: genhtml instagrow/coverage/lcov.info --output-directory instagrow/coverage/html
+      
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: instagrow/coverage/lcov.info
-      
-#       - run: ls instagrow/coverage
-#       - run: ls instagrow/coverage/html
-      
-#       - name: Archive code coverage results
-#         uses: actions/upload-artifact@v1
-#         with:
-#           name: code-coverage-report
-#           path: instagrow/coverage/html/
+          name: code-coverage-report
+          path: instagrow/coverage/html/
         
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
