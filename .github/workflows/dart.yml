@@ -32,8 +32,8 @@ jobs:
         working-directory: ${{env.working-dir}}
         
       # run static analys code
-      - run: flutter  analyze
-        working-directory: ${{env.working-dir}}
+#       - run: flutter  analyze
+#         working-directory: ${{env.working-dir}}
         
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
