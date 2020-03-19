@@ -19,7 +19,6 @@ jobs:
       - uses: actions/checkout@v1
       
       # Change directory from project root to flutter project
-      - run: cd ./instagrow
         
       # Setup a flutter environment.
       # https://github.com/marketplace/actions/flutter-action
@@ -27,19 +26,20 @@ jobs:
         with:
           flutter-version: '1.15.3'
           channel: 'dev'
-      
+            
+      - run: cd ./instagrow
       - run: ls -l
       - run: pwd
       
-#       - run: flutter pub get
-#       # run static analys code
-#       - run: flutter  analyze
-#       # run  flutter widgets tests  and unit tests
-#       - run: flutter test --coverage
-#       # Upload coverage reports to Codecov
-#       # https://github.com/marketplace/actions/codecov
-#       - name: Upload coverage to Codecov
-#         uses: codecov/codecov-action@v1
-#         with:
-#           token: ${{ secrets.CODECOV_TOKEN }}
-#           file: coverage/lcov.info
+      - run: flutter pub get
+      # run static analys code
+      - run: flutter  analyze
+      # run  flutter widgets tests  and unit tests
+      - run: flutter test --coverage
+      # Upload coverage reports to Codecov
+      # https://github.com/marketplace/actions/codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
