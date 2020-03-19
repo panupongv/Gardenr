@@ -38,14 +38,20 @@ jobs:
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
         working-directory: ${{env.working-directory}}
+      
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: instagrow/coverage/
         
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
 #       - run: bash codecov.sh -f instagrow/coverage/lcov.info -n  -F
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          token: c3666178-8858-47d5-b7f4-2eba099a5216
-          file: instagrow/coverage/lcov.info
+#       - name: Upload coverage to Codecov
+#         uses: codecov/codecov-action@v1
+#         with:
+#           token: c3666178-8858-47d5-b7f4-2eba099a5216
+#           file: instagrow/coverage/lcov.info
 #           working-directory: ${{env.working-directory}}
