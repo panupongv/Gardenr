@@ -39,6 +39,11 @@ jobs:
       - run: flutter test --coverage
         working-directory: ${{env.working-directory}}
         
+#       - uses: lcov/genhtml@v1
+#         with:
+#           :  
+          
+      - run: brew install lcov    
       - run: genhtml instagrow/coverage/lcov.info --output-directory instagrow/coverage/html
       
       - name: Archive code coverage results
