@@ -38,9 +38,14 @@ jobs:
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
         working-directory: ${{env.working-directory}}
+        
+      - uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: instagrow/coverage/lcov.info
       
-      - run: ls instagrow/coverage
-      - run: ls instagrow/coverage/html
+#       - run: ls instagrow/coverage
+#       - run: ls instagrow/coverage/html
       
 #       - name: Archive code coverage results
 #         uses: actions/upload-artifact@v1
