@@ -39,11 +39,14 @@ jobs:
       - run: flutter test --coverage
         working-directory: ${{env.working-directory}}
       
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: instagrow/coverage/html/
+      - run: ls instagrow/coverage
+      - run: ls instagrow/coverage/html
+      
+#       - name: Archive code coverage results
+#         uses: actions/upload-artifact@v1
+#         with:
+#           name: code-coverage-report
+#           path: instagrow/coverage/html/
         
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
