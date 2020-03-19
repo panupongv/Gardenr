@@ -8,7 +8,8 @@ jobs:
   test:
     #The type of machine to run the job on. [windows,macos, ubuntu , self-hosted]
     runs-on: macos-latest
-
+    env:
+      working-dir: ./instagrow 
     
     #sequence of tasks called
     steps:
@@ -27,15 +28,17 @@ jobs:
           flutter-version: '1.15.3'
           channel: 'dev'
             
-      - run: cd ./instagrow
-      - run: ls -l
-      - run: pwd
-      
       - run: flutter pub get
+        working-directory: ${{env.working-dir}}
+        
       # run static analys code
       - run: flutter  analyze
+        working-directory: ${{env.working-dir}}
+        
       # run  flutter widgets tests  and unit tests
       - run: flutter test --coverage
+        working-directory: ${{env.working-dir}}
+        
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
       - name: Upload coverage to Codecov
@@ -43,3 +46,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
+          working-directory: ${{env.working-dir}}
