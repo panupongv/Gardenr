@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:instagrow/models/enums.dart';
+import 'package:instagrow/utils/enums.dart';
 import 'package:instagrow/utils/style.dart';
 
 class ContentSegmentController extends StatefulWidget {

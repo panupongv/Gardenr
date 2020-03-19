@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagrow/models/enums.dart';
+import 'package:instagrow/utils/enums.dart';
 import 'package:instagrow/models/plant.dart';
 import 'package:instagrow/models/sensor_data.dart';
 import 'package:instagrow/models/user_profile.dart';
 import 'package:instagrow/screens/other_user_screen.dart';
 import 'package:instagrow/screens/profile_edit_screen.dart';
 import 'package:instagrow/screens/qr_screen.dart';
-import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/circular_cached_image.dart';
@@ -84,7 +84,9 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
 
     _following = null;
     DatabaseService.plantIsFollowed(_plant).then((bool following) {
-      _following = following;
+      setState(() {
+        _following = following;
+      });
     });
 
     _streamSubscription =

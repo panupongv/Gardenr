@@ -34,6 +34,14 @@ abstract class Styles {
     );
   }
 
+  static Color dynamicRed(context) {
+    return _dynamicColor(
+      context,
+      CupertinoColors.systemRed.color,
+      CupertinoColors.systemRed.darkColor,
+    );
+  }
+
   static TextStyle tabTitle(context) {
     return TextStyle(
       fontFamily: 'SFPro',
@@ -169,11 +177,7 @@ abstract class Styles {
     return TextStyle(
       fontFamily: 'SFPro',
       fontSize: 19,
-      color: _dynamicColor(
-        context,
-        CupertinoColors.systemRed.color,
-        CupertinoColors.systemRed.darkColor,
-      ),
+      color: dynamicRed(context),
     );
   }
 
@@ -303,6 +307,22 @@ abstract class Styles {
       fontFamily: 'SFPro',
       color: _defaultText(context),
       fontSize: 17,
+    );
+  }
+
+  static TextStyle dialogTextInput(context) {
+    return TextStyle(
+      fontFamily: 'SFPro',
+      color: _defaultText(context),
+      fontSize: 13,
+    );
+  }
+
+  static TextStyle generateCode(context) {
+    return TextStyle(
+      fontFamily: 'SFPro',
+      fontSize: 15,
+      color: dynamicRed(context),
     );
   }
 

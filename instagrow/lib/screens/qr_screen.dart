@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagrow/models/plant.dart';
-import 'package:instagrow/utils/database_service.dart';
+import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
 
 class QRScreen extends StatefulWidget {
   final Plant _plant;
@@ -56,6 +57,15 @@ class _QRScreenState extends State<QRScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         actionsForegroundColor: Styles.activeColor(context),
+        trailing: GestureDetector(
+          child: Icon(CupertinoIcons.share),
+          onTap: () {
+            Share.share(
+              _displayedCode,
+              subject: "Hello World",
+            );
+          },
+        ),
       ),
       child: SafeArea(
         child: Center(
@@ -67,7 +77,10 @@ class _QRScreenState extends State<QRScreen> {
                 height: 32,
               ),
               CupertinoButton(
-                child: Text("Generate new QRCode"),
+                child: Text(
+                  "Generate new QRCode",
+                  style: Styles.generateCode(context),
+                ),
                 onPressed: () async {
                   showCupertinoDialog(
                     context: context,
