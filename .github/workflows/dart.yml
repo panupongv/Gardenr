@@ -44,7 +44,9 @@ jobs:
 #           :  
           
       - run: brew install lcov    
-      - run: genhtml instagrow/coverage/lcov.info --output-directory instagrow/coverage/html
+        
+      - run: genhtml coverage/lcov.info --output-directory coverage/html
+        working-directory: ${{env.working-directory}}
       
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
