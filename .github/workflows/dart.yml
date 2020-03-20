@@ -68,8 +68,8 @@ jobs:
     needs: test-dart-files
     runs-on: macos-latest
     env:
-      working-directory: ./instagrow 
-      
+      working-directory: ./instagrow
+            
     steps:
       
       - uses: actions/checkout@v1
@@ -86,6 +86,6 @@ jobs:
       - run: flutter pub get
         working-directory: ${{env.working-directory}}
       
-      - run: flutter build ios
-        working-directory: ${{env.working-directory}}
+      - run: xcodebuild -allowProvisioningUpdates
+        working-directory: ./instagrow/ios
         
