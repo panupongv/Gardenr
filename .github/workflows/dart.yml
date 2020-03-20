@@ -1,11 +1,11 @@
 #The name of your workflow.
-name:  Test Dart Files
+name:  Test and Build
 # Trigger the workflow on push or pull request
 on: [push,pull_request]
 #A workflow run is made up of one or more jobs. Jobs run in parallel by default.
 jobs:
 
-  test:
+  test-dart-files:
     #The type of machine to run the job on. [windows,macos, ubuntu , self-hosted]
     runs-on: macos-latest
     env:
@@ -53,7 +53,7 @@ jobs:
         with:
           name: code-coverage-report
           path: instagrow/coverage/html/
-        
+                  
       # Upload coverage reports to Codecov
       # https://github.com/marketplace/actions/codecov
 #       - run: bash codecov.sh -f instagrow/coverage/lcov.info -n  -F
@@ -64,3 +64,13 @@ jobs:
 #           token: c3666178-8858-47d5-b7f4-2eba099a5216
 #           file: instagrow/coverage/lcov.info
 #           working-directory: ${{env.working-directory}}
+  build-for-ios:
+    needs: test-dart-files
+    runs-on: macos-latest
+    env:
+      working-directory: ./instagrow 
+      
+    steps:
+      - run: flutter build ios
+        working-directory: ${{env.working-directory}}
+     
