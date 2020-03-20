@@ -71,6 +71,21 @@ jobs:
       working-directory: ./instagrow 
       
     steps:
+      
+      - uses: actions/checkout@v1
+      
+      # Change directory from project root to flutter project
+        
+      # Setup a flutter environment.
+      # https://github.com/marketplace/actions/flutter-action
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.15.3'
+          channel: 'dev'
+            
+      - run: flutter pub get
+        working-directory: ${{env.working-directory}}
+      
       - run: flutter build ios
         working-directory: ${{env.working-directory}}
-     
+        
