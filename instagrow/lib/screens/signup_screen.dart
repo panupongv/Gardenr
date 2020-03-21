@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagrow/models/auth_field_validator.dart';
+import 'package:instagrow/utils/auth_field_validator.dart';
 import 'package:instagrow/services/auth_service.dart';
 import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/style.dart';

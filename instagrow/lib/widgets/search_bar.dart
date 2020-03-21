@@ -26,7 +26,6 @@ class SearchBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 4,
-            vertical: 4,
           ),
           child: Row(
             children: [

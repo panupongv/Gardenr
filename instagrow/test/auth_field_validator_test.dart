@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:instagrow/models/auth_field_validator.dart';
+import 'package:instagrow/utils/auth_field_validator.dart';
 
 void main() {
   test('hasEmptyField', () {
