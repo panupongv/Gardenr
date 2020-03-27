@@ -20,35 +20,42 @@ class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen(this._contentType);
 
   @override
-  _DashBoardScreenState createState() => _DashBoardScreenState();
+  _DashBoardScreenState createState() {
+    bool isMyPlant = _contentType == DashBoardContentType.Garden;
+    String title = isMyPlant ? "My Garden" : "Following";
+    Function queryFunction = isMyPlant
+        ? DatabaseService.getMyPlants
+        : DatabaseService.getFollowingPlants;
+    return _DashBoardScreenState(isMyPlant, title, queryFunction);
+  }
 }
 
 class _DashBoardScreenState extends State<DashBoardScreen>
     with SingleTickerProviderStateMixin {
-  String _title;
-  bool _isMyPlant, _showSearch;
-  List<Plant> _plants;
-  List<bool> _filteredPlants;
+  final bool _isMyPlant;
+  final String _title;
+  final Function _querySource;
 
+  bool _showSearch;
+  List<Plant> _plants;
+  List<bool> _filteredIndexes;
+
+  String _searchText;
   TextEditingController _searchTextController;
   FocusNode _searchFocusNode;
 
-  Function _querySource;
+  _DashBoardScreenState(this._isMyPlant, this._title, this._querySource);
 
   @override
   initState() {
     super.initState();
-    _isMyPlant = widget._contentType == DashBoardContentType.Garden;
-    _title = _isMyPlant ? "My Garden" : "Following";
-    _querySource = _isMyPlant
-        ? DatabaseService.getMyPlants
-        : DatabaseService.getFollowingPlants;
 
+    _searchText = "";
     _searchTextController = TextEditingController();
     _searchFocusNode = FocusNode();
     _showSearch = false;
     _plants = List<Plant>();
-    _filteredPlants = List<bool>();
+    _filteredIndexes = List<bool>();
 
     _onRefresh();
   }
@@ -71,7 +78,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
           ),
           CupertinoActionSheetAction(
             child: Text(
-              "Enter Shareable Code",
+              "Enter Textual Code",
               style: Styles.actionSheetAction(context),
             ),
             onPressed: () {
@@ -105,7 +112,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         content: Column(
           children: <Widget>[
             Text(
-              "Enter or paste shared code from a Gardenr user.",
+              "Enter a shared code obtained from a Gardenr user.",
               style: Styles.dialogContent(context),
             ),
             Container(
@@ -219,9 +226,10 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               ));
     } else {
       showCupertinoDialog(
-          context: context,
-          builder: (BuildContext context) =>
-              quickAlertDialog(context, "Oops", claimResult.item2, "Dismiss"));
+        context: context,
+        builder: (BuildContext context) =>
+            quickAlertDialog(context, "Oops", claimResult.item2, "Dismiss"),
+      );
     }
   }
 
@@ -250,7 +258,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
       setState(() {
         _plants = queriedPlants;
       });
-      _updateFilteredPlants();
+      _updateFilteredPlants(true);
     }
   }
 
@@ -271,13 +279,25 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     });
   }
 
-  void _updateFilteredPlants() {
+  void _updateFilteredPlants(bool bypass) {
     String searchText = _searchTextController.text.toLowerCase();
-    setState(() {
-      _filteredPlants = _plants
-          .map((Plant plant) => plant.name.toLowerCase().contains(searchText))
-          .toList();
-    });
+    if (!bypass && searchText.contains(_searchText)) {
+      List<bool> filteredIndexes = List.from(_filteredIndexes);
+      for (int i = 0; i < _filteredIndexes.length; i++) {
+        filteredIndexes[i] =
+            _filteredIndexes[i] && _plants[i].name.toLowerCase().contains(searchText);
+      }
+      setState(() {
+        _filteredIndexes = filteredIndexes;
+      });
+    } else {
+      setState(() {
+        _filteredIndexes = _plants
+            .map((Plant plant) => plant.name.toLowerCase().contains(searchText))
+            .toList();
+      });
+    }
+    _searchText = searchText;
   }
 
   Widget _navigationBarLeadingWidget() {
@@ -288,9 +308,11 @@ class _DashBoardScreenState extends State<DashBoardScreen>
               CupertinoIcons.search,
             ),
             onTap: () {
-              setState(() {
-                _showSearch = true;
-              });
+              setState(
+                () {
+                  _showSearch = true;
+                },
+              );
             },
           );
   }
@@ -302,7 +324,9 @@ class _DashBoardScreenState extends State<DashBoardScreen>
             child: SearchBar(
               controller: _searchTextController,
               focusNode: _searchFocusNode,
-              onUpdate: _updateFilteredPlants,
+              onUpdate: () {
+                _updateFilteredPlants(false);
+              },
             ),
           )
         : navigationBarTitle(context, _title);
@@ -338,7 +362,7 @@ class _DashBoardScreenState extends State<DashBoardScreen>
         trailing: _navigationBarTrailingWidget(),
       ),
       child:
-          DashBoard(_plants, _filteredPlants, _onRefresh, _onItemPressed, []),
+          DashBoard(_plants, _filteredIndexes, _onRefresh, _onItemPressed, []),
     );
   }
 }

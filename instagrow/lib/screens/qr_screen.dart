@@ -62,7 +62,6 @@ class _QRScreenState extends State<QRScreen> {
           onTap: () {
             Share.share(
               _displayedCode,
-              subject: "Hello World",
             );
           },
         ),
@@ -78,7 +77,7 @@ class _QRScreenState extends State<QRScreen> {
               ),
               CupertinoButton(
                 child: Text(
-                  "Generate new QRCode",
+                  "Generate new code",
                   style: Styles.generateCode(context),
                 ),
                 onPressed: () async {

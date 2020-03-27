@@ -14,6 +14,7 @@ import 'package:instagrow/services/database_service.dart';
 import 'package:instagrow/utils/size_config.dart';
 import 'package:instagrow/utils/style.dart';
 import 'package:instagrow/widgets/circular_cached_image.dart';
+import 'package:instagrow/widgets/date_picker_arrow.dart';
 import 'package:instagrow/widgets/default_images.dart';
 import 'package:instagrow/widgets/description_expandable.dart';
 import 'package:instagrow/widgets/graph_focus_popup.dart';
@@ -107,6 +108,10 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
     return Jiffy(date).format("EEEE, MMMM do yyyy");
   }
 
+  String _graphTitleDateFormat(DateTime date) {
+    return Jiffy(date).format("(do MMMM)");
+  }
+
   void _calculateDatesAvailable() {
     DateTime utcTime = DateTime.now().toUtc();
     DateTime plantTime = utcTime.add(Duration(hours: _plant.utcTimeZone));
@@ -145,21 +150,7 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                     context,
                     "Done",
                     () {
-                      setState(() {
-                        _selectedDateIndex = _scrollController.selectedItem;
-                        _loadingData = true;
-                      });
-                      _scrollController = FixedExtentScrollController(
-                        initialItem: _selectedDateIndex,
-                      );
-                      DatabaseService.getSensorData(
-                              _plant.id, _datesAvailable[_selectedDateIndex])
-                          .then((SensorData data) {
-                        setState(() {
-                          _sensorData = data;
-                          _loadingData = false;
-                        });
-                      });
+                      _onDateChanged(_scrollController.selectedItem);
                       Navigator.of(context).pop();
                     },
                   ),
@@ -186,6 +177,24 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
         ],
       ),
     );
+  }
+
+  void _onDateChanged(int newIndex) {
+    setState(() {
+      _selectedDateIndex = newIndex;
+      _loadingData = true;
+    });
+    _scrollController = FixedExtentScrollController(
+      initialItem: _selectedDateIndex,
+    );
+    DatabaseService.getSensorData(
+            _plant.id, _datesAvailable[_selectedDateIndex])
+        .then((SensorData data) {
+      setState(() {
+        _sensorData = data;
+        _loadingData = false;
+      });
+    });
   }
 
   Future<void> _moreOptions() async {
@@ -380,8 +389,14 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
           () async {
             await showCupertinoModalPopup(
               context: context,
-              builder: (BuildContext context) =>
-                  GraphFocusPopup("Soil Moisture", moistureGraph),
+              builder: (BuildContext context) => GraphFocusPopup(
+                _plant.id,
+                "Soil Moisture ",
+                moistureGraph,
+                _datesAvailable,
+                _selectedDateIndex,
+                true,
+              ),
             );
           },
         ),
@@ -391,8 +406,14 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
           () async {
             await showCupertinoModalPopup(
               context: context,
-              builder: (BuildContext context) =>
-                  GraphFocusPopup("Temperature", temperatureGraph),
+              builder: (BuildContext context) => GraphFocusPopup(
+                _plant.id,
+                "Temperature ",
+                temperatureGraph,
+                _datesAvailable,
+                _selectedDateIndex,
+                false,
+              ),
             );
           },
         ),
@@ -469,11 +490,14 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                   color: Styles.dynamicGray(context),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      "Data from: ",
-                      style: Styles.dataFromDate(context),
+                    DatePickerArrow(
+                      CupertinoIcons.left_chevron,
+                      _selectedDateIndex,
+                      0,
+                      null,
+                      () {_onDateChanged(_selectedDateIndex - 1);},
                     ),
                     CupertinoButton(
                       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
@@ -487,7 +511,13 @@ class _PlantProfileScreenState extends State<PlantProfileScreen> {
                             useRootNavigator: false,
                             builder: (_) => _buildOverlay());
                       },
-                    )
+                    ),
+                    DatePickerArrow(
+                        CupertinoIcons.right_chevron,
+                        _selectedDateIndex,
+                        null,
+                        _datesAvailable.length - 1,
+                        () {_onDateChanged(_selectedDateIndex + 1);}),
                   ],
                 ),
                 _graphSection(),
