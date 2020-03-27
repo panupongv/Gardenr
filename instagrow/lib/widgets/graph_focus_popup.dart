@@ -71,7 +71,6 @@ class _GraphFocusPopupState extends State<GraphFocusPopup> {
     Widget graph = _graphs[_selectedIndex];
     return _loading
         ? Container(
-            color: Colors.amber,
             child: CircularProgressIndicator(),
             width: double.infinity,
             height: double.infinity,
