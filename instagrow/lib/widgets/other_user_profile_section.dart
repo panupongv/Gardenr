@@ -15,22 +15,42 @@ class OtherUserProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularCachedImage(
-                  _userProfile.imageUrl,
-                  PROFILE_SCREEN_IMAGE_SIZE,
-                  progressIndicator(context),
-                  defaultPlantImage(context)),
+        // Row(
+        //   children: <Widget>[
+        //     Padding(
+        //       padding: EdgeInsets.all(16),
+        //       child: CircularCachedImage(
+        //           _userProfile.imageUrl,
+        //           PROFILE_SCREEN_IMAGE_SIZE,
+        //           progressIndicator(context),
+        //           defaultPlantImage(context)),
+        //     ),
+        //     Text(
+        //       _userProfile.name,
+        //       textAlign: TextAlign.left,
+        //       style: Styles.plantProfileName(context),
+        //     ),
+        //   ],
+        // ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: UnconstrainedBox(
+            child: CircularCachedImage(
+              _userProfile.imageUrl,
+              PROFILE_SCREEN_IMAGE_SIZE,
+              progressIndicator(context),
+              defaultPlantImage(context),
             ),
-            Text(_userProfile.name,
-                textAlign: TextAlign.left,
-                style: Styles.plantProfileName(context)),
-          ],
+          ),
+        ),
+        Text(
+          _userProfile.name,
+          textAlign: TextAlign.left,
+          style: Styles.plantProfileName(context),
+        ),
+        Container(
+          height: 16,
         ),
         DescriptionExpandable(_userProfile.description),
       ],
