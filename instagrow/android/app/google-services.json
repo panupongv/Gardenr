@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "288974771562",
+    "firebase_url": "https://gardenr-ed17f.firebaseio.com",
+    "project_id": "gardenr-ed17f",
+    "storage_bucket": "gardenr-ed17f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288974771562:android:31c522a829f410b224c113",
+        "android_client_info": {
+          "package_name": "com.panupongv.instagrow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288974771562-9qhemdnrpb715t2nes20piuoof7nni86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt0Vd0gMsxtnlIy7Qu1m3DpZ9YBnZysYY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288974771562-9qhemdnrpb715t2nes20piuoof7nni86.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "288974771562-hg00j8o98m9vdd0ke8lgp4iib6h9146q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.panupongv.instagrow"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

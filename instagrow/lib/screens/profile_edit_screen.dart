@@ -242,7 +242,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (_privacyChanged || previousScreen == PreviousScreen.AddMyPlant) {
       await DatabaseService.updatePlantPrivacy(widget.plant, _isPublic);
     }
-    await trace.putAttribute("Profile Type", previousScreen.toString());
+    await trace.putAttribute("ProfileType", previousScreen.toString());
     trace.stop();
     Navigator.of(context).pop();
   }
