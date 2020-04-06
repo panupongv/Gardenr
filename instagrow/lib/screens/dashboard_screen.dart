@@ -280,12 +280,21 @@ class _DashBoardScreenState extends State<DashBoardScreen>
   }
 
   void _updateFilteredPlants(bool bypass) {
-    String searchText = _searchTextController.text.toLowerCase();
-    if (!bypass && searchText.contains(_searchText)) {
+    String newSearchText = _searchTextController.text.toLowerCase();
+    if (!bypass && newSearchText.contains(_searchText)) {
       List<bool> filteredIndexes = List.from(_filteredIndexes);
       for (int i = 0; i < _filteredIndexes.length; i++) {
-        filteredIndexes[i] =
-            _filteredIndexes[i] && _plants[i].name.toLowerCase().contains(searchText);
+        filteredIndexes[i] = _filteredIndexes[i] &&
+            _plants[i].name.toLowerCase().contains(newSearchText);
+      }
+      setState(() {
+        _filteredIndexes = filteredIndexes;
+      });
+    } else if (!bypass && _searchText.contains(newSearchText)) {
+      List<bool> filteredIndexes = List.from(_filteredIndexes);
+      for (int i = 0; i < _filteredIndexes.length; i++) {
+        filteredIndexes[i] = _filteredIndexes[i] ||
+            _plants[i].name.toLowerCase().contains(newSearchText);
       }
       setState(() {
         _filteredIndexes = filteredIndexes;
@@ -293,11 +302,11 @@ class _DashBoardScreenState extends State<DashBoardScreen>
     } else {
       setState(() {
         _filteredIndexes = _plants
-            .map((Plant plant) => plant.name.toLowerCase().contains(searchText))
+            .map((Plant plant) => plant.name.toLowerCase().contains(newSearchText))
             .toList();
       });
     }
-    _searchText = searchText;
+    _searchText = newSearchText;
   }
 
   Widget _navigationBarLeadingWidget() {
