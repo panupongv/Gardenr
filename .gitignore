@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 .DS_Store
-/flutter
+.vscode
 
 *.class
 *.lock
@@ -67,6 +66,7 @@ version
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Runner/GoogleService-Info.plist
 
 # Coverage
 coverage/
@@ -79,6 +79,7 @@ coverage/
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 
+<<<<<<< HEAD
 =======
 
 # Created by https://www.gitignore.io/api/python
@@ -193,4 +194,6 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/python
->>>>>>> 634a58e437d26fe9596fc61a52cbb7e244e0c362
+=======
+evaluations/private.py
+Gardenr Setup/python scripts/private.py
